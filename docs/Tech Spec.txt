@@ -1,0 +1,543 @@
+# Amazon Price Tracker API - Complete Specification
+
+## Overview
+
+A WordPress REST API plugin for tracking Amazon product prices across multiple international marketplaces. The API integrates with Amazon Product Advertising API 5.0 to fetch real-time pricing and product information, storing historical data for price tracking over time.
+
+The API will be accessible via the WordPress REST API (WP REST API), allowing external applications to interact with it outside of WordPress.
+
+---
+
+## Authentication
+
+- **Method:** WordPress Application Passwords
+- **Type:** HTTP Basic Authentication
+- **Usage:** All endpoints require authentication unless otherwise specified
+
+---
+
+## User Roles & Permissions
+
+### Standard Users (Subscriber, Contributor, Author, Editor)
+- Can CREATE new ASIN/Region entries (maximum 50 per day)
+- Can READ all product data (ASINs, prices, history)
+- Cannot delete products
+- Cannot refresh prices
+- Cannot manage blacklist
+- Cannot update custom categories
+
+### Administrator Users
+- Full access to all operations
+- Unlimited ASIN creation (no daily limit)
+- Can DELETE products (soft or hard delete)
+- Can REFRESH prices (trigger Amazon PA-API fetch)
+- Can manage BLACKLIST (add/remove/view)
+- Can UPDATE custom categories
+- Can VIEW all categories in use
+
+---
+
+## Supported Amazon Regions
+
+All 12 Amazon marketplaces must be supported:
+
+| Region Code | Country | Marketplace Domain | Currency |
+|-------------|---------|-------------------|----------|
+| US | United States | amazon.com | USD |
+| CA | Canada | amazon.ca | CAD |
+| UK | United Kingdom | amazon.co.uk | GBP |
+| DE | Germany | amazon.de | EUR |
+| FR | France | amazon.fr | EUR |
+| ES | Spain | amazon.es | EUR |
+| IT | Italy | amazon.it | EUR |
+| AU | Australia | amazon.com.au | AUD |
+| JP | Japan | amazon.co.jp | JPY |
+| IN | India | amazon.in | INR |
+| MX | Mexico | amazon.com.mx | MXN |
+| BR | Brazil | amazon.com.br | BRL |
+
+---
+
+## Database Schema
+
+### Table 1: Products (`apt_products`)
+
+Stores tracked ASIN/Region combinations with product metadata.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INT (PK, AUTO) | Unique product ID |
+| asin | VARCHAR(10) | Amazon Standard Identification Number |
+| region | VARCHAR(2) | Region code (US, UK, etc.) |
+| custom_category | VARCHAR(255), NULL | Admin-assigned category (NOT Amazon's category) |
+| images | JSON/LONGTEXT | Array of product images (main + variants, large size) |
+| facts | JSON/LONGTEXT | Key-value pairs of product data from Amazon |
+| is_active | BOOLEAN | True = active, False = soft-deleted |
+| created_at | DATETIME | When entry was created |
+| updated_at | DATETIME | When entry was last updated |
+| created_by | INT (FK) | WordPress user ID who created entry |
+
+**Constraints:**
+- UNIQUE constraint on (asin, region) combination
+
+**Images JSON Structure:**
+```json
+[
+  {
+    "url": "https://m.media-amazon.com/images/I/xxxxx.jpg",
+    "height": 500,
+    "width": 500,
+    "type": "main"
+  },
+  {
+    "url": "https://m.media-amazon.com/images/I/yyyyy.jpg",
+    "height": 500,
+    "width": 500,
+    "type": "variant"
+  }
+]
+```
+
+**Facts JSON Structure (flexible key-value pairs):**
+```json
+{
+  "title": "Product Name",
+  "brand": "Brand Name",
+  "manufacturer": "Manufacturer Name",
+  "features": ["Feature 1", "Feature 2", "Feature 3"],
+  "description": "Product description",
+  "amazon_category": "Electronics > Computers > Accessories",
+  "amazon_category_id": "123456",
+  "dimensions": "10 x 5 x 2 inches",
+  "weight": "1.5 pounds",
+  "rating": 4.5,
+  "review_count": 1250,
+  "color": "Black",
+  "size": "Large",
+  "model_number": "ABC123",
+  "part_number": "XYZ789",
+  "release_date": "2024-01-15",
+  "is_prime_eligible": true,
+  "parent_asin": "B000000000",
+  "variation_attributes": ["Color", "Size"]
+}
+```
+
+**Note:** Collect as much product information as Amazon PA-API returns. Store in flexible JSON to avoid creating many columns.
+
+---
+
+### Table 2: Price History (`apt_price_history`)
+
+Stores price records with timestamps for historical tracking.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INT (PK, AUTO) | Unique price record ID |
+| product_id | INT (FK) | Reference to apt_products.id |
+| rrp | DECIMAL(10,2), NULL | Recommended Retail Price (list price) |
+| current_price | DECIMAL(10,2), NULL | Current selling price (NULL if unavailable) |
+| is_prime_price | BOOLEAN | Whether this is a Prime-exclusive price |
+| availability | ENUM | 'in_stock', 'out_of_stock', 'limited_stock', 'preorder', 'unknown' |
+| recorded_at | DATETIME | When this price was recorded |
+
+**Notes:**
+- If product is unavailable/out of stock, current_price should be NULL
+- Currency code is NOT stored; it's derived from region at response time
+- Both RRP and current_price are stored each time to track RRP changes and sale periods
+
+---
+
+### Table 3: User Settings (`apt_user_settings`)
+
+Stores Amazon PA-API credentials and partner tags per user.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INT (PK, AUTO) | Unique settings ID |
+| user_id | INT (FK, UNIQUE) | WordPress user ID |
+| access_key | VARCHAR(20) | Amazon PA-API Access Key (encrypted) |
+| secret_key | VARCHAR(40) | Amazon PA-API Secret Key (encrypted) |
+| partner_tags | JSON/LONGTEXT | Map of region codes to partner tags |
+| created_at | DATETIME | When settings were created |
+| updated_at | DATETIME | When settings were last updated |
+
+**Partner Tags JSON Structure:**
+```json
+{
+  "US": "mysite-20",
+  "UK": "mysite-21",
+  "DE": "mysite-03"
+}
+```
+
+**Requirements:**
+- Partner tags are REQUIRED for each region a user wants to track
+- No default/fallback partner tags
+- Different users have different tags for each region
+
+---
+
+### Table 4: Blacklist (`apt_blacklist`)
+
+Stores blacklisted ASIN/Region combinations that cannot be added.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INT (PK, AUTO) | Unique blacklist entry ID |
+| asin | VARCHAR(10) | Blacklisted ASIN |
+| region | VARCHAR(2) | Blacklisted region |
+| reason | VARCHAR(500), NULL | Optional reason for blacklisting |
+| created_at | DATETIME | When entry was created |
+| created_by | INT (FK) | Admin user ID who created entry |
+
+**Constraints:**
+- UNIQUE constraint on (asin, region) combination
+
+---
+
+## API Endpoints
+
+### Regions
+
+#### GET /regions
+- **Access:** All authenticated users
+- **Description:** Get list of all supported Amazon marketplace regions
+- **Response:** Array of region objects with code, name, marketplace domain, currency
+
+---
+
+### User Settings
+
+#### GET /settings
+- **Access:** Authenticated user (own settings only)
+- **Description:** Retrieve current user's settings
+- **Response:** User settings (secret_key NEVER returned)
+- **Error:** 404 if not configured
+
+#### PUT /settings
+- **Access:** Authenticated user (own settings only)
+- **Description:** Create or update user settings
+- **Body:** access_key, secret_key, partner_tags (all optional, merged)
+- **Behavior:** Partner tags are merged with existing; use DELETE to remove
+
+#### DELETE /settings/partner-tags/{region}
+- **Access:** Authenticated user (own settings only)
+- **Description:** Remove a partner tag for a specific region
+
+#### POST /settings/validate
+- **Access:** Authenticated user
+- **Description:** Validate Amazon PA-API credentials by making test request
+
+---
+
+### Products
+
+#### GET /products
+- **Access:** All authenticated users
+- **Description:** Retrieve paginated list of all tracked products
+- **Query Parameters:**
+  - `page` (int, default: 1)
+  - `per_page` (int, default: 20, max: 100)
+  - `region` (single region filter)
+  - `regions` (comma-separated multiple regions)
+  - `custom_category` (exact match filter)
+  - `search` (search title and brand, min 2 chars)
+  - `min_price` (minimum current price)
+  - `max_price` (maximum current price)
+  - `availability` (in_stock, out_of_stock, all)
+  - `is_active` (boolean, default: true)
+  - `sort_by` (created_at, updated_at, current_price, title, asin)
+  - `sort_order` (asc, desc)
+
+#### POST /products
+- **Access:** All authenticated users
+- **Description:** Create a new tracked product
+- **Body:** `{ asin, region }`
+- **Rate Limit:** 50/day for non-admins (resets midnight UTC)
+- **Process:**
+  1. Validate ASIN format (10 alphanumeric)
+  2. Check blacklist (403 if blacklisted with message)
+  3. Check if already exists (409 if exists)
+  4. Validate user has partner tag for region (400 if missing)
+  5. Fetch from Amazon PA-API
+  6. If ASIN not found on Amazon, return 400 (do NOT create)
+  7. Create product with images, facts, initial price record
+- **Errors:**
+  - 400: VALIDATION_ERROR, ASIN_NOT_FOUND, AMAZON_API_ERROR, MISSING_PARTNER_TAG
+  - 403: BLACKLISTED (include reason in response)
+  - 409: ALREADY_EXISTS
+  - 429: RATE_LIMIT_EXCEEDED (include limit, used, resets_at)
+
+#### POST /products/bulk
+- **Access:** All authenticated users
+- **Description:** Create multiple products in single request
+- **Body:** `{ products: [{ asin, region }, ...] }`
+- **Limit:** Maximum 100 per request
+- **Rate Limit:** Counts against 50/day for non-admins
+- **Response:** Success/failure count with individual results
+
+#### POST /products/refresh
+- **Access:** Admin only
+- **Description:** Trigger price refresh for multiple products
+- **Body:** 
+  - `product_ids` (optional array of specific IDs)
+  - `regions` (optional array to filter by region)
+  - `limit` (default: 100, max: 1000)
+- **Behavior:** If Amazon PA-API fails, existing price remains unchanged
+
+#### GET /products/{id}
+- **Access:** All authenticated users
+- **Description:** Get full product details by ID
+
+#### DELETE /products/{id}
+- **Access:** Admin only
+- **Description:** Delete a product
+- **Query Parameters:**
+  - `force` (boolean, default: false)
+    - false = soft delete (is_active=false, history preserved)
+    - true = hard delete (permanently remove product and all price history)
+
+#### PUT /products/{id}/category
+- **Access:** Admin only
+- **Description:** Update custom category for a product
+- **Body:** `{ custom_category: "string" | null }`
+
+#### GET /products/{id}/prices
+- **Access:** All authenticated users
+- **Description:** Get price history for a product
+- **Query Parameters:**
+  - `page`, `per_page` (pagination)
+  - `from` (datetime, start of range)
+  - `to` (datetime, end of range)
+  - `aggregate` (none, daily, weekly, monthly)
+  - `sort_order` (asc, desc)
+- **Response:**
+  - Product info (id, asin, region, title)
+  - Currency code (derived from region)
+  - Array of price records
+  - Aggregations array (if requested): period_start, period_end, min/max/avg price, min/max/avg rrp, record_count
+
+#### POST /products/{id}/refresh
+- **Access:** Admin only
+- **Description:** Refresh price for single product
+- **Behavior:** If Amazon PA-API fails, existing price unchanged, return 502
+
+#### GET /products/by-asin/{asin}
+- **Access:** All authenticated users
+- **Description:** Get all tracked products for an ASIN across all regions
+
+#### GET /products/by-asin/{asin}/{region}
+- **Access:** All authenticated users
+- **Description:** Get product by ASIN and region combination
+
+#### GET /products/by-asin/{asin}/{region}/prices
+- **Access:** All authenticated users
+- **Description:** Get price history by ASIN/region (same params as /products/{id}/prices)
+
+---
+
+### Categories
+
+#### GET /categories
+- **Access:** Admin only
+- **Description:** Get list of all unique custom categories currently in use
+- **Response:** Alphabetically sorted array of category strings with count
+
+---
+
+### Blacklist
+
+#### GET /blacklist
+- **Access:** Admin only
+- **Description:** Get paginated list of blacklisted ASIN/Region combinations
+- **Query Parameters:**
+  - `page`, `per_page` (pagination)
+  - `region` (filter by region)
+  - `search` (search by ASIN)
+
+#### POST /blacklist
+- **Access:** Admin only
+- **Description:** Add ASIN/Region to blacklist
+- **Body:** `{ asin, region, reason? }`
+- **Behavior:** If product is currently tracked, it will be soft-deleted
+- **Error:** 409 if already blacklisted
+
+#### GET /blacklist/{id}
+- **Access:** Admin only
+- **Description:** Get specific blacklist entry
+
+#### DELETE /blacklist/{id}
+- **Access:** Admin only
+- **Description:** Remove ASIN/Region from blacklist
+
+#### GET /blacklist/check
+- **Access:** Admin only
+- **Description:** Check if specific ASIN/Region is blacklisted
+- **Query Parameters:** `asin`, `region` (both required)
+- **Response:** `{ blacklisted: boolean, entry?: {...} }`
+
+---
+
+### Statistics
+
+#### GET /stats
+- **Access:** All authenticated users (admins see more)
+- **Response:**
+  - total_products
+  - active_products
+  - total_price_records
+  - products_by_region (count per region)
+  - categories_count
+  - last_refresh (admin only)
+  - user_stats:
+    - products_created_today
+    - daily_limit
+    - remaining_today
+
+#### GET /stats/user
+- **Access:** Authenticated user
+- **Description:** Detailed stats for current user
+- **Response:**
+  - products_created_today
+  - products_created_total
+  - daily_limit (50 for non-admin, unlimited for admin)
+  - remaining_today
+  - is_admin
+  - configured_regions
+
+---
+
+### Health
+
+#### GET /health
+- **Access:** Public (no authentication)
+- **Description:** API health status
+- **Response:** status, version, wordpress_version, php_version, timestamp
+
+#### GET /health/amazon
+- **Access:** Authenticated user
+- **Description:** Test Amazon PA-API connectivity with user's credentials
+- **Response:** status (connected, error, not_configured), message, response_time_ms
+
+---
+
+## Business Rules
+
+### ASIN/Region Universality
+- ASIN/Region combinations are universal (shared across all users)
+- All users can view any tracked product
+- A product only needs to be created once; subsequent attempts return 409
+
+### Rate Limiting
+- Non-admin users: Maximum 50 ASIN creations per day
+- Daily limit resets at midnight UTC
+- Read operations: No rate limits (rely on WordPress caching plugins)
+- Admin operations: No rate limits
+
+### Blacklist Enforcement
+- If someone tries to create a blacklisted ASIN/Region, request rejected with 403
+- Response includes reason for blacklisting
+- Blacklist persists even after product deletion
+- When adding to blacklist, if product exists, it gets soft-deleted
+
+### Price Updates
+- All prices come from Amazon PA-API only (no manual override)
+- If price refresh fails, existing price (with original timestamp) remains unchanged
+- Store both RRP and current_price each time to track:
+  - RRP changes over time
+  - Sale periods (when current_price < RRP)
+
+### Product Data Collection
+- Images: Main image + all variant images, large size only
+- Facts: Collect as much as Amazon PA-API returns
+- Store facts as JSON key-value pairs for flexibility
+- Amazon's category stored in facts (amazon_category, amazon_category_id)
+- Custom category is separate column for admin classification
+
+### Deletion Behavior
+- **Soft delete (default):** Sets is_active=false, preserves all price history
+- **Hard delete (force=true):** Permanently removes product and ALL price history
+
+### Amazon PA-API Error Handling
+- **On CREATE:** If Amazon cannot find ASIN, do NOT create entry (return 400)
+- **On REFRESH:** If Amazon fails, keep existing price unchanged (no new record)
+
+---
+
+## Response Format Standards
+
+### Success Responses
+- Single item: Return object directly
+- List: Return `{ data: [...], meta: { pagination } }`
+- Bulk operations: Return `{ success_count, failure_count, results: [...] }`
+
+### Pagination Metadata
+```json
+{
+  "current_page": 1,
+  "per_page": 20,
+  "total_items": 150,
+  "total_pages": 8,
+  "has_next": true,
+  "has_previous": false
+}
+```
+
+### Error Responses
+```json
+{
+  "code": "ERROR_CODE",
+  "message": "Human readable message",
+  "details": { }
+}
+```
+
+### Validation Errors
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Request validation failed",
+  "errors": [
+    { "field": "asin", "message": "ASIN must be 10 alphanumeric characters" }
+  ]
+}
+```
+
+---
+
+## Currency Handling
+
+- Currency is NOT stored in the database
+- Currency is derived from region at response time
+- Include currency code in price-related responses for consumer convenience
+
+---
+
+## Partner Tag Usage
+
+- Partner tags are stored per user, per region
+- When generating Amazon URLs, use the requesting user's partner tag (if configured)
+- If user has no partner tag for the product's region, URL is generated without tag
+- Partner tags are required to create products (you need a tag to make PA-API requests)
+
+---
+
+## Amazon PA-API Integration Notes
+
+- Use Amazon Product Advertising API 5.0
+- Each user provides their own Access Key and Secret Key
+- Each user provides partner tags for each region they want to track
+- Images: Request large size variants
+- Product data: Request comprehensive item information (title, brand, manufacturer, features, descriptions, categories, dimensions, ratings, etc.)
+- Pricing: Request both list price (RRP) and current price, plus availability status
+
+---
+
+## Base URI
+
+```
+https://{domain}/wp-json/amazon-price-tracker/v1
+```
+
+Where `{domain}` is the WordPress installation domain.
