@@ -1,0 +1,275 @@
+# Amazon Price Tracker - Pre-Production Pending Tasks
+# Generated: 2025-12-05
+# Status: Ready for pre-prod testing after completing these tasks
+#
+# FORMAT GUIDE:
+# - [ ] = Not started
+# - [x] = Completed
+# - [!] = Blocked/Needs attention
+# - Category headers use === markers
+# - Each task has an ID for reference (e.g., ENV-01, API-03)
+# - PRIORITY: HIGH, MEDIUM, LOW
+# - ACTION: What Claude should do when prompted
+
+================================================================================
+=== SECTION 1: CLEANUP - REMOVE LEGACY FILES ===
+================================================================================
+# PRIORITY: HIGH
+# ACTION: Delete these files from the repository. They are leftover boilerplate
+#         files that are not used by the plugin.
+
+- [ ] CLEAN-01: Delete /rd-amazon-price-tracker.php
+- [ ] CLEAN-02: Delete /includes/class-rd-amazon-price-tracker.php
+- [ ] CLEAN-03: Delete /includes/class-rd-amazon-price-tracker-activator.php
+- [ ] CLEAN-04: Delete /includes/class-rd-amazon-price-tracker-deactivator.php
+- [ ] CLEAN-05: Delete /includes/class-rd-amazon-price-tracker-i18n.php
+- [ ] CLEAN-06: Delete /includes/class-rd-amazon-price-tracker-loader.php
+- [ ] CLEAN-07: Delete /admin/class-rd-amazon-price-tracker-admin.php
+- [ ] CLEAN-08: Delete /admin/partials/rd-amazon-price-tracker-admin-display.php
+- [ ] CLEAN-09: Delete /public/class-rd-amazon-price-tracker-public.php
+- [ ] CLEAN-10: Delete /public/partials/rd-amazon-price-tracker-public-display.php
+- [ ] CLEAN-11: Remove empty index.php placeholder files if not needed for security
+
+================================================================================
+=== SECTION 2: DOCUMENTATION UPDATES ===
+================================================================================
+# PRIORITY: MEDIUM
+# ACTION: Update plugin metadata and documentation files
+
+- [ ] DOC-01: Update readme.txt - Change "yourname" to actual author name
+      FILE: /readme.txt
+      LINE: 2 (Contributors field)
+
+- [ ] DOC-02: Update readme.txt - Change Plugin URI to actual URL
+      FILE: /amazon-price-tracker.php
+      LINE: 5
+
+- [ ] DOC-03: Update readme.txt - Change Author and Author URI
+      FILE: /amazon-price-tracker.php
+      LINES: 7-8
+
+- [ ] DOC-04: Create API testing collection (Postman/Insomnia format)
+      OUTPUT: /docs/api-collection.json
+      INCLUDE: All 24 endpoints with example requests/responses
+
+- [ ] DOC-05: Add CHANGELOG.md for version tracking
+      OUTPUT: /CHANGELOG.md
+
+================================================================================
+=== SECTION 3: TESTING SCRIPTS ===
+================================================================================
+# PRIORITY: HIGH
+# ACTION: Create test scripts or documentation for manual testing
+
+- [ ] TEST-01: Create test data seeder script
+      PURPOSE: Populate database with sample products for testing
+      OUTPUT: /tests/seed-test-data.php
+      REQUIREMENTS:
+        - Create 10 sample products across different regions
+        - Add price history records for each
+        - Add sample blacklist entries
+        - Should be runnable via WP-CLI or direct include
+
+- [ ] TEST-02: Create endpoint test checklist
+      PURPOSE: Manual QA checklist for all endpoints
+      OUTPUT: /docs/api-test-checklist.md
+      INCLUDE:
+        - Each endpoint with expected request/response
+        - Authentication test cases
+        - Permission test cases (admin vs standard)
+        - Rate limiting test cases
+        - Error response validations
+
+- [ ] TEST-03: Create PHPUnit test bootstrap (optional)
+      PURPOSE: Automated unit testing setup
+      OUTPUT: /tests/bootstrap.php, /phpunit.xml
+
+================================================================================
+=== SECTION 4: CODE QUALITY ===
+================================================================================
+# PRIORITY: MEDIUM
+# ACTION: Add code quality tooling and fix any issues
+
+- [ ] QUAL-01: Add .phpcs.xml for WordPress Coding Standards
+      OUTPUT: /.phpcs.xml
+      STANDARD: WordPress-Core or WordPress-Plugin
+
+- [ ] QUAL-02: Run PHP linting on all files
+      COMMAND: find . -name "*.php" -exec php -l {} \;
+      FIX: Any syntax errors found
+
+- [ ] QUAL-03: Add .editorconfig for consistent formatting
+      OUTPUT: /.editorconfig
+
+- [ ] QUAL-04: Review Response helper for consistent HTTP status codes
+      FILE: /includes/Helpers/Response.php
+      CHECK: All error responses use correct HTTP status codes per RAML
+
+================================================================================
+=== SECTION 5: SECURITY HARDENING ===
+================================================================================
+# PRIORITY: HIGH
+# ACTION: Verify security measures are in place
+
+- [ ] SEC-01: Verify all SQL queries use prepared statements
+      FILES: All Controllers and Services
+      CHECK: No raw $wpdb->query() with user input
+
+- [ ] SEC-02: Verify ABSPATH checks on all PHP files
+      CHECK: All PHP files start with if (!defined('ABSPATH')) exit;
+
+- [ ] SEC-03: Verify nonce validation on admin forms
+      FILE: /amazon-price-tracker.php
+      LINES: 155, 171 (check_admin_referer calls)
+
+- [ ] SEC-04: Verify capability checks on admin endpoints
+      FILES: All Controllers
+      CHECK: check_admin() used for admin-only routes
+
+- [ ] SEC-05: Verify secret_key is never exposed in API responses
+      FILE: /includes/API/Controllers/Settings_Controller.php
+      CHECK: format_settings() method masks access_key, omits secret_key
+
+================================================================================
+=== SECTION 6: PERFORMANCE OPTIMIZATION ===
+================================================================================
+# PRIORITY: LOW
+# ACTION: Implement caching and optimize queries
+
+- [ ] PERF-01: Add database indexes for common queries
+      FILE: /includes/Database/Installer.php
+      ADD INDEXES:
+        - apt_products: (asin, region), (is_active), (created_by, created_at)
+        - apt_price_history: (product_id, recorded_at)
+        - apt_blacklist: (asin, region)
+
+- [ ] PERF-02: Implement transient caching for /stats endpoint
+      FILE: /includes/API/Controllers/Stats_Controller.php
+      CACHE KEY: apt_stats_cache
+      DURATION: 5 minutes
+
+- [ ] PERF-03: Add query optimization for products list with price join
+      FILE: /includes/API/Controllers/Products_Controller.php
+      METHOD: get_items()
+      REVIEW: Subquery for latest price may be slow with large datasets
+
+================================================================================
+=== SECTION 7: FEATURE ENHANCEMENTS (POST-MVP) ===
+================================================================================
+# PRIORITY: LOW
+# ACTION: Nice-to-have features for future versions
+
+- [ ] FEAT-01: Add webhook notifications for price drops
+- [ ] FEAT-02: Add CSV/JSON export for price history
+- [ ] FEAT-03: Add product import from CSV
+- [ ] FEAT-04: Add email notifications for scheduled refresh failures
+- [ ] FEAT-05: Add REST API rate limiting headers (X-RateLimit-*)
+
+================================================================================
+=== SECTION 8: ENVIRONMENT SETUP (MANUAL) ===
+================================================================================
+# PRIORITY: HIGH
+# ACTION: These are manual steps for the person deploying to pre-prod
+# NOTE: Claude cannot perform these - they require human action
+
+- [ ] ENV-01: Set up WordPress 5.9+ test environment
+- [ ] ENV-02: Install PHP 7.4+ with required extensions (json, openssl, curl)
+- [ ] ENV-03: Create Amazon Associates account
+- [ ] ENV-04: Register for Amazon PA-API 5.0 access
+- [ ] ENV-05: Generate PA-API access key and secret key
+- [ ] ENV-06: Create partner tags for test regions (US, UK minimum)
+- [ ] ENV-07: Create WordPress user with Application Password
+- [ ] ENV-08: Configure HTTPS (required for Application Passwords)
+
+================================================================================
+=== SECTION 9: PRE-PROD TESTING SEQUENCE ===
+================================================================================
+# PRIORITY: HIGH
+# ACTION: Follow this sequence when testing in pre-prod environment
+# NOTE: This is a test script to validate all functionality works
+
+STEP 1: Plugin Activation
+  - Activate plugin via WordPress admin
+  - Verify: wp_apt_products table exists
+  - Verify: wp_apt_price_history table exists
+  - Verify: wp_apt_user_settings table exists
+  - Verify: wp_apt_blacklist table exists
+  - Verify: apt_encryption_key option exists
+  - Verify: Cron job apt_scheduled_price_refresh is scheduled
+
+STEP 2: Configure User Settings
+  - Endpoint: PUT /wp-json/amazon-price-tracker/v1/settings
+  - Body: {"access_key": "YOUR_KEY", "secret_key": "YOUR_SECRET", "partner_tags": {"US": "your-tag-20"}}
+  - Expected: 201 Created (first time) or 200 OK (update)
+
+STEP 3: Validate Amazon Credentials
+  - Endpoint: POST /wp-json/amazon-price-tracker/v1/settings/validate
+  - Expected: {"valid": true, "message": "..."}
+
+STEP 4: Create First Product
+  - Endpoint: POST /wp-json/amazon-price-tracker/v1/products
+  - Body: {"asin": "B08N5WRWNW", "region": "US"}
+  - Expected: 201 Created with product object
+
+STEP 5: Verify Product Data
+  - Endpoint: GET /wp-json/amazon-price-tracker/v1/products/{id}
+  - Verify: images array populated
+  - Verify: facts object contains title, brand, etc.
+
+STEP 6: Test Price Refresh
+  - Endpoint: POST /wp-json/amazon-price-tracker/v1/products/{id}/refresh
+  - Expected: 200 OK with updated product
+  - Verify: New record in apt_price_history
+
+STEP 7: Test Price History
+  - Endpoint: GET /wp-json/amazon-price-tracker/v1/products/{id}/prices
+  - Verify: Returns price records
+  - Test with ?aggregate=daily
+
+STEP 8: Test Blacklist
+  - Endpoint: POST /wp-json/amazon-price-tracker/v1/blacklist
+  - Body: {"asin": "B000000000", "region": "US", "reason": "Test"}
+  - Verify: 201 Created
+  - Try to create product with blacklisted ASIN
+  - Verify: 403 Forbidden with BLACKLISTED code
+
+STEP 9: Test Rate Limiting (as non-admin user)
+  - Create standard WordPress user (Subscriber role)
+  - Generate Application Password for user
+  - Create 50 products successfully
+  - Attempt 51st product
+  - Verify: 429 Rate Limit Exceeded
+
+STEP 10: Test Scheduled Refresh
+  - Go to Settings > Amazon Price Tracker
+  - Click "Run Manual Refresh"
+  - Verify: Success message with count
+  - Check price_history table for new records
+
+================================================================================
+=== COMPLETION TRACKING ===
+================================================================================
+
+CLEANUP:    0/11 complete
+DOCS:       0/5 complete
+TESTING:    0/3 complete
+QUALITY:    0/4 complete
+SECURITY:   0/5 complete
+PERFORMANCE: 0/3 complete
+FEATURES:   0/5 complete (post-MVP)
+
+TOTAL REQUIRED FOR PRE-PROD: 0/31 complete
+(Excludes FEATURES section which is post-MVP)
+
+================================================================================
+=== NOTES FOR FUTURE PROMPTS ===
+================================================================================
+
+When resuming work on this project, use prompts like:
+- "Complete all CLEANUP tasks"
+- "Complete SEC-01 through SEC-05"
+- "Run the pre-prod testing sequence and report results"
+- "Create the API testing collection (DOC-04)"
+- "Add database indexes as specified in PERF-01"
+
+Each task ID (e.g., CLEAN-01, SEC-03) can be referenced directly.
