@@ -87,6 +87,12 @@ final class Amazon_Price_Tracker {
 
         // Register REST API routes
         add_action('rest_api_init', [$this, 'register_rest_routes']);
+
+        // Initialize scheduled refresh
+        add_action('init', [$this, 'init_scheduled_refresh']);
+
+        // Add admin menu
+        add_action('admin_menu', [$this, 'add_admin_menu']);
     }
 
     /**
@@ -101,6 +107,10 @@ final class Amazon_Price_Tracker {
         // Set default options
         add_option('apt_version', APT_VERSION);
         add_option('apt_installed_at', current_time('mysql', true));
+        add_option('apt_refresh_batch_size', 50);
+
+        // Schedule price refresh (twice daily by default)
+        APT\Services\Scheduled_Refresh::schedule('twicedaily');
 
         // Clear any cached data
         wp_cache_flush();
@@ -110,11 +120,158 @@ final class Amazon_Price_Tracker {
      * Plugin deactivation
      */
     public function deactivate(): void {
-        // Clear scheduled events if any
-        wp_clear_scheduled_hook('apt_price_refresh_cron');
+        // Clear scheduled events
+        APT\Services\Scheduled_Refresh::unschedule();
 
         // Clear transients
         delete_transient('apt_stats_cache');
+    }
+
+    /**
+     * Initialize scheduled refresh service
+     */
+    public function init_scheduled_refresh(): void {
+        APT\Services\Scheduled_Refresh::init();
+    }
+
+    /**
+     * Add admin menu
+     */
+    public function add_admin_menu(): void {
+        add_options_page(
+            __('Amazon Price Tracker', 'amazon-price-tracker'),
+            __('Amazon Price Tracker', 'amazon-price-tracker'),
+            'manage_options',
+            'amazon-price-tracker',
+            [$this, 'render_admin_page']
+        );
+    }
+
+    /**
+     * Render admin settings page
+     */
+    public function render_admin_page(): void {
+        // Handle form submission
+        if (isset($_POST['apt_save_settings']) && check_admin_referer('apt_settings_nonce')) {
+            $schedule = sanitize_text_field($_POST['apt_schedule'] ?? 'twicedaily');
+            $batch_size = absint($_POST['apt_batch_size'] ?? 50);
+
+            update_option('apt_refresh_batch_size', min(max($batch_size, 10), 500));
+
+            if ($schedule === 'disabled') {
+                APT\Services\Scheduled_Refresh::unschedule();
+            } else {
+                APT\Services\Scheduled_Refresh::schedule($schedule);
+            }
+
+            echo '<div class="notice notice-success"><p>' . esc_html__('Settings saved.', 'amazon-price-tracker') . '</p></div>';
+        }
+
+        // Trigger manual refresh
+        if (isset($_POST['apt_manual_refresh']) && check_admin_referer('apt_settings_nonce')) {
+            APT\Services\Scheduled_Refresh::run_scheduled_refresh();
+            echo '<div class="notice notice-success"><p>' . esc_html__('Manual refresh completed.', 'amazon-price-tracker') . '</p></div>';
+        }
+
+        $status = APT\Services\Scheduled_Refresh::get_status();
+        $batch_size = get_option('apt_refresh_batch_size', 50);
+        $current_schedule = $status['schedule'] ?? 'twicedaily';
+
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e('Amazon Price Tracker Settings', 'amazon-price-tracker'); ?></h1>
+
+            <h2><?php esc_html_e('API Information', 'amazon-price-tracker'); ?></h2>
+            <table class="form-table">
+                <tr>
+                    <th><?php esc_html_e('API Endpoint', 'amazon-price-tracker'); ?></th>
+                    <td><code><?php echo esc_html(rest_url(APT_API_NAMESPACE)); ?></code></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('Authentication', 'amazon-price-tracker'); ?></th>
+                    <td><?php esc_html_e('WordPress Application Passwords (HTTP Basic Auth)', 'amazon-price-tracker'); ?></td>
+                </tr>
+            </table>
+
+            <h2><?php esc_html_e('Scheduled Price Refresh', 'amazon-price-tracker'); ?></h2>
+            <form method="post">
+                <?php wp_nonce_field('apt_settings_nonce'); ?>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="apt_schedule"><?php esc_html_e('Refresh Schedule', 'amazon-price-tracker'); ?></label></th>
+                        <td>
+                            <select name="apt_schedule" id="apt_schedule">
+                                <option value="disabled" <?php selected($current_schedule, 'disabled'); ?>><?php esc_html_e('Disabled', 'amazon-price-tracker'); ?></option>
+                                <option value="hourly" <?php selected($current_schedule, 'hourly'); ?>><?php esc_html_e('Hourly', 'amazon-price-tracker'); ?></option>
+                                <option value="apt_six_hours" <?php selected($current_schedule, 'apt_six_hours'); ?>><?php esc_html_e('Every 6 Hours', 'amazon-price-tracker'); ?></option>
+                                <option value="apt_twelve_hours" <?php selected($current_schedule, 'apt_twelve_hours'); ?>><?php esc_html_e('Every 12 Hours', 'amazon-price-tracker'); ?></option>
+                                <option value="twicedaily" <?php selected($current_schedule, 'twicedaily'); ?>><?php esc_html_e('Twice Daily', 'amazon-price-tracker'); ?></option>
+                                <option value="daily" <?php selected($current_schedule, 'daily'); ?>><?php esc_html_e('Daily', 'amazon-price-tracker'); ?></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="apt_batch_size"><?php esc_html_e('Batch Size', 'amazon-price-tracker'); ?></label></th>
+                        <td>
+                            <input type="number" name="apt_batch_size" id="apt_batch_size" value="<?php echo esc_attr($batch_size); ?>" min="10" max="500" class="small-text">
+                            <p class="description"><?php esc_html_e('Number of products to refresh per scheduled run (10-500).', 'amazon-price-tracker'); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php esc_html_e('Status', 'amazon-price-tracker'); ?></th>
+                        <td>
+                            <?php if ($status['is_scheduled']): ?>
+                                <span style="color: green;">&#10003; <?php esc_html_e('Scheduled', 'amazon-price-tracker'); ?></span><br>
+                                <?php if ($status['next_run']): ?>
+                                    <?php printf(esc_html__('Next run: %s', 'amazon-price-tracker'), esc_html($status['next_run'])); ?>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <span style="color: gray;"><?php esc_html_e('Not scheduled', 'amazon-price-tracker'); ?></span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php if ($status['last_refresh']): ?>
+                    <tr>
+                        <th><?php esc_html_e('Last Refresh', 'amazon-price-tracker'); ?></th>
+                        <td>
+                            <?php
+                            $last = $status['last_refresh'];
+                            printf(
+                                esc_html__('%s - %d success, %d failed (%.2fs)', 'amazon-price-tracker'),
+                                esc_html($last['timestamp']),
+                                (int) $last['success_count'],
+                                (int) $last['failure_count'],
+                                (float) $last['duration_seconds']
+                            );
+                            ?>
+                        </td>
+                    </tr>
+                    <?php endif; ?>
+                </table>
+                <p class="submit">
+                    <input type="submit" name="apt_save_settings" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'amazon-price-tracker'); ?>">
+                    <input type="submit" name="apt_manual_refresh" class="button" value="<?php esc_attr_e('Run Manual Refresh', 'amazon-price-tracker'); ?>">
+                </p>
+            </form>
+
+            <h2><?php esc_html_e('Quick Stats', 'amazon-price-tracker'); ?></h2>
+            <?php
+            global $wpdb;
+            $products_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}apt_products WHERE is_active = 1");
+            $prices_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}apt_price_history");
+            ?>
+            <table class="form-table">
+                <tr>
+                    <th><?php esc_html_e('Active Products', 'amazon-price-tracker'); ?></th>
+                    <td><?php echo esc_html(number_format_i18n($products_count)); ?></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('Price Records', 'amazon-price-tracker'); ?></th>
+                    <td><?php echo esc_html(number_format_i18n($prices_count)); ?></td>
+                </tr>
+            </table>
+        </div>
+        <?php
     }
 
     /**
