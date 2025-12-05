@@ -18,7 +18,7 @@ use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
 use APT\Helpers\Response;
-use APT\Helpers\Encryption;
+use APT\Services\Product_Service;
 
 /**
  * Class Health_Controller
@@ -81,65 +81,10 @@ class Health_Controller extends Base_Controller {
      */
     public function get_amazon_health(WP_REST_Request $request) {
         $user_id = $this->get_current_user_id();
-        $settings = $this->get_user_settings($user_id);
 
-        if (!$settings) {
-            return Response::success([
-                'status' => 'not_configured',
-                'message' => __('Amazon PA-API credentials not configured', 'amazon-price-tracker'),
-            ]);
-        }
+        $service = new Product_Service();
+        $result = $service->test_connection($user_id);
 
-        // Get decrypted credentials
-        $access_key = Encryption::decrypt($settings->access_key);
-        $secret_key = Encryption::decrypt($settings->secret_key);
-
-        if (empty($access_key) || empty($secret_key)) {
-            return Response::success([
-                'status' => 'not_configured',
-                'message' => __('Amazon PA-API credentials incomplete', 'amazon-price-tracker'),
-            ]);
-        }
-
-        // TODO: Implement actual Amazon PA-API connectivity test
-        // For now, return a placeholder response
-        // The actual implementation will be added with the Amazon API service
-
-        $start_time = microtime(true);
-
-        // Simulated connectivity check
-        // In production, this would make a test request to Amazon PA-API
-        $connected = true; // Placeholder
-        $response_time = (int) ((microtime(true) - $start_time) * 1000);
-
-        if ($connected) {
-            return Response::success([
-                'status' => 'connected',
-                'message' => __('Amazon PA-API credentials configured (connection test pending full integration)', 'amazon-price-tracker'),
-                'response_time_ms' => $response_time,
-            ]);
-        }
-
-        return Response::success([
-            'status' => 'error',
-            'message' => __('Failed to connect to Amazon PA-API', 'amazon-price-tracker'),
-            'response_time_ms' => $response_time,
-        ]);
-    }
-
-    /**
-     * Get user settings from database
-     *
-     * @param int $user_id User ID
-     * @return object|null
-     */
-    private function get_user_settings(int $user_id): ?object {
-        $db = $this->get_db();
-        $table = $this->get_table('user_settings');
-
-        return $db->get_row($db->prepare(
-            "SELECT * FROM {$table} WHERE user_id = %d",
-            $user_id
-        ));
+        return Response::success($result);
     }
 }

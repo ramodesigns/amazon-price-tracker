@@ -21,6 +21,7 @@ use APT\Helpers\Response;
 use APT\Helpers\Validation;
 use APT\Helpers\Encryption;
 use APT\Helpers\Regions;
+use APT\Services\Product_Service;
 
 /**
  * Class Settings_Controller
@@ -250,27 +251,24 @@ class Settings_Controller extends Base_Controller {
      */
     public function validate_credentials(WP_REST_Request $request) {
         $user_id = $this->get_current_user_id();
-        $settings = $this->get_user_settings($user_id);
 
-        if (!$settings) {
-            return Response::not_configured(__('Amazon PA-API credentials not configured', 'amazon-price-tracker'));
+        $service = new Product_Service();
+        $result = $service->test_connection($user_id);
+
+        if ($result['status'] === 'connected') {
+            return Response::success([
+                'valid' => true,
+                'message' => $result['message'],
+            ]);
         }
 
-        // Get decrypted credentials
-        $access_key = Encryption::decrypt($settings->access_key);
-        $secret_key = Encryption::decrypt($settings->secret_key);
-
-        if (empty($access_key) || empty($secret_key)) {
-            return Response::not_configured(__('Amazon PA-API credentials not configured', 'amazon-price-tracker'));
+        if ($result['status'] === 'not_configured') {
+            return Response::not_configured($result['message']);
         }
-
-        // TODO: Make actual test request to Amazon PA-API
-        // For now, we'll just validate that credentials exist
-        // The actual validation will be implemented in the Amazon API service
 
         return Response::success([
-            'valid' => true,
-            'message' => __('Credentials configured (validation pending Amazon API integration)', 'amazon-price-tracker'),
+            'valid' => false,
+            'message' => $result['message'],
         ]);
     }
 

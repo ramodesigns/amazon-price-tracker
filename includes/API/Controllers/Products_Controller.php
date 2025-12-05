@@ -20,6 +20,7 @@ use WP_Error;
 use APT\Helpers\Response;
 use APT\Helpers\Validation;
 use APT\Helpers\Regions;
+use APT\Services\Product_Service;
 
 /**
  * Class Products_Controller
@@ -404,53 +405,24 @@ class Products_Controller extends Base_Controller {
             );
         }
 
-        // Check user has partner tag for region
-        $partner_tag_check = $this->check_partner_tag($region);
-        if (is_wp_error($partner_tag_check)) {
-            return $partner_tag_check;
+        // Use Product Service to create the product (fetches from Amazon PA-API)
+        $service = new Product_Service();
+        $result = $service->create_product($asin, $region, $this->get_current_user_id());
+
+        if (!$result['success']) {
+            $error_code = $result['error_code'] ?? 'UNKNOWN_ERROR';
+            $error_message = $result['error'] ?? 'Unknown error occurred';
+
+            return match($error_code) {
+                'ASIN_NOT_FOUND' => Response::asin_not_found(),
+                'MISSING_PARTNER_TAG' => Response::missing_partner_tag($region),
+                'AMAZON_API_ERROR' => Response::amazon_api_error($error_message),
+                'NOT_CONFIGURED' => Response::not_configured($error_message),
+                default => Response::error($error_code, $error_message, 500),
+            };
         }
 
-        // TODO: Fetch from Amazon PA-API
-        // For now, create with placeholder data
-        // The actual Amazon API integration will be added later
-
-        $db = $this->get_db();
-        $now = current_time('mysql', true);
-
-        // Create product
-        $product_data = [
-            'asin' => $asin,
-            'region' => $region,
-            'custom_category' => null,
-            'images' => wp_json_encode([]),
-            'facts' => wp_json_encode([
-                'title' => "Product {$asin} ({$region})",
-                'note' => 'Placeholder - Amazon PA-API integration pending',
-            ]),
-            'is_active' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
-            'created_by' => $this->get_current_user_id(),
-        ];
-
-        $db->insert($this->get_table('products'), $product_data);
-        $product_id = $db->insert_id;
-
-        // Create initial price record
-        $price_data = [
-            'product_id' => $product_id,
-            'rrp' => null,
-            'current_price' => null,
-            'is_prime_price' => 0,
-            'availability' => 'unknown',
-            'recorded_at' => $now,
-        ];
-
-        $db->insert($this->get_table('price_history'), $price_data);
-
-        // Fetch and return the created product
-        $product = $this->get_product_by_id($product_id);
-        return Response::created($this->format_product($product));
+        return Response::created($this->format_product($result['product']));
     }
 
     /**
@@ -521,13 +493,22 @@ class Products_Controller extends Base_Controller {
      * @return WP_REST_Response|WP_Error
      */
     public function bulk_refresh($request) {
-        // TODO: Implement bulk refresh with Amazon PA-API
-        return Response::success([
-            'message' => 'Bulk refresh pending Amazon PA-API integration',
-            'success_count' => 0,
-            'failure_count' => 0,
-            'results' => [],
-        ]);
+        $product_ids = $request->get_param('product_ids') ?: [];
+        $regions = $request->get_param('regions') ?: [];
+        $limit = (int) ($request->get_param('limit') ?: 100);
+
+        // Validate and normalize regions
+        if (!empty($regions)) {
+            $regions = array_filter(array_map(function($r) {
+                $r = Validation::normalize_region($r);
+                return Validation::is_valid_region($r) ? $r : null;
+            }, $regions));
+        }
+
+        $service = new Product_Service();
+        $result = $service->bulk_refresh($product_ids, $regions, $limit, $this->get_current_user_id());
+
+        return Response::bulk_result($result['success_count'], $result['failure_count'], $result['results']);
     }
 
     /**
@@ -639,17 +620,24 @@ class Products_Controller extends Base_Controller {
      */
     public function refresh_item($request) {
         $id = (int) $request->get_param('id');
-        $product = $this->get_product_by_id($id);
 
-        if (!$product) {
-            return Response::not_found('Product not found');
+        $service = new Product_Service();
+        $result = $service->refresh_product($id, $this->get_current_user_id());
+
+        if (!$result['success']) {
+            $error_code = $result['error_code'] ?? 'UNKNOWN_ERROR';
+            $error_message = $result['error'] ?? 'Unknown error occurred';
+
+            return match($error_code) {
+                'NOT_FOUND' => Response::not_found($error_message),
+                'AMAZON_API_ERROR' => Response::amazon_api_error($error_message),
+                'MISSING_PARTNER_TAG' => Response::error($error_code, $error_message, 400),
+                'NOT_CONFIGURED' => Response::not_configured($error_message),
+                default => Response::error($error_code, $error_message, 502),
+            };
         }
 
-        // TODO: Implement with Amazon PA-API
-        return Response::success([
-            'message' => 'Price refresh pending Amazon PA-API integration',
-            'product' => $this->format_product($product),
-        ]);
+        return Response::success($this->format_product($result['product']));
     }
 
     /**
