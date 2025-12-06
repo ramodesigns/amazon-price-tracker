@@ -92,12 +92,22 @@ abstract class Base_Controller extends WP_REST_Controller {
     /**
      * Get current user ID
      *
+     * Always fetches fresh from WordPress to ensure we have the
+     * correctly authenticated user, with fallback to cached value.
+     *
      * @return int
      */
     protected function get_current_user_id(): int {
-        if (!$this->current_user_id) {
-            $this->current_user_id = get_current_user_id();
+        // Always get fresh from WordPress - Application Passwords may
+        // authenticate after controller instantiation
+        $wp_user_id = \get_current_user_id();
+
+        if ($wp_user_id > 0) {
+            $this->current_user_id = $wp_user_id;
+            return $wp_user_id;
         }
+
+        // Fallback to cached value from permission callback
         return $this->current_user_id;
     }
 
