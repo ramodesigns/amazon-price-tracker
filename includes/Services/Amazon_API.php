@@ -287,6 +287,12 @@ class Amazon_API {
 
         $url = 'https://' . $this->host . $path;
 
+        // Debug: Log request details if WP_DEBUG is enabled
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('Amazon PA-API Request: ' . $operation . ' to ' . $url);
+            error_log('Amazon PA-API Payload: ' . $payload_json);
+        }
+
         $start_time = microtime(true);
 
         $response = wp_remote_post($url, [
@@ -307,7 +313,28 @@ class Amazon_API {
         $data = json_decode($body, true);
 
         if ($status_code !== 200) {
-            $this->last_error = $data['Errors'][0]['Message'] ?? "HTTP {$status_code} error";
+            // Try to extract detailed error message from Amazon's response
+            $error_message = "HTTP {$status_code} error";
+
+            if (is_array($data)) {
+                // PA-API 5.0 error format
+                if (isset($data['Errors'][0]['Message'])) {
+                    $error_message = $data['Errors'][0]['Message'];
+                } elseif (isset($data['__type']) && isset($data['message'])) {
+                    // Alternative error format
+                    $error_message = $data['message'];
+                } elseif (isset($data['Message'])) {
+                    // Simple message format
+                    $error_message = $data['Message'];
+                }
+            }
+
+            // Log the full error response for debugging
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Amazon PA-API Error: Status ' . $status_code . ', Response: ' . $body);
+            }
+
+            $this->last_error = $error_message;
             return null;
         }
 
