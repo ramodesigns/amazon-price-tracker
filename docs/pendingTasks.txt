@@ -18,16 +18,16 @@
 # ACTION: Delete these files from the repository. They are leftover boilerplate
 #         files that are not used by the plugin.
 
-- [ ] CLEAN-01: Delete /rd-amazon-price-tracker.php
-- [ ] CLEAN-02: Delete /includes/class-rd-amazon-price-tracker.php
-- [ ] CLEAN-03: Delete /includes/class-rd-amazon-price-tracker-activator.php
-- [ ] CLEAN-04: Delete /includes/class-rd-amazon-price-tracker-deactivator.php
-- [ ] CLEAN-05: Delete /includes/class-rd-amazon-price-tracker-i18n.php
-- [ ] CLEAN-06: Delete /includes/class-rd-amazon-price-tracker-loader.php
-- [ ] CLEAN-07: Delete /admin/class-rd-amazon-price-tracker-admin.php
-- [ ] CLEAN-08: Delete /admin/partials/rd-amazon-price-tracker-admin-display.php
-- [ ] CLEAN-09: Delete /public/class-rd-amazon-price-tracker-public.php
-- [ ] CLEAN-10: Delete /public/partials/rd-amazon-price-tracker-public-display.php
+- [x] CLEAN-01: Delete /rd-amazon-price-tracker.php (DONE 2025-12-06)
+- [x] CLEAN-02: Delete /includes/class-rd-amazon-price-tracker.php (DONE 2025-12-06)
+- [x] CLEAN-03: Delete /includes/class-rd-amazon-price-tracker-activator.php (DONE 2025-12-06)
+- [x] CLEAN-04: Delete /includes/class-rd-amazon-price-tracker-deactivator.php (DONE 2025-12-06)
+- [x] CLEAN-05: Delete /includes/class-rd-amazon-price-tracker-i18n.php (DONE 2025-12-06)
+- [x] CLEAN-06: Delete /includes/class-rd-amazon-price-tracker-loader.php (DONE 2025-12-06)
+- [x] CLEAN-07: Delete /admin/class-rd-amazon-price-tracker-admin.php (DONE 2025-12-06)
+- [x] CLEAN-08: Delete /admin/partials/rd-amazon-price-tracker-admin-display.php (DONE 2025-12-06)
+- [x] CLEAN-09: Delete /public/class-rd-amazon-price-tracker-public.php (DONE 2025-12-06)
+- [x] CLEAN-10: Delete /public/partials/rd-amazon-price-tracker-public-display.php (DONE 2025-12-06)
 - [ ] CLEAN-11: Remove empty index.php placeholder files if not needed for security
 
 ================================================================================
@@ -48,7 +48,7 @@
       FILE: /amazon-price-tracker.php
       LINES: 7-8
 
-- [ ] DOC-04: Create API testing collection (Postman/Insomnia format)
+- [x] DOC-04: Create API testing collection (Postman/Insomnia format) (DONE 2025-12-06)
       OUTPUT: /docs/api-collection.json
       INCLUDE: All 24 endpoints with example requests/responses
 
@@ -136,12 +136,12 @@
 # PRIORITY: LOW
 # ACTION: Implement caching and optimize queries
 
-- [ ] PERF-01: Add database indexes for common queries
+- [x] PERF-01: Add database indexes for common queries (DONE 2025-12-06)
       FILE: /includes/Database/Installer.php
-      ADD INDEXES:
-        - apt_products: (asin, region), (is_active), (created_by, created_at)
-        - apt_price_history: (product_id, recorded_at)
-        - apt_blacklist: (asin, region)
+      ADDED INDEXES:
+        - apt_products: user_daily (created_by, created_at) for rate limiting queries
+        - apt_price_history: product_recorded (product_id, recorded_at) for history queries
+      NOTE: Other indexes already existed in original implementation
 
 - [ ] PERF-02: Implement transient caching for /stats endpoint
       FILE: /includes/API/Controllers/Stats_Controller.php
@@ -250,16 +250,18 @@ STEP 10: Test Scheduled Refresh
 === COMPLETION TRACKING ===
 ================================================================================
 
-CLEANUP:    0/11 complete
-DOCS:       0/5 complete
+CLEANUP:    10/11 complete
+DOCS:       1/5 complete
 TESTING:    0/3 complete
 QUALITY:    0/4 complete
 SECURITY:   0/5 complete
-PERFORMANCE: 0/3 complete
+PERFORMANCE: 1/3 complete
 FEATURES:   0/5 complete (post-MVP)
 
-TOTAL REQUIRED FOR PRE-PROD: 0/31 complete
+TOTAL REQUIRED FOR PRE-PROD: 12/31 complete
 (Excludes FEATURES section which is post-MVP)
+
+Last updated: 2025-12-06
 
 ================================================================================
 === NOTES FOR FUTURE PROMPTS ===

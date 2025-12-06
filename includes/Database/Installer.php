@@ -85,7 +85,8 @@ class Installer {
             KEY is_active (is_active),
             KEY custom_category (custom_category),
             KEY created_by (created_by),
-            KEY created_at (created_at)
+            KEY created_at (created_at),
+            KEY user_daily (created_by, created_at)
         ) {$charset_collate};";
 
         dbDelta($sql);
@@ -110,7 +111,8 @@ class Installer {
             PRIMARY KEY (id),
             KEY product_id (product_id),
             KEY recorded_at (recorded_at),
-            KEY availability (availability)
+            KEY availability (availability),
+            KEY product_recorded (product_id, recorded_at)
         ) {$charset_collate};";
 
         dbDelta($sql);
