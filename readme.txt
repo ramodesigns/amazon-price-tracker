@@ -1,5 +1,5 @@
 === Amazon Price Tracker ===
-Contributors: yourname
+Contributors: ramodesigns
 Tags: amazon, price tracker, product advertising api, affiliate, price history
 Requires at least: 5.9
 Tested up to: 6.4

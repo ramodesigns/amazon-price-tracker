@@ -38,17 +38,20 @@
 # PRIORITY: MEDIUM
 # ACTION: Update plugin metadata and documentation files
 
-- [ ] DOC-01: Update readme.txt - Change "yourname" to actual author name
+- [x] DOC-01: Update readme.txt - Change "yourname" to actual author name (DONE 2025-12-06)
       FILE: /readme.txt
       LINE: 2 (Contributors field)
+      VALUE: ramodesigns
 
-- [ ] DOC-02: Update readme.txt - Change Plugin URI to actual URL
+- [x] DOC-02: Update Plugin URI to actual URL (DONE 2025-12-06)
       FILE: /amazon-price-tracker.php
-      LINE: 5
+      LINE: 4
+      VALUE: https://github.com/ramodesigns/amazon-price-tracker
 
-- [ ] DOC-03: Update readme.txt - Change Author and Author URI
+- [x] DOC-03: Update Author and Author URI (DONE 2025-12-06)
       FILE: /amazon-price-tracker.php
       LINES: 7-8
+      VALUES: Author: Ramo Designs, Author URI: https://github.com/ramodesigns
 
 - [x] DOC-04: Create API testing collection (Postman/Insomnia format) (DONE 2025-12-06)
       OUTPUT: /docs/api-collection.json
@@ -270,14 +273,14 @@ STEP 10: Test Scheduled Refresh
 ================================================================================
 
 CLEANUP:    11/11 complete
-DOCS:       2/5 complete
+DOCS:       5/5 complete
 TESTING:    3/3 complete
 QUALITY:    4/4 complete
 SECURITY:   5/5 complete
 PERFORMANCE: 3/3 complete
 FEATURES:   0/5 complete (post-MVP)
 
-TOTAL REQUIRED FOR PRE-PROD: 28/31 complete (90%)
+TOTAL REQUIRED FOR PRE-PROD: 31/31 complete (100%)
 (Excludes FEATURES section which is post-MVP)
 
 Last updated: 2025-12-06

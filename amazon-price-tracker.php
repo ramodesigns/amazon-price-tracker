@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Amazon Price Tracker
- * Plugin URI: https://example.com/amazon-price-tracker
+ * Plugin URI: https://github.com/ramodesigns/amazon-price-tracker
  * Description: A WordPress REST API plugin for tracking Amazon product prices across multiple international marketplaces.
  * Version: 1.0.0
- * Author: Your Name
- * Author URI: https://example.com
+ * Author: Ramo Designs
+ * Author URI: https://github.com/ramodesigns
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: amazon-price-tracker
