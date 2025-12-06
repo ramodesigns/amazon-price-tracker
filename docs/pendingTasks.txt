@@ -158,10 +158,11 @@
       DURATION: 5 minutes (300 seconds)
       ADDED: get_cached_global_stats(), compute_global_stats(), clear_cache() methods
 
-- [ ] PERF-03: Add query optimization for products list with price join
+- [x] PERF-03: Add query optimization for products list with price join (DONE 2025-12-06)
       FILE: /includes/API/Controllers/Products_Controller.php
       METHOD: get_items()
-      REVIEW: Subquery for latest price may be slow with large datasets
+      OPTIMIZATION: Replaced double-join pattern with correlated subquery in JOIN condition
+      BENEFIT: Better utilization of product_recorded composite index for "latest row per group"
 
 ================================================================================
 === SECTION 7: FEATURE ENHANCEMENTS (POST-MVP) ===
@@ -265,10 +266,10 @@ DOCS:       2/5 complete
 TESTING:    2/3 complete
 QUALITY:    4/4 complete
 SECURITY:   5/5 complete
-PERFORMANCE: 2/3 complete
+PERFORMANCE: 3/3 complete
 FEATURES:   0/5 complete (post-MVP)
 
-TOTAL REQUIRED FOR PRE-PROD: 25/31 complete (81%)
+TOTAL REQUIRED FOR PRE-PROD: 26/31 complete (84%)
 (Excludes FEATURES section which is post-MVP)
 
 Last updated: 2025-12-06

@@ -321,22 +321,21 @@ class Products_Controller extends Base_Controller {
         }
         $total_items = (int) $db->get_var($count_sql);
 
-        // Get products with latest price
+        // Get products with latest price using optimized correlated subquery
+        // This pattern leverages the product_recorded (product_id, recorded_at) composite index
+        // for efficient "latest row per group" lookups
         $sql = "
             SELECT
                 p.*,
-                latest_price.current_price,
-                latest_price.availability
+                ph.current_price,
+                ph.availability
             FROM {$products_table} p
-            LEFT JOIN (
-                SELECT ph1.product_id, ph1.current_price, ph1.availability
-                FROM {$prices_table} ph1
-                INNER JOIN (
-                    SELECT product_id, MAX(recorded_at) as max_recorded
-                    FROM {$prices_table}
-                    GROUP BY product_id
-                ) ph2 ON ph1.product_id = ph2.product_id AND ph1.recorded_at = ph2.max_recorded
-            ) latest_price ON p.id = latest_price.product_id
+            LEFT JOIN {$prices_table} ph ON p.id = ph.product_id
+                AND ph.recorded_at = (
+                    SELECT MAX(ph2.recorded_at)
+                    FROM {$prices_table} ph2
+                    WHERE ph2.product_id = p.id
+                )
             {$where_sql}
             ORDER BY {$sort_column} {$sort_order}
             LIMIT %d OFFSET %d
