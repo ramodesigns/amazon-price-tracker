@@ -93,6 +93,9 @@ final class Amazon_Price_Tracker {
 
         // Add admin menu
         add_action('admin_menu', [$this, 'add_admin_menu']);
+
+        // Initialize dashboard widget
+        APT\Admin\Dashboard_Widget::init();
     }
 
     /**
@@ -125,6 +128,7 @@ final class Amazon_Price_Tracker {
 
         // Clear transients
         delete_transient('apt_stats_cache');
+        delete_transient('apt_dashboard_widget_data');
     }
 
     /**

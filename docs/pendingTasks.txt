@@ -186,6 +186,16 @@
 - [ ] FEAT-03: Add product import from CSV
 - [ ] FEAT-04: Add email notifications for scheduled refresh failures
 - [ ] FEAT-05: Add REST API rate limiting headers (X-RateLimit-*)
+- [x] FEAT-06: Add dashboard widget for at-a-glance stats (DONE 2025-12-06)
+      FILE: /includes/Admin/Dashboard_Widget.php
+      FEATURES:
+        - Quick stats (products tracked, price records, last refresh)
+        - Recent price drops (24h) with percentage change
+        - Attention alerts (out of stock, stale data)
+        - Products by region breakdown
+        - Quick action buttons (View All, Run Refresh)
+        - AJAX-powered manual refresh with status feedback
+        - 5-minute data caching for performance
 
 ================================================================================
 === SECTION 8: ENVIRONMENT SETUP (MANUAL) ===
@@ -278,10 +288,10 @@ TESTING:    3/3 complete
 QUALITY:    4/4 complete
 SECURITY:   5/5 complete
 PERFORMANCE: 3/3 complete
-FEATURES:   0/5 complete (post-MVP)
+FEATURES:   1/6 complete (post-MVP bonus: dashboard widget)
 
 TOTAL REQUIRED FOR PRE-PROD: 31/31 complete (100%)
-(Excludes FEATURES section which is post-MVP)
+BONUS FEATURES IMPLEMENTED: 1/6 (Dashboard Widget)
 
 Last updated: 2025-12-06
 
