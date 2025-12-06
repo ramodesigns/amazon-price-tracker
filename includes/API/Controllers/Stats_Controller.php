@@ -55,12 +55,70 @@ class Stats_Controller extends Base_Controller {
     }
 
     /**
+     * Cache key for global stats
+     */
+    private const STATS_CACHE_KEY = 'apt_stats_cache';
+
+    /**
+     * Cache duration in seconds (5 minutes)
+     */
+    private const STATS_CACHE_DURATION = 300;
+
+    /**
      * Get overall API statistics
      *
      * @param WP_REST_Request $request Request object
      * @return WP_REST_Response
      */
     public function get_stats($request): WP_REST_Response {
+        // Get cached global stats or compute them
+        $global_stats = $this->get_cached_global_stats();
+
+        // User-specific stats (not cached - varies per user)
+        $user_stats = $this->get_user_daily_stats();
+
+        $response = array_merge($global_stats, [
+            'user_stats' => $user_stats,
+        ]);
+
+        // Admin-only fields (not cached - sensitive)
+        if ($this->is_admin()) {
+            $db = $this->get_db();
+            $prices_table = $this->get_table('price_history');
+            $last_refresh = $db->get_var(
+                "SELECT MAX(recorded_at) FROM {$prices_table}"
+            );
+            $response['last_refresh'] = $last_refresh ? $this->format_datetime($last_refresh) : null;
+        }
+
+        return Response::success($response);
+    }
+
+    /**
+     * Get cached global statistics
+     *
+     * @return array
+     */
+    private function get_cached_global_stats(): array {
+        $cached = get_transient(self::STATS_CACHE_KEY);
+
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $stats = $this->compute_global_stats();
+
+        set_transient(self::STATS_CACHE_KEY, $stats, self::STATS_CACHE_DURATION);
+
+        return $stats;
+    }
+
+    /**
+     * Compute global statistics from database
+     *
+     * @return array
+     */
+    private function compute_global_stats(): array {
         $db = $this->get_db();
         $products_table = $this->get_table('products');
         $prices_table = $this->get_table('price_history');
@@ -99,27 +157,22 @@ class Stats_Controller extends Base_Controller {
              WHERE custom_category IS NOT NULL AND custom_category != '' AND is_active = 1"
         );
 
-        // User daily stats
-        $user_stats = $this->get_user_daily_stats();
-
-        $response = [
+        return [
             'total_products' => $total_products,
             'active_products' => $active_products,
             'total_price_records' => $total_price_records,
             'products_by_region' => $products_by_region,
             'categories_count' => $categories_count,
-            'user_stats' => $user_stats,
         ];
+    }
 
-        // Admin-only fields
-        if ($this->is_admin()) {
-            $last_refresh = $db->get_var(
-                "SELECT MAX(recorded_at) FROM {$prices_table}"
-            );
-            $response['last_refresh'] = $last_refresh ? $this->format_datetime($last_refresh) : null;
-        }
-
-        return Response::success($response);
+    /**
+     * Clear the stats cache
+     *
+     * Call this when products are created/deleted/modified
+     */
+    public static function clear_cache(): void {
+        delete_transient(self::STATS_CACHE_KEY);
     }
 
     /**

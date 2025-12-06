@@ -61,14 +61,15 @@
 # PRIORITY: HIGH
 # ACTION: Create test scripts or documentation for manual testing
 
-- [ ] TEST-01: Create test data seeder script
+- [x] TEST-01: Create test data seeder script (DONE 2025-12-06)
       PURPOSE: Populate database with sample products for testing
       OUTPUT: /tests/seed-test-data.php
-      REQUIREMENTS:
-        - Create 10 sample products across different regions
-        - Add price history records for each
-        - Add sample blacklist entries
-        - Should be runnable via WP-CLI or direct include
+      FEATURES:
+        - Creates 10 sample products across 6 regions (US, UK, DE, FR, JP, AU)
+        - Generates 10-20 price history records per product
+        - Adds 3 sample blacklist entries
+        - Run via: wp eval-file tests/seed-test-data.php
+        - Clear data: wp eval-file tests/seed-test-data.php --clear
 
 - [ ] TEST-02: Create endpoint test checklist
       PURPOSE: Manual QA checklist for all endpoints
@@ -143,10 +144,11 @@
         - apt_price_history: product_recorded (product_id, recorded_at) for history queries
       NOTE: Other indexes already existed in original implementation
 
-- [ ] PERF-02: Implement transient caching for /stats endpoint
+- [x] PERF-02: Implement transient caching for /stats endpoint (DONE 2025-12-06)
       FILE: /includes/API/Controllers/Stats_Controller.php
       CACHE KEY: apt_stats_cache
-      DURATION: 5 minutes
+      DURATION: 5 minutes (300 seconds)
+      ADDED: get_cached_global_stats(), compute_global_stats(), clear_cache() methods
 
 - [ ] PERF-03: Add query optimization for products list with price join
       FILE: /includes/API/Controllers/Products_Controller.php
@@ -252,13 +254,13 @@ STEP 10: Test Scheduled Refresh
 
 CLEANUP:    10/11 complete
 DOCS:       2/5 complete
-TESTING:    0/3 complete
+TESTING:    1/3 complete
 QUALITY:    0/4 complete
 SECURITY:   5/5 complete
-PERFORMANCE: 1/3 complete
+PERFORMANCE: 2/3 complete
 FEATURES:   0/5 complete (post-MVP)
 
-TOTAL REQUIRED FOR PRE-PROD: 18/31 complete (58%)
+TOTAL REQUIRED FOR PRE-PROD: 20/31 complete (65%)
 (Excludes FEATURES section which is post-MVP)
 
 Last updated: 2025-12-06
