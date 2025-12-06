@@ -71,15 +71,16 @@
         - Run via: wp eval-file tests/seed-test-data.php
         - Clear data: wp eval-file tests/seed-test-data.php --clear
 
-- [ ] TEST-02: Create endpoint test checklist
+- [x] TEST-02: Create endpoint test checklist (DONE 2025-12-06)
       PURPOSE: Manual QA checklist for all endpoints
       OUTPUT: /docs/api-test-checklist.md
-      INCLUDE:
-        - Each endpoint with expected request/response
-        - Authentication test cases
-        - Permission test cases (admin vs standard)
-        - Rate limiting test cases
-        - Error response validations
+      INCLUDES:
+        - 100+ test cases across 10 sections
+        - All 24 endpoints with expected request/response
+        - Authentication and permission tests
+        - Rate limiting tests
+        - Error response format verification
+        - Admin UI tests
 
 - [ ] TEST-03: Create PHPUnit test bootstrap (optional)
       PURPOSE: Automated unit testing setup
@@ -91,9 +92,15 @@
 # PRIORITY: MEDIUM
 # ACTION: Add code quality tooling and fix any issues
 
-- [ ] QUAL-01: Add .phpcs.xml for WordPress Coding Standards
+- [x] QUAL-01: Add .phpcs.xml for WordPress Coding Standards (DONE 2025-12-06)
       OUTPUT: /.phpcs.xml
-      STANDARD: WordPress-Core or WordPress-Plugin
+      STANDARD: WordPress + WordPress-Extra + WordPress-Docs
+      FEATURES:
+        - PSR-4 autoloading compatible (filename exclusions)
+        - PHP 7.4+ compatibility
+        - WordPress 5.9+ minimum
+        - Security rules (escaping, sanitization, nonces, prepared SQL)
+        - Complexity limits configured
 
 - [ ] QUAL-02: Run PHP linting on all files
       COMMAND: find . -name "*.php" -exec php -l {} \;
@@ -254,13 +261,13 @@ STEP 10: Test Scheduled Refresh
 
 CLEANUP:    10/11 complete
 DOCS:       2/5 complete
-TESTING:    1/3 complete
-QUALITY:    0/4 complete
+TESTING:    2/3 complete
+QUALITY:    1/4 complete
 SECURITY:   5/5 complete
 PERFORMANCE: 2/3 complete
 FEATURES:   0/5 complete (post-MVP)
 
-TOTAL REQUIRED FOR PRE-PROD: 20/31 complete (65%)
+TOTAL REQUIRED FOR PRE-PROD: 22/31 complete (71%)
 (Excludes FEATURES section which is post-MVP)
 
 Last updated: 2025-12-06
