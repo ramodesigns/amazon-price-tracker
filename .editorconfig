@@ -1,0 +1,68 @@
+# EditorConfig for Amazon Price Tracker
+# https://editorconfig.org
+
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# PHP files - WordPress coding standards use tabs
+[*.php]
+indent_style = tab
+indent_size = 4
+
+# JavaScript files
+[*.js]
+indent_style = tab
+indent_size = 4
+
+# CSS files
+[*.css]
+indent_style = tab
+indent_size = 4
+
+# JSON files - use spaces for better readability
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# XML files (including .phpcs.xml)
+[*.xml]
+indent_style = space
+indent_size = 4
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
+
+# Text files
+[*.txt]
+indent_style = space
+indent_size = 2
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# Composer and package files
+[{composer.json,package.json}]
+indent_style = space
+indent_size = 2
+
+# Makefiles require tabs
+[Makefile]
+indent_style = tab
