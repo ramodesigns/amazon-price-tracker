@@ -100,6 +100,9 @@ final class Amazon_Price_Tracker {
         // Initialize scheduled refresh
         add_action('init', [$this, 'init_scheduled_refresh']);
 
+        // Initialize price history maintenance
+        add_action('init', [$this, 'init_history_maintenance']);
+
         // Add admin menu
         add_action('admin_menu', [$this, 'add_admin_menu']);
 
@@ -124,6 +127,9 @@ final class Amazon_Price_Tracker {
         // Schedule price refresh (twice daily by default)
         APT\Services\Scheduled_Refresh::schedule('twicedaily');
 
+        // Schedule price history maintenance (weekly)
+        APT\Services\Price_History_Maintenance::schedule();
+
         // Clear any cached data
         wp_cache_flush();
     }
@@ -134,6 +140,7 @@ final class Amazon_Price_Tracker {
     public function deactivate(): void {
         // Clear scheduled events
         APT\Services\Scheduled_Refresh::unschedule();
+        APT\Services\Price_History_Maintenance::unschedule();
 
         // Clear transients
         delete_transient('apt_stats_cache');
@@ -145,6 +152,13 @@ final class Amazon_Price_Tracker {
      */
     public function init_scheduled_refresh(): void {
         APT\Services\Scheduled_Refresh::init();
+    }
+
+    /**
+     * Initialize price history maintenance service
+     */
+    public function init_history_maintenance(): void {
+        APT\Services\Price_History_Maintenance::init();
     }
 
     /**
@@ -170,8 +184,18 @@ final class Amazon_Price_Tracker {
             $batch_size = absint($_POST['apt_batch_size'] ?? 50);
             $daily_limit = absint($_POST['apt_daily_limit'] ?? APT_DAILY_CREATION_LIMIT);
 
+            // Retention settings
+            $full_retention = absint($_POST['apt_full_retention'] ?? 30);
+            $daily_retention = absint($_POST['apt_daily_retention'] ?? 90);
+            $weekly_retention = absint($_POST['apt_weekly_retention'] ?? 365);
+
             update_option('apt_refresh_batch_size', min(max($batch_size, 10), 500));
             update_option('apt_daily_creation_limit', min(max($daily_limit, 1), 1000));
+
+            // Save retention settings with sensible limits
+            update_option('apt_history_full_retention', min(max($full_retention, 7), 90));
+            update_option('apt_history_daily_retention', min(max($daily_retention, 30), 180));
+            update_option('apt_history_weekly_retention', min(max($weekly_retention, 90), 730));
 
             if ($schedule === 'disabled') {
                 APT\Services\Scheduled_Refresh::unschedule();
@@ -188,10 +212,33 @@ final class Amazon_Price_Tracker {
             echo '<div class="notice notice-success"><p>' . esc_html__('Manual refresh completed.', 'amazon-price-tracker') . '</p></div>';
         }
 
+        // Trigger manual history maintenance
+        if (isset($_POST['apt_run_maintenance']) && check_admin_referer('apt_settings_nonce')) {
+            $maintenance = new APT\Services\Price_History_Maintenance();
+            $result = $maintenance->run_manual();
+            echo '<div class="notice notice-success"><p>' . sprintf(
+                esc_html__('History maintenance completed: %d records pruned from %d products. %d milestone records preserved.', 'amazon-price-tracker'),
+                $result['total_pruned'],
+                $result['products_processed'],
+                $result['milestones_preserved']
+            ) . '</p></div>';
+        }
+
         $status = APT\Services\Scheduled_Refresh::get_status();
         $batch_size = get_option('apt_refresh_batch_size', 50);
         $daily_limit = apt_get_daily_limit();
         $current_schedule = $status['schedule'] ?? 'twicedaily';
+
+        // History maintenance settings
+        $full_retention = (int) get_option('apt_history_full_retention', 30);
+        $daily_retention = (int) get_option('apt_history_daily_retention', 90);
+        $weekly_retention = (int) get_option('apt_history_weekly_retention', 365);
+        $maintenance_status = APT\Services\Price_History_Maintenance::get_last_run();
+        $maintenance_next = APT\Services\Price_History_Maintenance::get_next_run();
+
+        // Get storage stats
+        $maintenance_service = new APT\Services\Price_History_Maintenance();
+        $storage_stats = $maintenance_service->get_storage_stats();
 
         ?>
         <div class="wrap">
@@ -293,6 +340,91 @@ final class Amazon_Price_Tracker {
                     <td><?php echo esc_html(number_format_i18n($prices_count)); ?></td>
                 </tr>
             </table>
+
+            <h2><?php esc_html_e('Price History Maintenance', 'amazon-price-tracker'); ?></h2>
+            <p class="description">
+                <?php esc_html_e('Configure how long price history is retained. Older records are consolidated to save storage while preserving trends.', 'amazon-price-tracker'); ?>
+            </p>
+
+            <form method="post">
+                <?php wp_nonce_field('apt_settings_nonce'); ?>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="apt_full_retention"><?php esc_html_e('Full Granularity', 'amazon-price-tracker'); ?></label></th>
+                        <td>
+                            <input type="number" name="apt_full_retention" id="apt_full_retention" value="<?php echo esc_attr($full_retention); ?>" min="7" max="90" class="small-text"> <?php esc_html_e('days', 'amazon-price-tracker'); ?>
+                            <p class="description"><?php esc_html_e('Keep all price records for this period (7-90 days).', 'amazon-price-tracker'); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="apt_daily_retention"><?php esc_html_e('Daily Snapshots', 'amazon-price-tracker'); ?></label></th>
+                        <td>
+                            <input type="number" name="apt_daily_retention" id="apt_daily_retention" value="<?php echo esc_attr($daily_retention); ?>" min="30" max="180" class="small-text"> <?php esc_html_e('days', 'amazon-price-tracker'); ?>
+                            <p class="description"><?php esc_html_e('Keep 1 record per day for this period (30-180 days).', 'amazon-price-tracker'); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="apt_weekly_retention"><?php esc_html_e('Weekly Snapshots', 'amazon-price-tracker'); ?></label></th>
+                        <td>
+                            <input type="number" name="apt_weekly_retention" id="apt_weekly_retention" value="<?php echo esc_attr($weekly_retention); ?>" min="90" max="730" class="small-text"> <?php esc_html_e('days', 'amazon-price-tracker'); ?>
+                            <p class="description"><?php esc_html_e('Keep 1 record per week for this period (90-730 days). Records older than this keep 1 per month.', 'amazon-price-tracker'); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php esc_html_e('Storage Usage', 'amazon-price-tracker'); ?></th>
+                        <td>
+                            <ul style="margin: 0;">
+                                <li><?php printf(esc_html__('Last 30 days: %s records', 'amazon-price-tracker'), '<strong>' . esc_html(number_format_i18n($storage_stats['records_0_30_days'])) . '</strong>'); ?></li>
+                                <li><?php printf(esc_html__('30-90 days: %s records', 'amazon-price-tracker'), '<strong>' . esc_html(number_format_i18n($storage_stats['records_30_90_days'])) . '</strong>'); ?></li>
+                                <li><?php printf(esc_html__('90-365 days: %s records', 'amazon-price-tracker'), '<strong>' . esc_html(number_format_i18n($storage_stats['records_90_365_days'])) . '</strong>'); ?></li>
+                                <li><?php printf(esc_html__('Over 1 year: %s records', 'amazon-price-tracker'), '<strong>' . esc_html(number_format_i18n($storage_stats['records_over_1_year'])) . '</strong>'); ?></li>
+                                <li><?php printf(esc_html__('Estimated size: %s MB', 'amazon-price-tracker'), '<strong>' . esc_html($storage_stats['estimated_size_mb']) . '</strong>'); ?></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php esc_html_e('Maintenance Status', 'amazon-price-tracker'); ?></th>
+                        <td>
+                            <?php if ($maintenance_status): ?>
+                                <?php
+                                printf(
+                                    esc_html__('Last run: %s (%d records pruned, %d milestones preserved)', 'amazon-price-tracker'),
+                                    esc_html($maintenance_status['timestamp']),
+                                    (int) $maintenance_status['records_pruned'],
+                                    (int) $maintenance_status['milestones_preserved']
+                                );
+                                ?>
+                            <?php else: ?>
+                                <span style="color: gray;"><?php esc_html_e('Never run', 'amazon-price-tracker'); ?></span>
+                            <?php endif; ?>
+                            <br>
+                            <?php if ($maintenance_next): ?>
+                                <?php printf(esc_html__('Next scheduled: %s', 'amazon-price-tracker'), esc_html(wp_date('Y-m-d H:i:s', $maintenance_next))); ?>
+                            <?php else: ?>
+                                <span style="color: orange;"><?php esc_html_e('Not scheduled', 'amazon-price-tracker'); ?></span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php esc_html_e('Preserved Records', 'amazon-price-tracker'); ?></th>
+                        <td>
+                            <p class="description" style="margin-top: 0;">
+                                <?php esc_html_e('The following records are never deleted:', 'amazon-price-tracker'); ?>
+                            </p>
+                            <ul style="margin: 5px 0 0 0; list-style: disc; padding-left: 20px;">
+                                <li><?php esc_html_e('All-time lowest price (best deal reference)', 'amazon-price-tracker'); ?></li>
+                                <li><?php esc_html_e('All-time highest price (price range reference)', 'amazon-price-tracker'); ?></li>
+                                <li><?php esc_html_e('First recorded price (baseline)', 'amazon-price-tracker'); ?></li>
+                                <li><?php esc_html_e('Records where availability changed', 'amazon-price-tracker'); ?></li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                <p class="submit">
+                    <input type="submit" name="apt_save_settings" class="button button-primary" value="<?php esc_attr_e('Save Retention Settings', 'amazon-price-tracker'); ?>">
+                    <input type="submit" name="apt_run_maintenance" class="button" value="<?php esc_attr_e('Run Maintenance Now', 'amazon-price-tracker'); ?>" onclick="return confirm('<?php esc_attr_e('This will prune old price history records according to retention settings. Continue?', 'amazon-price-tracker'); ?>');">
+                </p>
+            </form>
         </div>
         <?php
     }
