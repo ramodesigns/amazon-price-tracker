@@ -80,11 +80,11 @@ class Validation {
      * Validate sort order
      *
      * @param string $order Sort order
-     * @return string Validated sort order ('asc' or 'desc')
+     * @return string Validated sort order ('ASC' or 'DESC')
      */
     public static function validate_sort_order(string $order): string {
-        $order = strtolower(trim($order));
-        return in_array($order, ['asc', 'desc'], true) ? $order : 'desc';
+        $order = strtoupper(trim($order));
+        return in_array($order, ['ASC', 'DESC'], true) ? $order : 'DESC';
     }
 
     /**

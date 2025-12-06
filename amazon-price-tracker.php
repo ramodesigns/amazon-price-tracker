@@ -26,8 +26,17 @@ define('APT_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('APT_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('APT_API_NAMESPACE', 'amazon-price-tracker/v1');
 
-// Daily creation limit for non-admin users
+// Daily creation limit for non-admin users (default value)
 define('APT_DAILY_CREATION_LIMIT', 50);
+
+/**
+ * Get the configured daily creation limit for non-admin users
+ *
+ * @return int Daily limit (configurable via apt_daily_creation_limit option)
+ */
+function apt_get_daily_limit(): int {
+    return (int) get_option('apt_daily_creation_limit', APT_DAILY_CREATION_LIMIT);
+}
 
 // Autoloader for plugin classes
 spl_autoload_register(function ($class) {
@@ -159,8 +168,10 @@ final class Amazon_Price_Tracker {
         if (isset($_POST['apt_save_settings']) && check_admin_referer('apt_settings_nonce')) {
             $schedule = sanitize_text_field($_POST['apt_schedule'] ?? 'twicedaily');
             $batch_size = absint($_POST['apt_batch_size'] ?? 50);
+            $daily_limit = absint($_POST['apt_daily_limit'] ?? APT_DAILY_CREATION_LIMIT);
 
             update_option('apt_refresh_batch_size', min(max($batch_size, 10), 500));
+            update_option('apt_daily_creation_limit', min(max($daily_limit, 1), 1000));
 
             if ($schedule === 'disabled') {
                 APT\Services\Scheduled_Refresh::unschedule();
@@ -179,6 +190,7 @@ final class Amazon_Price_Tracker {
 
         $status = APT\Services\Scheduled_Refresh::get_status();
         $batch_size = get_option('apt_refresh_batch_size', 50);
+        $daily_limit = apt_get_daily_limit();
         $current_schedule = $status['schedule'] ?? 'twicedaily';
 
         ?>
@@ -219,6 +231,13 @@ final class Amazon_Price_Tracker {
                         <td>
                             <input type="number" name="apt_batch_size" id="apt_batch_size" value="<?php echo esc_attr($batch_size); ?>" min="10" max="500" class="small-text">
                             <p class="description"><?php esc_html_e('Number of products to refresh per scheduled run (10-500).', 'amazon-price-tracker'); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="apt_daily_limit"><?php esc_html_e('Daily Creation Limit', 'amazon-price-tracker'); ?></label></th>
+                        <td>
+                            <input type="number" name="apt_daily_limit" id="apt_daily_limit" value="<?php echo esc_attr($daily_limit); ?>" min="1" max="1000" class="small-text">
+                            <p class="description"><?php esc_html_e('Maximum products non-admin users can create per day (1-1000).', 'amazon-price-tracker'); ?></p>
                         </td>
                     </tr>
                     <tr>

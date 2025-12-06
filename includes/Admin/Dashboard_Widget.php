@@ -456,19 +456,25 @@ class Dashboard_Widget {
             wp_send_json_error(['message' => __('Permission denied', 'amazon-price-tracker')]);
         }
 
-        // Trigger the scheduled refresh
-        if (class_exists('APT\\Services\\Scheduled_Refresh')) {
-            $refresh = new \APT\Services\Scheduled_Refresh();
-            $result = $refresh->run_refresh();
+        // Trigger the scheduled refresh using Product_Service directly
+        if (class_exists('APT\\Services\\Product_Service')) {
+            $user_id = get_current_user_id();
+            $batch_size = (int) get_option('apt_refresh_batch_size', 50);
+
+            $service = new \APT\Services\Product_Service();
+            $result = $service->bulk_refresh([], [], $batch_size, $user_id);
 
             // Clear widget cache
             delete_transient(self::CACHE_KEY);
+
+            // Also clear stats cache
+            delete_transient('apt_stats_cache');
 
             wp_send_json_success([
                 'message' => sprintf(
                     /* translators: %d: number of products refreshed */
                     __('Refresh complete. %d products updated.', 'amazon-price-tracker'),
-                    $result['refreshed'] ?? 0
+                    $result['success_count'] ?? 0
                 ),
             ]);
         } else {

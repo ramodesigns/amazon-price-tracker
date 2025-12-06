@@ -116,53 +116,81 @@ class Product_Service {
             ];
         }
 
-        // Insert product into database
+        // Insert product into database with transaction for data integrity
         $now = current_time('mysql', true);
 
-        $insert_data = [
-            'asin' => $asin,
-            'region' => $region,
-            'custom_category' => null,
-            'images' => wp_json_encode($product_data['images'] ?? []),
-            'facts' => wp_json_encode($product_data['facts'] ?? []),
-            'is_active' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
-            'created_by' => $user_id,
-        ];
+        // Start transaction
+        $this->db->query('START TRANSACTION');
 
-        $this->db->insert($this->products_table, $insert_data);
-        $product_id = $this->db->insert_id;
+        try {
+            $insert_data = [
+                'asin' => $asin,
+                'region' => $region,
+                'custom_category' => null,
+                'images' => wp_json_encode($product_data['images'] ?? []),
+                'facts' => wp_json_encode($product_data['facts'] ?? []),
+                'is_active' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+                'created_by' => $user_id,
+            ];
 
-        if (!$product_id) {
+            $this->db->insert($this->products_table, $insert_data);
+            $product_id = $this->db->insert_id;
+
+            if (!$product_id) {
+                $this->db->query('ROLLBACK');
+                return [
+                    'success' => false,
+                    'error_code' => 'DATABASE_ERROR',
+                    'error' => 'Failed to save product to database',
+                ];
+            }
+
+            // Insert initial price record
+            $pricing = $product_data['pricing'] ?? [];
+
+            $price_data = [
+                'product_id' => $product_id,
+                'rrp' => $pricing['rrp'] ?? null,
+                'current_price' => $pricing['current_price'] ?? null,
+                'is_prime_price' => ($pricing['is_prime_price'] ?? false) ? 1 : 0,
+                'availability' => $pricing['availability'] ?? 'unknown',
+                'recorded_at' => $now,
+            ];
+
+            $price_inserted = $this->db->insert($this->prices_table, $price_data);
+
+            if (!$price_inserted) {
+                $this->db->query('ROLLBACK');
+                return [
+                    'success' => false,
+                    'error_code' => 'DATABASE_ERROR',
+                    'error' => 'Failed to save initial price record',
+                ];
+            }
+
+            // Commit transaction
+            $this->db->query('COMMIT');
+
+            // Clear caches since product data changed
+            $this->clear_caches();
+
+            // Fetch and return the complete product
+            $product = $this->get_product_by_id($product_id);
+
+            return [
+                'success' => true,
+                'product' => $product,
+            ];
+        } catch (\Exception $e) {
+            $this->db->query('ROLLBACK');
             return [
                 'success' => false,
                 'error_code' => 'DATABASE_ERROR',
-                'error' => 'Failed to save product to database',
+                'error' => 'Database transaction failed: ' . $e->getMessage(),
             ];
         }
-
-        // Insert initial price record
-        $pricing = $product_data['pricing'] ?? [];
-
-        $price_data = [
-            'product_id' => $product_id,
-            'rrp' => $pricing['rrp'] ?? null,
-            'current_price' => $pricing['current_price'] ?? null,
-            'is_prime_price' => ($pricing['is_prime_price'] ?? false) ? 1 : 0,
-            'availability' => $pricing['availability'] ?? 'unknown',
-            'recorded_at' => $now,
-        ];
-
-        $this->db->insert($this->prices_table, $price_data);
-
-        // Fetch and return the complete product
-        $product = $this->get_product_by_id($product_id);
-
-        return [
-            'success' => true,
-            'product' => $product,
-        ];
     }
 
     /**
@@ -406,6 +434,11 @@ class Product_Service {
             }
         }
 
+        // Clear caches if any products were successfully refreshed
+        if ($success_count > 0) {
+            $this->clear_caches();
+        }
+
         return [
             'success_count' => $success_count,
             'failure_count' => $failure_count,
@@ -499,5 +532,18 @@ class Product_Service {
             "SELECT * FROM {$this->settings_table} WHERE user_id = %d",
             $user_id
         ));
+    }
+
+    /**
+     * Clear all relevant caches after product data changes
+     *
+     * This ensures dashboard widgets and stats show fresh data
+     */
+    private function clear_caches(): void {
+        // Clear stats cache
+        delete_transient('apt_stats_cache');
+
+        // Clear dashboard widget cache
+        delete_transient('apt_dashboard_widget_data');
     }
 }

@@ -205,9 +205,10 @@ class Stats_Controller extends Base_Controller {
             $user_id
         ));
 
-        // Daily limit
-        $daily_limit = $is_admin ? null : APT_DAILY_CREATION_LIMIT;
-        $remaining = $is_admin ? null : max(0, APT_DAILY_CREATION_LIMIT - $created_today);
+        // Daily limit (configurable via option)
+        $configured_limit = apt_get_daily_limit();
+        $daily_limit = $is_admin ? null : $configured_limit;
+        $remaining = $is_admin ? null : max(0, $configured_limit - $created_today);
 
         // Configured regions
         $settings = $db->get_row($db->prepare(
@@ -251,10 +252,11 @@ class Stats_Controller extends Base_Controller {
             $today
         ));
 
+        $configured_limit = apt_get_daily_limit();
         return [
             'products_created_today' => $created_today,
-            'daily_limit' => $is_admin ? null : APT_DAILY_CREATION_LIMIT,
-            'remaining_today' => $is_admin ? null : max(0, APT_DAILY_CREATION_LIMIT - $created_today),
+            'daily_limit' => $is_admin ? null : $configured_limit,
+            'remaining_today' => $is_admin ? null : max(0, $configured_limit - $created_today),
         ];
     }
 }
