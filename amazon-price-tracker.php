@@ -247,14 +247,349 @@ final class Amazon_Price_Tracker {
             <h2><?php esc_html_e('API Information', 'amazon-price-tracker'); ?></h2>
             <table class="form-table">
                 <tr>
-                    <th><?php esc_html_e('API Endpoint', 'amazon-price-tracker'); ?></th>
+                    <th><?php esc_html_e('Base URL', 'amazon-price-tracker'); ?></th>
                     <td><code><?php echo esc_html(rest_url(APT_API_NAMESPACE)); ?></code></td>
                 </tr>
                 <tr>
                     <th><?php esc_html_e('Authentication', 'amazon-price-tracker'); ?></th>
                     <td><?php esc_html_e('WordPress Application Passwords (HTTP Basic Auth)', 'amazon-price-tracker'); ?></td>
                 </tr>
+                <tr>
+                    <th><?php esc_html_e('API Endpoints', 'amazon-price-tracker'); ?></th>
+                    <td>
+                        <button type="button" class="button apt-accordion-toggle" id="apt-endpoints-toggle">
+                            <?php esc_html_e('Show All Endpoints', 'amazon-price-tracker'); ?> ▼
+                        </button>
+                    </td>
+                </tr>
             </table>
+
+            <div id="apt-endpoints-accordion" class="apt-accordion-content" style="display: none; margin-top: 15px;">
+                <?php $base = rest_url(APT_API_NAMESPACE); ?>
+
+                <!-- Health Endpoints -->
+                <div class="apt-endpoint-group">
+                    <h4 class="apt-endpoint-group-title"><?php esc_html_e('Health & Status', 'amazon-price-tracker'); ?></h4>
+                    <table class="widefat striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/health</code></td>
+                                <td><?php esc_html_e('API health check - returns version and status info', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-public"><?php esc_html_e('Public', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/health/amazon</code></td>
+                                <td><?php esc_html_e('Test Amazon PA-API connectivity with your credentials', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Stats Endpoints -->
+                <div class="apt-endpoint-group">
+                    <h4 class="apt-endpoint-group-title"><?php esc_html_e('Statistics', 'amazon-price-tracker'); ?></h4>
+                    <table class="widefat striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/stats</code></td>
+                                <td><?php esc_html_e('Overall API statistics - product counts, regions, categories', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/stats/user</code></td>
+                                <td><?php esc_html_e('Current user statistics - daily limits, configured regions', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Products Endpoints -->
+                <div class="apt-endpoint-group">
+                    <h4 class="apt-endpoint-group-title"><?php esc_html_e('Products', 'amazon-price-tracker'); ?></h4>
+                    <table class="widefat striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/products</code></td>
+                                <td><?php esc_html_e('List products with filtering, sorting, and pagination', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-post">POST</span></td>
+                                <td><code>/products</code></td>
+                                <td><?php esc_html_e('Add a new product to track (requires ASIN and region)', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-post">POST</span></td>
+                                <td><code>/products/bulk</code></td>
+                                <td><?php esc_html_e('Bulk create multiple products at once (max 50)', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-post">POST</span></td>
+                                <td><code>/products/refresh</code></td>
+                                <td><?php esc_html_e('Bulk refresh prices for multiple products', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/products/{id}</code></td>
+                                <td><?php esc_html_e('Get details for a single product by ID', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-delete">DELETE</span></td>
+                                <td><code>/products/{id}</code></td>
+                                <td><?php esc_html_e('Soft-delete a product (use ?force=true for hard delete)', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-put">PUT</span></td>
+                                <td><code>/products/{id}/category</code></td>
+                                <td><?php esc_html_e('Update product custom category', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/products/{id}/prices</code></td>
+                                <td><?php esc_html_e('Get price history for a product with optional date range', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-post">POST</span></td>
+                                <td><code>/products/{id}/refresh</code></td>
+                                <td><?php esc_html_e('Refresh price for a single product from Amazon', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/products/by-asin/{asin}</code></td>
+                                <td><?php esc_html_e('Find all products by ASIN (across all regions)', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/products/by-asin/{asin}/{region}</code></td>
+                                <td><?php esc_html_e('Find product by ASIN and specific region', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Settings Endpoints -->
+                <div class="apt-endpoint-group">
+                    <h4 class="apt-endpoint-group-title"><?php esc_html_e('User Settings', 'amazon-price-tracker'); ?></h4>
+                    <table class="widefat striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/settings</code></td>
+                                <td><?php esc_html_e('Get your Amazon PA-API settings and partner tags', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-put">PUT</span></td>
+                                <td><code>/settings</code></td>
+                                <td><?php esc_html_e('Update Amazon PA-API credentials and partner tags', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-delete">DELETE</span></td>
+                                <td><code>/settings/partner-tags/{region}</code></td>
+                                <td><?php esc_html_e('Remove partner tag for a specific region', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-post">POST</span></td>
+                                <td><code>/settings/validate</code></td>
+                                <td><?php esc_html_e('Validate your Amazon PA-API credentials', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Reference Data Endpoints -->
+                <div class="apt-endpoint-group">
+                    <h4 class="apt-endpoint-group-title"><?php esc_html_e('Reference Data', 'amazon-price-tracker'); ?></h4>
+                    <table class="widefat striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/regions</code></td>
+                                <td><?php esc_html_e('List all supported Amazon marketplace regions', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/categories</code></td>
+                                <td><?php esc_html_e('List all custom categories in use with product counts', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Blacklist Endpoints -->
+                <div class="apt-endpoint-group">
+                    <h4 class="apt-endpoint-group-title"><?php esc_html_e('Blacklist Management', 'amazon-price-tracker'); ?></h4>
+                    <table class="widefat striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/blacklist</code></td>
+                                <td><?php esc_html_e('List blacklisted ASINs with pagination and filtering', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-post">POST</span></td>
+                                <td><code>/blacklist</code></td>
+                                <td><?php esc_html_e('Add an ASIN to the blacklist (prevents tracking)', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/blacklist/check</code></td>
+                                <td><?php esc_html_e('Check if a specific ASIN/region is blacklisted', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-get">GET</span></td>
+                                <td><code>/blacklist/{id}</code></td>
+                                <td><?php esc_html_e('Get details of a blacklist entry', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="apt-method apt-method-delete">DELETE</span></td>
+                                <td><code>/blacklist/{id}</code></td>
+                                <td><?php esc_html_e('Remove an entry from the blacklist', 'amazon-price-tracker'); ?></td>
+                                <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="description" style="margin-top: 15px;">
+                    <strong><?php esc_html_e('Authentication Levels:', 'amazon-price-tracker'); ?></strong><br>
+                    <span class="apt-auth-public"><?php esc_html_e('Public', 'amazon-price-tracker'); ?></span> - <?php esc_html_e('No authentication required', 'amazon-price-tracker'); ?><br>
+                    <span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span> - <?php esc_html_e('Requires WordPress Application Password', 'amazon-price-tracker'); ?><br>
+                    <span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span> - <?php esc_html_e('Requires admin-level Application Password', 'amazon-price-tracker'); ?>
+                </p>
+            </div>
+
+            <style>
+                .apt-endpoint-group { margin-bottom: 20px; }
+                .apt-endpoint-group-title {
+                    margin: 15px 0 10px 0;
+                    padding: 8px 12px;
+                    background: #f0f0f1;
+                    border-left: 4px solid #2271b1;
+                    font-size: 14px;
+                }
+                .apt-endpoint-group table code {
+                    background: #f6f7f7;
+                    padding: 2px 6px;
+                    font-size: 12px;
+                }
+                .apt-method {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 3px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                }
+                .apt-method-get { background: #d1e7dd; color: #0f5132; }
+                .apt-method-post { background: #cff4fc; color: #055160; }
+                .apt-method-put { background: #fff3cd; color: #664d03; }
+                .apt-method-delete { background: #f8d7da; color: #842029; }
+                .apt-auth-public, .apt-auth-user, .apt-auth-admin {
+                    display: inline-block;
+                    padding: 2px 8px;
+                    border-radius: 3px;
+                    font-size: 11px;
+                    font-weight: 500;
+                }
+                .apt-auth-public { background: #d1e7dd; color: #0f5132; }
+                .apt-auth-user { background: #cff4fc; color: #055160; }
+                .apt-auth-admin { background: #fff3cd; color: #664d03; }
+                .apt-accordion-toggle { cursor: pointer; }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var toggle = document.getElementById('apt-endpoints-toggle');
+                    var content = document.getElementById('apt-endpoints-accordion');
+
+                    if (toggle && content) {
+                        toggle.addEventListener('click', function() {
+                            if (content.style.display === 'none') {
+                                content.style.display = 'block';
+                                toggle.innerHTML = '<?php echo esc_js(__('Hide Endpoints', 'amazon-price-tracker')); ?> ▲';
+                            } else {
+                                content.style.display = 'none';
+                                toggle.innerHTML = '<?php echo esc_js(__('Show All Endpoints', 'amazon-price-tracker')); ?> ▼';
+                            }
+                        });
+                    }
+                });
+            </script>
 
             <h2><?php esc_html_e('Scheduled Price Refresh', 'amazon-price-tracker'); ?></h2>
             <form method="post">
