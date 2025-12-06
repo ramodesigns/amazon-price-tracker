@@ -273,10 +273,11 @@ final class Amazon_Price_Tracker {
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 70px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
                                 <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 120px;"><?php esc_html_e('Examples', 'amazon-price-tracker'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -285,12 +286,14 @@ final class Amazon_Price_Tracker {
                                 <td><code>/health</code></td>
                                 <td><?php esc_html_e('API health check - returns version and status info', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-public"><?php esc_html_e('Public', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="health">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/health/amazon</code></td>
                                 <td><?php esc_html_e('Test Amazon PA-API connectivity with your credentials', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="health-amazon">Response</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -302,10 +305,11 @@ final class Amazon_Price_Tracker {
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 70px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
                                 <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 120px;"><?php esc_html_e('Examples', 'amazon-price-tracker'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -314,12 +318,14 @@ final class Amazon_Price_Tracker {
                                 <td><code>/stats</code></td>
                                 <td><?php esc_html_e('Overall API statistics - product counts, regions, categories', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="stats">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/stats/user</code></td>
                                 <td><?php esc_html_e('Current user statistics - daily limits, configured regions', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="stats-user">Response</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -331,10 +337,11 @@ final class Amazon_Price_Tracker {
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 70px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
                                 <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 120px;"><?php esc_html_e('Examples', 'amazon-price-tracker'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -343,66 +350,89 @@ final class Amazon_Price_Tracker {
                                 <td><code>/products</code></td>
                                 <td><?php esc_html_e('List products with filtering, sorting, and pagination', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-list">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/products</code></td>
                                 <td><?php esc_html_e('Add a new product to track (requires ASIN and region)', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-create" data-type="request">Request</button>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-create" data-type="response">Response</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/products/bulk</code></td>
                                 <td><?php esc_html_e('Bulk create multiple products at once (max 50)', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-bulk" data-type="request">Request</button>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-bulk" data-type="response">Response</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/products/refresh</code></td>
                                 <td><?php esc_html_e('Bulk refresh prices for multiple products', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-refresh" data-type="request">Request</button>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-refresh" data-type="response">Response</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/products/{id}</code></td>
                                 <td><?php esc_html_e('Get details for a single product by ID', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-single">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-delete">DELETE</span></td>
                                 <td><code>/products/{id}</code></td>
                                 <td><?php esc_html_e('Soft-delete a product (use ?force=true for hard delete)', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-delete">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-put">PUT</span></td>
                                 <td><code>/products/{id}/category</code></td>
                                 <td><?php esc_html_e('Update product custom category', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-category" data-type="request">Request</button>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="products-category" data-type="response">Response</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/products/{id}/prices</code></td>
                                 <td><?php esc_html_e('Get price history for a product with optional date range', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-prices">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/products/{id}/refresh</code></td>
                                 <td><?php esc_html_e('Refresh price for a single product from Amazon', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-refresh-single">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/products/by-asin/{asin}</code></td>
                                 <td><?php esc_html_e('Find all products by ASIN (across all regions)', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-by-asin">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/products/by-asin/{asin}/{region}</code></td>
                                 <td><?php esc_html_e('Find product by ASIN and specific region', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="products-by-asin-region">Response</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -414,10 +444,11 @@ final class Amazon_Price_Tracker {
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 70px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
                                 <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 120px;"><?php esc_html_e('Examples', 'amazon-price-tracker'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -426,24 +457,31 @@ final class Amazon_Price_Tracker {
                                 <td><code>/settings</code></td>
                                 <td><?php esc_html_e('Get your Amazon PA-API settings and partner tags', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="settings-get">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-put">PUT</span></td>
                                 <td><code>/settings</code></td>
                                 <td><?php esc_html_e('Update Amazon PA-API credentials and partner tags', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="settings-update" data-type="request">Request</button>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="settings-update" data-type="response">Response</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-delete">DELETE</span></td>
                                 <td><code>/settings/partner-tags/{region}</code></td>
                                 <td><?php esc_html_e('Remove partner tag for a specific region', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="settings-delete-tag">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/settings/validate</code></td>
                                 <td><?php esc_html_e('Validate your Amazon PA-API credentials', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="settings-validate">Response</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -455,10 +493,11 @@ final class Amazon_Price_Tracker {
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 70px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
                                 <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 120px;"><?php esc_html_e('Examples', 'amazon-price-tracker'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -467,12 +506,14 @@ final class Amazon_Price_Tracker {
                                 <td><code>/regions</code></td>
                                 <td><?php esc_html_e('List all supported Amazon marketplace regions', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="regions">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/categories</code></td>
                                 <td><?php esc_html_e('List all custom categories in use with product counts', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="categories">Response</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -484,10 +525,11 @@ final class Amazon_Price_Tracker {
                     <table class="widefat striped">
                         <thead>
                             <tr>
-                                <th style="width: 80px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 35%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 70px;"><?php esc_html_e('Method', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 28%;"><?php esc_html_e('Endpoint', 'amazon-price-tracker'); ?></th>
                                 <th><?php esc_html_e('Description', 'amazon-price-tracker'); ?></th>
-                                <th style="width: 100px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 80px;"><?php esc_html_e('Auth', 'amazon-price-tracker'); ?></th>
+                                <th style="width: 120px;"><?php esc_html_e('Examples', 'amazon-price-tracker'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -496,30 +538,38 @@ final class Amazon_Price_Tracker {
                                 <td><code>/blacklist</code></td>
                                 <td><?php esc_html_e('List blacklisted ASINs with pagination and filtering', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="blacklist-list">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/blacklist</code></td>
                                 <td><?php esc_html_e('Add an ASIN to the blacklist (prevents tracking)', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="blacklist-create" data-type="request">Request</button>
+                                    <button type="button" class="button button-small apt-example-btn" data-endpoint="blacklist-create" data-type="response">Response</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/blacklist/check</code></td>
                                 <td><?php esc_html_e('Check if a specific ASIN/region is blacklisted', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="blacklist-check">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/blacklist/{id}</code></td>
                                 <td><?php esc_html_e('Get details of a blacklist entry', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="blacklist-single">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-delete">DELETE</span></td>
                                 <td><code>/blacklist/{id}</code></td>
                                 <td><?php esc_html_e('Remove an entry from the blacklist', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span></td>
+                                <td><button type="button" class="button button-small apt-example-btn" data-endpoint="blacklist-delete">Response</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -531,6 +581,23 @@ final class Amazon_Price_Tracker {
                     <span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span> - <?php esc_html_e('Requires WordPress Application Password', 'amazon-price-tracker'); ?><br>
                     <span class="apt-auth-admin"><?php esc_html_e('Admin', 'amazon-price-tracker'); ?></span> - <?php esc_html_e('Requires admin-level Application Password', 'amazon-price-tracker'); ?>
                 </p>
+            </div>
+
+            <!-- Example Modal -->
+            <div id="apt-example-modal" class="apt-modal" style="display: none;">
+                <div class="apt-modal-content">
+                    <div class="apt-modal-header">
+                        <h3 id="apt-modal-title"><?php esc_html_e('Example', 'amazon-price-tracker'); ?></h3>
+                        <button type="button" class="apt-modal-close">&times;</button>
+                    </div>
+                    <div class="apt-modal-body">
+                        <pre id="apt-modal-code"><code></code></pre>
+                    </div>
+                    <div class="apt-modal-footer">
+                        <button type="button" class="button apt-copy-btn"><?php esc_html_e('Copy to Clipboard', 'amazon-price-tracker'); ?></button>
+                        <button type="button" class="button apt-modal-close-btn"><?php esc_html_e('Close', 'amazon-price-tracker'); ?></button>
+                    </div>
+                </div>
             </div>
 
             <style>
@@ -570,25 +637,586 @@ final class Amazon_Price_Tracker {
                 .apt-auth-user { background: #cff4fc; color: #055160; }
                 .apt-auth-admin { background: #fff3cd; color: #664d03; }
                 .apt-accordion-toggle { cursor: pointer; }
+                .apt-example-btn { margin: 1px !important; font-size: 11px !important; }
+
+                /* Modal Styles */
+                .apt-modal {
+                    position: fixed;
+                    z-index: 100000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0,0,0,0.6);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .apt-modal-content {
+                    background: #fff;
+                    border-radius: 8px;
+                    width: 90%;
+                    max-width: 700px;
+                    max-height: 80vh;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                }
+                .apt-modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px 20px;
+                    border-bottom: 1px solid #ddd;
+                    background: #f6f7f7;
+                    border-radius: 8px 8px 0 0;
+                }
+                .apt-modal-header h3 {
+                    margin: 0;
+                    font-size: 16px;
+                }
+                .apt-modal-close {
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: #666;
+                    padding: 0;
+                    line-height: 1;
+                }
+                .apt-modal-close:hover { color: #d63638; }
+                .apt-modal-body {
+                    padding: 20px;
+                    overflow-y: auto;
+                    flex: 1;
+                }
+                .apt-modal-body pre {
+                    margin: 0;
+                    background: #23282d;
+                    color: #eee;
+                    padding: 15px;
+                    border-radius: 4px;
+                    overflow-x: auto;
+                    font-size: 13px;
+                    line-height: 1.5;
+                }
+                .apt-modal-body pre code {
+                    background: none;
+                    padding: 0;
+                    color: inherit;
+                }
+                .apt-modal-footer {
+                    padding: 15px 20px;
+                    border-top: 1px solid #ddd;
+                    text-align: right;
+                    background: #f6f7f7;
+                    border-radius: 0 0 8px 8px;
+                }
+                .apt-modal-footer .button { margin-left: 10px; }
+                .apt-copy-btn.copied { background: #00a32a; color: #fff; border-color: #00a32a; }
             </style>
 
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    var toggle = document.getElementById('apt-endpoints-toggle');
-                    var content = document.getElementById('apt-endpoints-accordion');
+            document.addEventListener('DOMContentLoaded', function() {
+                // Accordion toggle
+                var toggle = document.getElementById('apt-endpoints-toggle');
+                var content = document.getElementById('apt-endpoints-accordion');
 
-                    if (toggle && content) {
-                        toggle.addEventListener('click', function() {
-                            if (content.style.display === 'none') {
-                                content.style.display = 'block';
-                                toggle.innerHTML = '<?php echo esc_js(__('Hide Endpoints', 'amazon-price-tracker')); ?> ▲';
-                            } else {
-                                content.style.display = 'none';
-                                toggle.innerHTML = '<?php echo esc_js(__('Show All Endpoints', 'amazon-price-tracker')); ?> ▼';
+                if (toggle && content) {
+                    toggle.addEventListener('click', function() {
+                        if (content.style.display === 'none') {
+                            content.style.display = 'block';
+                            toggle.innerHTML = '<?php echo esc_js(__('Hide Endpoints', 'amazon-price-tracker')); ?> ▲';
+                        } else {
+                            content.style.display = 'none';
+                            toggle.innerHTML = '<?php echo esc_js(__('Show All Endpoints', 'amazon-price-tracker')); ?> ▼';
+                        }
+                    });
+                }
+
+                // Example data
+                var examples = {
+                    'health': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "status": "healthy",
+                                "version": "1.0.0",
+                                "wordpress_version": "6.4.2",
+                                "php_version": "8.2.13",
+                                "timestamp": "2024-12-06T10:30:00+00:00"
                             }
-                        });
+                        }
+                    },
+                    'health-amazon': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "status": "connected",
+                                "message": "Successfully connected to Amazon PA-API",
+                                "region_tested": "US",
+                                "response_time_ms": 245
+                            }
+                        }
+                    },
+                    'stats': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "total_products": 156,
+                                "active_products": 142,
+                                "total_price_records": 8934,
+                                "products_by_region": [
+                                    {"region": "US", "count": 89},
+                                    {"region": "UK", "count": 34},
+                                    {"region": "DE", "count": 19}
+                                ],
+                                "categories_count": 12,
+                                "user_stats": {
+                                    "products_created_today": 5,
+                                    "daily_limit": 50,
+                                    "remaining_today": 45
+                                }
+                            }
+                        }
+                    },
+                    'stats-user': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "products_created_today": 5,
+                                "products_created_total": 89,
+                                "daily_limit": 50,
+                                "remaining_today": 45,
+                                "is_admin": false,
+                                "configured_regions": ["US", "UK", "DE"]
+                            }
+                        }
+                    },
+                    'products-list': {
+                        response: {
+                            "success": true,
+                            "data": [
+                                {
+                                    "id": 1,
+                                    "asin": "B09V3KXJPB",
+                                    "region": "US",
+                                    "title": "Apple AirPods Pro (2nd Generation)",
+                                    "current_price": 189.99,
+                                    "currency": "USD",
+                                    "lowest_price": 179.99,
+                                    "highest_price": 249.99,
+                                    "is_available": true,
+                                    "custom_category": "Electronics",
+                                    "amazon_url": "https://www.amazon.com/dp/B09V3KXJPB",
+                                    "last_checked": "2024-12-06T10:00:00+00:00"
+                                }
+                            ],
+                            "pagination": {
+                                "current_page": 1,
+                                "per_page": 20,
+                                "total_items": 142,
+                                "total_pages": 8
+                            }
+                        }
+                    },
+                    'products-create': {
+                        request: {
+                            "asin": "B09V3KXJPB",
+                            "region": "US"
+                        },
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 157,
+                                "asin": "B09V3KXJPB",
+                                "region": "US",
+                                "title": "Apple AirPods Pro (2nd Generation)",
+                                "current_price": 189.99,
+                                "currency": "USD",
+                                "is_available": true,
+                                "amazon_url": "https://www.amazon.com/dp/B09V3KXJPB",
+                                "created_at": "2024-12-06T10:30:00+00:00"
+                            }
+                        }
+                    },
+                    'products-bulk': {
+                        request: {
+                            "products": [
+                                {"asin": "B09V3KXJPB", "region": "US"},
+                                {"asin": "B0BDHWDR12", "region": "US"},
+                                {"asin": "B09V3KXJPB", "region": "UK"}
+                            ]
+                        },
+                        response: {
+                            "success": true,
+                            "data": {
+                                "created": 3,
+                                "failed": 0,
+                                "skipped": 0,
+                                "products": [
+                                    {"id": 158, "asin": "B09V3KXJPB", "region": "US", "status": "created"},
+                                    {"id": 159, "asin": "B0BDHWDR12", "region": "US", "status": "created"},
+                                    {"id": 160, "asin": "B09V3KXJPB", "region": "UK", "status": "created"}
+                                ]
+                            }
+                        }
+                    },
+                    'products-refresh': {
+                        request: {
+                            "product_ids": [1, 2, 3, 4, 5],
+                            "batch_size": 10
+                        },
+                        response: {
+                            "success": true,
+                            "data": {
+                                "refreshed": 5,
+                                "failed": 0,
+                                "duration_seconds": 2.34,
+                                "results": [
+                                    {"id": 1, "status": "success", "price_changed": true, "old_price": 199.99, "new_price": 189.99},
+                                    {"id": 2, "status": "success", "price_changed": false}
+                                ]
+                            }
+                        }
+                    },
+                    'products-single': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "asin": "B09V3KXJPB",
+                                "region": "US",
+                                "title": "Apple AirPods Pro (2nd Generation)",
+                                "current_price": 189.99,
+                                "currency": "USD",
+                                "lowest_price": 179.99,
+                                "highest_price": 249.99,
+                                "is_available": true,
+                                "custom_category": "Electronics",
+                                "image_url": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+                                "amazon_url": "https://www.amazon.com/dp/B09V3KXJPB?tag=yourpartner-20",
+                                "created_at": "2024-11-01T08:00:00+00:00",
+                                "last_checked": "2024-12-06T10:00:00+00:00",
+                                "created_by": 1
+                            }
+                        }
+                    },
+                    'products-delete': {
+                        response: {
+                            "success": true,
+                            "data": null
+                        }
+                    },
+                    'products-category': {
+                        request: {
+                            "category": "Audio Equipment"
+                        },
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "asin": "B09V3KXJPB",
+                                "custom_category": "Audio Equipment",
+                                "updated_at": "2024-12-06T10:30:00+00:00"
+                            }
+                        }
+                    },
+                    'products-prices': {
+                        response: {
+                            "success": true,
+                            "data": [
+                                {
+                                    "id": 8934,
+                                    "price": 189.99,
+                                    "currency": "USD",
+                                    "is_available": true,
+                                    "recorded_at": "2024-12-06T10:00:00+00:00"
+                                },
+                                {
+                                    "id": 8890,
+                                    "price": 199.99,
+                                    "currency": "USD",
+                                    "is_available": true,
+                                    "recorded_at": "2024-12-05T10:00:00+00:00"
+                                },
+                                {
+                                    "id": 8845,
+                                    "price": 199.99,
+                                    "currency": "USD",
+                                    "is_available": true,
+                                    "recorded_at": "2024-12-04T10:00:00+00:00"
+                                }
+                            ],
+                            "pagination": {
+                                "current_page": 1,
+                                "per_page": 100,
+                                "total_items": 45,
+                                "total_pages": 1
+                            }
+                        }
+                    },
+                    'products-refresh-single': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "asin": "B09V3KXJPB",
+                                "previous_price": 199.99,
+                                "current_price": 189.99,
+                                "price_changed": true,
+                                "is_available": true,
+                                "refreshed_at": "2024-12-06T10:30:00+00:00"
+                            }
+                        }
+                    },
+                    'products-by-asin': {
+                        response: {
+                            "success": true,
+                            "data": [
+                                {"id": 1, "asin": "B09V3KXJPB", "region": "US", "current_price": 189.99, "currency": "USD"},
+                                {"id": 45, "asin": "B09V3KXJPB", "region": "UK", "current_price": 169.99, "currency": "GBP"},
+                                {"id": 89, "asin": "B09V3KXJPB", "region": "DE", "current_price": 199.99, "currency": "EUR"}
+                            ]
+                        }
+                    },
+                    'products-by-asin-region': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "asin": "B09V3KXJPB",
+                                "region": "US",
+                                "title": "Apple AirPods Pro (2nd Generation)",
+                                "current_price": 189.99,
+                                "currency": "USD",
+                                "is_available": true
+                            }
+                        }
+                    },
+                    'settings-get': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "user_id": 1,
+                                "access_key": "AKIA****XXXX",
+                                "partner_tags": {
+                                    "US": "mysite-20",
+                                    "UK": "mysite-21",
+                                    "DE": "mysite-21"
+                                },
+                                "created_at": "2024-11-01T08:00:00+00:00",
+                                "updated_at": "2024-12-01T10:00:00+00:00"
+                            }
+                        }
+                    },
+                    'settings-update': {
+                        request: {
+                            "access_key": "AKIAIOSFODNN7EXAMPLE",
+                            "secret_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+                            "partner_tags": {
+                                "US": "mysite-20",
+                                "UK": "mysite-21"
+                            }
+                        },
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "user_id": 1,
+                                "access_key": "AKIA****MPLE",
+                                "partner_tags": {
+                                    "US": "mysite-20",
+                                    "UK": "mysite-21"
+                                },
+                                "updated_at": "2024-12-06T10:30:00+00:00"
+                            }
+                        }
+                    },
+                    'settings-delete-tag': {
+                        response: {
+                            "success": true,
+                            "data": null
+                        }
+                    },
+                    'settings-validate': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "valid": true,
+                                "message": "Amazon PA-API credentials are valid and working"
+                            }
+                        }
+                    },
+                    'regions': {
+                        response: {
+                            "success": true,
+                            "data": [
+                                {"code": "US", "name": "United States", "marketplace": "amazon.com", "currency": "USD"},
+                                {"code": "UK", "name": "United Kingdom", "marketplace": "amazon.co.uk", "currency": "GBP"},
+                                {"code": "DE", "name": "Germany", "marketplace": "amazon.de", "currency": "EUR"},
+                                {"code": "FR", "name": "France", "marketplace": "amazon.fr", "currency": "EUR"},
+                                {"code": "JP", "name": "Japan", "marketplace": "amazon.co.jp", "currency": "JPY"},
+                                {"code": "CA", "name": "Canada", "marketplace": "amazon.ca", "currency": "CAD"},
+                                {"code": "AU", "name": "Australia", "marketplace": "amazon.com.au", "currency": "AUD"}
+                            ]
+                        }
+                    },
+                    'categories': {
+                        response: {
+                            "success": true,
+                            "data": [
+                                {"name": "Electronics", "count": 45},
+                                {"name": "Home & Kitchen", "count": 32},
+                                {"name": "Books", "count": 28},
+                                {"name": "Clothing", "count": 19},
+                                {"name": "Sports & Outdoors", "count": 12}
+                            ]
+                        }
+                    },
+                    'blacklist-list': {
+                        response: {
+                            "success": true,
+                            "data": [
+                                {
+                                    "id": 1,
+                                    "asin": "B000EXAMPLE",
+                                    "region": "US",
+                                    "reason": "Counterfeit product",
+                                    "created_at": "2024-12-01T08:00:00+00:00",
+                                    "created_by": 1
+                                },
+                                {
+                                    "id": 2,
+                                    "asin": "B001EXAMPLE",
+                                    "region": "US",
+                                    "reason": "Adult content",
+                                    "created_at": "2024-12-02T09:00:00+00:00",
+                                    "created_by": 1
+                                }
+                            ],
+                            "pagination": {
+                                "current_page": 1,
+                                "per_page": 20,
+                                "total_items": 2,
+                                "total_pages": 1
+                            }
+                        }
+                    },
+                    'blacklist-create': {
+                        request: {
+                            "asin": "B000EXAMPLE",
+                            "region": "US",
+                            "reason": "Counterfeit product"
+                        },
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 3,
+                                "asin": "B000EXAMPLE",
+                                "region": "US",
+                                "reason": "Counterfeit product",
+                                "created_at": "2024-12-06T10:30:00+00:00",
+                                "created_by": 1
+                            }
+                        }
+                    },
+                    'blacklist-check': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "blacklisted": true,
+                                "entry": {
+                                    "id": 1,
+                                    "asin": "B000EXAMPLE",
+                                    "region": "US",
+                                    "reason": "Counterfeit product",
+                                    "created_at": "2024-12-01T08:00:00+00:00"
+                                }
+                            }
+                        }
+                    },
+                    'blacklist-single': {
+                        response: {
+                            "success": true,
+                            "data": {
+                                "id": 1,
+                                "asin": "B000EXAMPLE",
+                                "region": "US",
+                                "reason": "Counterfeit product",
+                                "created_at": "2024-12-01T08:00:00+00:00",
+                                "created_by": 1
+                            }
+                        }
+                    },
+                    'blacklist-delete': {
+                        response: {
+                            "success": true,
+                            "data": null
+                        }
+                    }
+                };
+
+                // Modal elements
+                var modal = document.getElementById('apt-example-modal');
+                var modalTitle = document.getElementById('apt-modal-title');
+                var modalCode = document.querySelector('#apt-modal-code code');
+                var copyBtn = document.querySelector('.apt-copy-btn');
+
+                // Open modal
+                document.querySelectorAll('.apt-example-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var endpoint = this.getAttribute('data-endpoint');
+                        var type = this.getAttribute('data-type') || 'response';
+                        var example = examples[endpoint];
+
+                        if (example) {
+                            var data = type === 'request' ? example.request : example.response;
+                            var title = type === 'request' ? 'Example Request' : 'Example Response';
+                            title += ' - ' + endpoint.replace(/-/g, '/');
+
+                            modalTitle.textContent = title;
+                            modalCode.textContent = JSON.stringify(data, null, 2);
+                            modal.style.display = 'flex';
+                        }
+                    });
+                });
+
+                // Close modal
+                document.querySelectorAll('.apt-modal-close, .apt-modal-close-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        modal.style.display = 'none';
+                    });
+                });
+
+                // Close on backdrop click
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
                     }
                 });
+
+                // Close on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && modal.style.display === 'flex') {
+                        modal.style.display = 'none';
+                    }
+                });
+
+                // Copy to clipboard
+                copyBtn.addEventListener('click', function() {
+                    var text = modalCode.textContent;
+                    navigator.clipboard.writeText(text).then(function() {
+                        copyBtn.textContent = '<?php echo esc_js(__('Copied!', 'amazon-price-tracker')); ?>';
+                        copyBtn.classList.add('copied');
+                        setTimeout(function() {
+                            copyBtn.textContent = '<?php echo esc_js(__('Copy to Clipboard', 'amazon-price-tracker')); ?>';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    });
+                });
+            });
             </script>
 
             <h2><?php esc_html_e('Scheduled Price Refresh', 'amazon-price-tracker'); ?></h2>
