@@ -305,12 +305,12 @@ class Products_Controller extends Base_Controller {
         // Get sort parameters
         $sort = $this->get_sort_params($request);
         $sort_field = $sort['sort_by'];
-        $sort_order = strtoupper($sort['sort_order']);
+        $sort_order = $sort['sort_order']; // Already uppercase from Validation helper
 
         // Map sort field to actual column
         $sort_column = match($sort_field) {
             'title' => "JSON_UNQUOTE(JSON_EXTRACT(p.facts, '$.title'))",
-            'current_price' => 'latest_price.current_price',
+            'current_price' => 'ph.current_price',
             default => "p.{$sort_field}",
         };
 
@@ -321,22 +321,21 @@ class Products_Controller extends Base_Controller {
         }
         $total_items = (int) $db->get_var($count_sql);
 
-        // Get products with latest price
+        // Get products with latest price using optimized correlated subquery
+        // This pattern leverages the product_recorded (product_id, recorded_at) composite index
+        // for efficient "latest row per group" lookups
         $sql = "
             SELECT
                 p.*,
-                latest_price.current_price,
-                latest_price.availability
+                ph.current_price,
+                ph.availability
             FROM {$products_table} p
-            LEFT JOIN (
-                SELECT ph1.product_id, ph1.current_price, ph1.availability
-                FROM {$prices_table} ph1
-                INNER JOIN (
-                    SELECT product_id, MAX(recorded_at) as max_recorded
-                    FROM {$prices_table}
-                    GROUP BY product_id
-                ) ph2 ON ph1.product_id = ph2.product_id AND ph1.recorded_at = ph2.max_recorded
-            ) latest_price ON p.id = latest_price.product_id
+            LEFT JOIN {$prices_table} ph ON p.id = ph.product_id
+                AND ph.recorded_at = (
+                    SELECT MAX(ph2.recorded_at)
+                    FROM {$prices_table} ph2
+                    WHERE ph2.product_id = p.id
+                )
             {$where_sql}
             ORDER BY {$sort_column} {$sort_order}
             LIMIT %d OFFSET %d
@@ -422,6 +421,17 @@ class Products_Controller extends Base_Controller {
             };
         }
 
+        // Add rate limit headers for non-admin users
+        if (!$this->is_admin()) {
+            $rate_info = $this->get_rate_limit_info();
+            return Response::created_with_rate_limit(
+                $this->format_product($result['product']),
+                $rate_info['limit'],
+                $rate_info['remaining'],
+                $rate_info['reset']
+            );
+        }
+
         return Response::created($this->format_product($result['product']));
     }
 
@@ -446,11 +456,37 @@ class Products_Controller extends Base_Controller {
             ]);
         }
 
-        $success_count = 0;
-        $failure_count = 0;
-        $results = [];
+        // Detect and remove duplicates within the request to avoid wasted API calls
+        $seen = [];
+        $unique_products = [];
+        $skipped_duplicates = [];
 
         foreach ($products as $product) {
+            $asin = isset($product['asin']) ? Validation::normalize_asin($product['asin']) : '';
+            $region = isset($product['region']) ? Validation::normalize_region($product['region']) : '';
+            $key = "{$asin}:{$region}";
+
+            if (isset($seen[$key])) {
+                $skipped_duplicates[] = [
+                    'asin' => $asin,
+                    'region' => $region,
+                    'success' => false,
+                    'error' => [
+                        'code' => 'DUPLICATE_IN_REQUEST',
+                        'message' => 'Duplicate ASIN/region combination in the same request',
+                    ],
+                ];
+            } else {
+                $seen[$key] = true;
+                $unique_products[] = $product;
+            }
+        }
+
+        $success_count = 0;
+        $failure_count = count($skipped_duplicates);
+        $results = $skipped_duplicates;
+
+        foreach ($unique_products as $product) {
             $asin = isset($product['asin']) ? Validation::normalize_asin($product['asin']) : '';
             $region = isset($product['region']) ? Validation::normalize_region($product['region']) : '';
 
@@ -483,7 +519,15 @@ class Products_Controller extends Base_Controller {
             }
         }
 
-        return Response::bulk_result($success_count, $failure_count, $results);
+        $response = Response::bulk_result($success_count, $failure_count, $results);
+
+        // Add rate limit headers for non-admin users
+        if (!$this->is_admin()) {
+            $rate_info = $this->get_rate_limit_info();
+            Response::add_rate_limit_headers($response, $rate_info['limit'], $rate_info['remaining'], $rate_info['reset']);
+        }
+
+        return $response;
     }
 
     /**
@@ -740,12 +784,40 @@ class Products_Controller extends Base_Controller {
             $today
         ));
 
-        if ($count >= APT_DAILY_CREATION_LIMIT) {
+        $daily_limit = apt_get_daily_limit();
+        if ($count >= $daily_limit) {
             $tomorrow = gmdate('c', strtotime('tomorrow midnight'));
-            return Response::rate_limit_exceeded(APT_DAILY_CREATION_LIMIT, $count, $tomorrow);
+            return Response::rate_limit_exceeded($daily_limit, $count, $tomorrow);
         }
 
         return true;
+    }
+
+    /**
+     * Get rate limit info for current user
+     *
+     * @return array Rate limit info with 'limit', 'remaining', 'reset'
+     */
+    private function get_rate_limit_info(): array {
+        $user_id = $this->get_current_user_id();
+        $today = gmdate('Y-m-d');
+
+        $db = $this->get_db();
+        $count = (int) $db->get_var($db->prepare(
+            "SELECT COUNT(*) FROM {$this->get_table('products')}
+             WHERE created_by = %d AND DATE(created_at) = %s",
+            $user_id,
+            $today
+        ));
+
+        $daily_limit = apt_get_daily_limit();
+        $tomorrow = gmdate('c', strtotime('tomorrow midnight'));
+
+        return [
+            'limit' => $daily_limit,
+            'remaining' => max(0, $daily_limit - $count),
+            'reset' => $tomorrow,
+        ];
     }
 
     /**

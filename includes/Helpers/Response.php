@@ -253,4 +253,33 @@ class Response {
     public static function created($data): WP_REST_Response {
         return new WP_REST_Response($data, 201);
     }
+
+    /**
+     * Create a created response with rate limit headers (201)
+     *
+     * @param mixed $data Created resource data
+     * @param int $limit Daily limit
+     * @param int $remaining Remaining today
+     * @param string $reset Reset time (ISO 8601)
+     * @return WP_REST_Response
+     */
+    public static function created_with_rate_limit($data, int $limit, int $remaining, string $reset): WP_REST_Response {
+        $response = new WP_REST_Response($data, 201);
+        self::add_rate_limit_headers($response, $limit, $remaining, $reset);
+        return $response;
+    }
+
+    /**
+     * Add rate limit headers to a response
+     *
+     * @param WP_REST_Response $response Response object
+     * @param int $limit Daily limit
+     * @param int $remaining Remaining today
+     * @param string $reset Reset time (ISO 8601)
+     */
+    public static function add_rate_limit_headers(WP_REST_Response $response, int $limit, int $remaining, string $reset): void {
+        $response->header('X-RateLimit-Limit', (string) $limit);
+        $response->header('X-RateLimit-Remaining', (string) max(0, $remaining));
+        $response->header('X-RateLimit-Reset', $reset);
+    }
 }
