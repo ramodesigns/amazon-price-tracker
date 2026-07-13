@@ -183,7 +183,7 @@ class Product_Service {
                 'success' => true,
                 'product' => $product,
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->db->query('ROLLBACK');
             return [
                 'success' => false,

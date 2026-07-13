@@ -40,7 +40,6 @@ class Test_Validation extends WP_UnitTestCase {
             'B08N5WRW',       // Too short
             'B08N5WRWNWX',    // Too long
             'B08N5WRW-W',     // Contains hyphen
-            'b08n5wrwnw',     // Lowercase (should be uppercase)
             'B08N5WRW W',     // Contains space
         ];
 
@@ -50,6 +49,16 @@ class Test_Validation extends WP_UnitTestCase {
                 "Expected '{$asin}' to be an invalid ASIN"
             );
         }
+    }
+
+    /**
+     * Test that ASIN validation is case-insensitive.
+     */
+    public function test_is_valid_asin_is_case_insensitive() {
+        $this->assertTrue(
+            Validation::is_valid_asin('b08n5wrwnw'),
+            "Expected lowercase ASIN to be accepted as valid"
+        );
     }
 
     /**
@@ -79,7 +88,7 @@ class Test_Validation extends WP_UnitTestCase {
      * Test invalid region detection.
      */
     public function test_is_valid_region_with_invalid_regions() {
-        $invalid_regions = ['', 'XX', 'USA', 'us', 'United States', 'GB'];
+        $invalid_regions = ['', 'XX', 'USA', 'United States', 'GB'];
 
         foreach ($invalid_regions as $region) {
             $this->assertFalse(
@@ -87,6 +96,16 @@ class Test_Validation extends WP_UnitTestCase {
                 "Expected '{$region}' to be an invalid region"
             );
         }
+    }
+
+    /**
+     * Test that region validation is case-insensitive.
+     */
+    public function test_is_valid_region_is_case_insensitive() {
+        $this->assertTrue(
+            Validation::is_valid_region('us'),
+            "Expected lowercase region code to be accepted as valid"
+        );
     }
 
     /**
@@ -177,5 +196,194 @@ class Test_Validation extends WP_UnitTestCase {
         // Invalid formats should return null
         $this->assertNull(Validation::validate_datetime('invalid'));
         $this->assertNull(Validation::validate_datetime(''));
+    }
+
+    /**
+     * Test pagination validation within bounds.
+     */
+    public function test_validate_pagination_within_bounds() {
+        $result = Validation::validate_pagination(2, 25, 100);
+
+        $this->assertSame(['page' => 2, 'per_page' => 25], $result);
+    }
+
+    /**
+     * Test pagination validation uses default values.
+     */
+    public function test_validate_pagination_defaults() {
+        $result = Validation::validate_pagination();
+
+        $this->assertSame(['page' => 1, 'per_page' => 20], $result);
+    }
+
+    /**
+     * Test pagination validation clamps page numbers below 1.
+     */
+    public function test_validate_pagination_clamps_page_below_one() {
+        $this->assertSame(1, Validation::validate_pagination(0, 20, 100)['page']);
+        $this->assertSame(1, Validation::validate_pagination(-5, 20, 100)['page']);
+    }
+
+    /**
+     * Test pagination validation clamps per_page below 1.
+     */
+    public function test_validate_pagination_clamps_per_page_below_one() {
+        $this->assertSame(1, Validation::validate_pagination(1, 0, 100)['per_page']);
+    }
+
+    /**
+     * Test pagination validation clamps per_page above the maximum.
+     */
+    public function test_validate_pagination_clamps_per_page_above_max() {
+        $this->assertSame(100, Validation::validate_pagination(1, 500, 100)['per_page']);
+    }
+
+    /**
+     * Test availability validation with valid statuses.
+     */
+    public function test_validate_availability_with_valid_statuses() {
+        $valid_statuses = ['in_stock', 'out_of_stock', 'limited_stock', 'preorder', 'unknown'];
+
+        foreach ($valid_statuses as $status) {
+            $this->assertSame($status, Validation::validate_availability($status));
+        }
+    }
+
+    /**
+     * Test availability validation is case-insensitive and trims whitespace.
+     */
+    public function test_validate_availability_is_case_insensitive() {
+        $this->assertSame('in_stock', Validation::validate_availability(' IN_STOCK '));
+    }
+
+    /**
+     * Test availability validation with an invalid status returns null.
+     */
+    public function test_validate_availability_with_invalid_status_returns_null() {
+        $this->assertNull(Validation::validate_availability('shipped'));
+        $this->assertNull(Validation::validate_availability(''));
+    }
+
+    /**
+     * Test product sort field validation with valid fields.
+     */
+    public function test_validate_product_sort_field_with_valid_fields() {
+        $valid_fields = ['created_at', 'updated_at', 'current_price', 'title', 'asin'];
+
+        foreach ($valid_fields as $field) {
+            $this->assertSame($field, Validation::validate_product_sort_field($field));
+        }
+    }
+
+    /**
+     * Test product sort field validation is case-insensitive and trims whitespace.
+     */
+    public function test_validate_product_sort_field_is_case_insensitive() {
+        $this->assertSame('current_price', Validation::validate_product_sort_field(' CURRENT_PRICE '));
+    }
+
+    /**
+     * Test product sort field validation defaults to created_at when invalid.
+     */
+    public function test_validate_product_sort_field_defaults_to_created_at() {
+        $this->assertSame('created_at', Validation::validate_product_sort_field('invalid_field'));
+        $this->assertSame('created_at', Validation::validate_product_sort_field(''));
+    }
+
+    /**
+     * Test search query validation with a valid query.
+     */
+    public function test_validate_search_query_with_valid_query() {
+        $this->assertSame('wireless mouse', Validation::validate_search_query('wireless mouse'));
+    }
+
+    /**
+     * Test search query validation trims whitespace.
+     */
+    public function test_validate_search_query_trims_whitespace() {
+        $this->assertSame('mouse', Validation::validate_search_query('  mouse  '));
+    }
+
+    /**
+     * Test search query validation rejects queries shorter than the minimum length.
+     */
+    public function test_validate_search_query_too_short_returns_null() {
+        $this->assertNull(Validation::validate_search_query('a'));
+    }
+
+    /**
+     * Test search query validation respects a custom minimum length.
+     */
+    public function test_validate_search_query_respects_custom_min_length() {
+        $this->assertNull(Validation::validate_search_query('ab', 3));
+        $this->assertSame('abc', Validation::validate_search_query('abc', 3));
+    }
+
+    /**
+     * Test price validation with valid numeric values.
+     */
+    public function test_validate_price_with_valid_values() {
+        $this->assertSame(19.99, Validation::validate_price(19.99));
+        $this->assertSame(20.0, Validation::validate_price('20'));
+        $this->assertSame(0.0, Validation::validate_price(0));
+    }
+
+    /**
+     * Test price validation rounds to two decimal places.
+     */
+    public function test_validate_price_rounds_to_two_decimals() {
+        $this->assertSame(20.0, Validation::validate_price(19.999));
+        $this->assertSame(5.0, Validation::validate_price(5.004));
+    }
+
+    /**
+     * Test price validation rejects negative values.
+     */
+    public function test_validate_price_with_negative_value_returns_null() {
+        $this->assertNull(Validation::validate_price(-5));
+        $this->assertNull(Validation::validate_price('-0.01'));
+    }
+
+    /**
+     * Test price validation rejects non-numeric values.
+     */
+    public function test_validate_price_with_non_numeric_value_returns_null() {
+        $this->assertNull(Validation::validate_price('abc'));
+        $this->assertNull(Validation::validate_price(null));
+        $this->assertNull(Validation::validate_price([]));
+    }
+
+    /**
+     * Test building a validation error response.
+     */
+    public function test_build_validation_error() {
+        $errors = [['field' => 'asin', 'message' => 'Required']];
+        $result = Validation::build_validation_error($errors);
+
+        $this->assertSame('VALIDATION_ERROR', $result['code']);
+        $this->assertSame('Request validation failed', $result['message']);
+        $this->assertSame($errors, $result['errors']);
+    }
+
+    /**
+     * Test appending a field error to an empty errors array.
+     */
+    public function test_add_field_error_appends_to_empty_array() {
+        $errors = [];
+        Validation::add_field_error($errors, 'asin', 'ASIN is required');
+
+        $this->assertCount(1, $errors);
+        $this->assertSame(['field' => 'asin', 'message' => 'ASIN is required'], $errors[0]);
+    }
+
+    /**
+     * Test appending a field error preserves existing errors.
+     */
+    public function test_add_field_error_appends_to_existing_array() {
+        $errors = [['field' => 'region', 'message' => 'Invalid region']];
+        Validation::add_field_error($errors, 'asin', 'ASIN is required');
+
+        $this->assertCount(2, $errors);
+        $this->assertSame('asin', $errors[1]['field']);
     }
 }

@@ -1,38 +1,21 @@
 <?xml version="1.0"?>
 <phpunit
-    bootstrap="tests/bootstrap.php"
-    backupGlobals="false"
-    colors="true"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    >
-    <testsuites>
-        <testsuite name="Amazon Price Tracker Test Suite">
-            <directory prefix="test-" suffix=".php">./tests/</directory>
-        </testsuite>
-        <testsuite name="Unit Tests">
-            <directory prefix="test-" suffix=".php">./tests/unit/</directory>
-        </testsuite>
-        <testsuite name="Integration Tests">
-            <directory prefix="test-" suffix=".php">./tests/integration/</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./includes/</directory>
-            <exclude>
-                <directory suffix=".php">./includes/index.php</directory>
-            </exclude>
-        </whitelist>
-    </filter>
-    <php>
-        <env name="WP_TESTS_DIR" value="/tmp/wordpress-tests-lib"/>
-        <const name="APT_VERSION" value="1.0.0"/>
-        <const name="APT_DAILY_CREATION_LIMIT" value="50"/>
-    </php>
-    <logging>
-        <log type="coverage-html" target="tests/coverage"/>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-    </logging>
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+>
+	<testsuites>
+		<testsuite name="unit">
+			<directory prefix="test-" suffix=".php">./tests/unit/</directory>
+		</testsuite>
+		<testsuite name="component">
+			<directory prefix="test-" suffix=".php">./tests/component/</directory>
+		</testsuite>
+		<testsuite name="integration">
+			<directory prefix="test-" suffix=".php">./tests/integration/</directory>
+		</testsuite>
+	</testsuites>
 </phpunit>

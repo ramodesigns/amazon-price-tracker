@@ -224,7 +224,7 @@ class Amazon_API {
      */
     private function request(string $operation, array $payload): ?array {
         $this->last_error = null;
-        $path = '/paapi5/' . $operation;
+        $path = '/paapi5/' . strtolower($operation);
         $target = 'com.amazon.paapi5.v1.ProductAdvertisingAPIv1.' . $operation;
 
         $payload_json = wp_json_encode($payload);
