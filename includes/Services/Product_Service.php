@@ -70,51 +70,13 @@ class Product_Service {
      * @return array Result with 'success', 'product' or 'error'
      */
     public function create_product(string $asin, string $region, int $user_id): array {
-        // Get user settings
-        $settings = $this->get_user_settings($user_id);
+        $fetch = $this->fetch_amazon_product_data($asin, $region, $user_id);
 
-        if (!$settings) {
-            return [
-                'success' => false,
-                'error_code' => 'NOT_CONFIGURED',
-                'error' => 'Amazon PA-API credentials not configured',
-            ];
+        if (!$fetch['success']) {
+            return $fetch;
         }
 
-        // Create Amazon API client
-        $amazon = Amazon_API::from_settings($settings, $region);
-
-        if (!$amazon) {
-            return [
-                'success' => false,
-                'error_code' => 'MISSING_PARTNER_TAG',
-                'error' => "No partner tag configured for region {$region}",
-            ];
-        }
-
-        // Fetch product from Amazon
-        $product_data = $amazon->get_item($asin);
-
-        if (!$product_data) {
-            $error = $amazon->get_last_error();
-
-            // Check if it's a "not found" error
-            if (str_contains(strtolower($error ?? ''), 'itemnotfound') ||
-                str_contains(strtolower($error ?? ''), 'invalid') ||
-                str_contains(strtolower($error ?? ''), 'not found')) {
-                return [
-                    'success' => false,
-                    'error_code' => 'ASIN_NOT_FOUND',
-                    'error' => 'Product not found on Amazon',
-                ];
-            }
-
-            return [
-                'success' => false,
-                'error_code' => 'AMAZON_API_ERROR',
-                'error' => $error ?: 'Failed to fetch product from Amazon',
-            ];
-        }
+        $product_data = $fetch['product_data'];
 
         // Insert product into database with transaction for data integrity
         $now = current_time('mysql', true);
@@ -178,6 +140,97 @@ class Product_Service {
 
             // Fetch and return the complete product
             $product = $this->get_product_by_id($product_id);
+
+            return [
+                'success' => true,
+                'product' => $product,
+            ];
+        } catch (\Throwable $e) {
+            $this->db->query('ROLLBACK');
+            return [
+                'success' => false,
+                'error_code' => 'DATABASE_ERROR',
+                'error' => 'Database transaction failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Reactivate a previously soft-deleted product
+     *
+     * Re-fetches from Amazon (rather than just flipping is_active) since the
+     * previously stored data may be stale, and records a fresh price history
+     * entry. Preserves the existing row's id/created_at/created_by - unlike
+     * create_product(), this updates the existing row rather than inserting
+     * a new one.
+     *
+     * @param string $asin Product ASIN
+     * @param string $region Region code
+     * @param int $user_id User ID performing the reactivation
+     * @return array Result with 'success', 'product' or 'error'
+     */
+    public function reactivate_product(string $asin, string $region, int $user_id): array {
+        $existing = $this->db->get_row($this->db->prepare(
+            "SELECT * FROM {$this->products_table} WHERE asin = %s AND region = %s",
+            $asin,
+            $region
+        ));
+
+        if (!$existing) {
+            return [
+                'success' => false,
+                'error_code' => 'NOT_FOUND',
+                'error' => 'No existing product found for this ASIN/region to reactivate',
+            ];
+        }
+
+        $fetch = $this->fetch_amazon_product_data($asin, $region, $user_id);
+
+        if (!$fetch['success']) {
+            return $fetch;
+        }
+
+        $product_data = $fetch['product_data'];
+        $now = current_time('mysql', true);
+
+        $this->db->query('START TRANSACTION');
+
+        try {
+            $this->db->update(
+                $this->products_table,
+                [
+                    'images' => wp_json_encode($product_data['images'] ?? []),
+                    'facts' => wp_json_encode($product_data['facts'] ?? []),
+                    'is_active' => 1,
+                    'updated_at' => $now,
+                ],
+                ['id' => $existing->id]
+            );
+
+            $pricing = $product_data['pricing'] ?? [];
+
+            $price_inserted = $this->db->insert($this->prices_table, [
+                'product_id' => $existing->id,
+                'rrp' => $pricing['rrp'] ?? null,
+                'current_price' => $pricing['current_price'] ?? null,
+                'is_prime_price' => ($pricing['is_prime_price'] ?? false) ? 1 : 0,
+                'availability' => $pricing['availability'] ?? 'unknown',
+                'recorded_at' => $now,
+            ]);
+
+            if (!$price_inserted) {
+                $this->db->query('ROLLBACK');
+                return [
+                    'success' => false,
+                    'error_code' => 'DATABASE_ERROR',
+                    'error' => 'Failed to save price record',
+                ];
+            }
+
+            $this->db->query('COMMIT');
+            $this->clear_caches();
+
+            $product = $this->get_product_by_id($existing->id);
 
             return [
                 'success' => true,
@@ -545,5 +598,67 @@ class Product_Service {
 
         // Clear dashboard widget cache
         delete_transient('apt_dashboard_widget_data');
+    }
+
+    /**
+     * Fetch and validate product data from Amazon PA-API for a user/region
+     *
+     * Shared by create_product() and reactivate_product() - both need the
+     * same settings lookup, Amazon API client construction, and error
+     * mapping, differing only in what they do with the DB afterwards.
+     *
+     * @param string $asin Product ASIN
+     * @param string $region Region code
+     * @param int $user_id User ID whose PA-API credentials to use
+     * @return array On success: ['success' => true, 'product_data' => array].
+     *               On failure: ['success' => false, 'error_code' => string, 'error' => string].
+     */
+    private function fetch_amazon_product_data(string $asin, string $region, int $user_id): array {
+        $settings = $this->get_user_settings($user_id);
+
+        if (!$settings) {
+            return [
+                'success' => false,
+                'error_code' => 'NOT_CONFIGURED',
+                'error' => 'Amazon PA-API credentials not configured',
+            ];
+        }
+
+        $amazon = Amazon_API::from_settings($settings, $region);
+
+        if (!$amazon) {
+            return [
+                'success' => false,
+                'error_code' => 'MISSING_PARTNER_TAG',
+                'error' => "No partner tag configured for region {$region}",
+            ];
+        }
+
+        $product_data = $amazon->get_item($asin);
+
+        if (!$product_data) {
+            $error = $amazon->get_last_error();
+
+            if (str_contains(strtolower($error ?? ''), 'itemnotfound') ||
+                str_contains(strtolower($error ?? ''), 'invalid') ||
+                str_contains(strtolower($error ?? ''), 'not found')) {
+                return [
+                    'success' => false,
+                    'error_code' => 'ASIN_NOT_FOUND',
+                    'error' => 'Product not found on Amazon',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'error_code' => 'AMAZON_API_ERROR',
+                'error' => $error ?: 'Failed to fetch product from Amazon',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'product_data' => $product_data,
+        ];
     }
 }

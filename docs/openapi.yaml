@@ -1,0 +1,1605 @@
+openapi: 3.1.0
+
+info:
+  title: Amazon Price Tracker API
+  version: "1.0.0"
+  description: |
+    A WordPress REST API plugin for tracking Amazon product prices across multiple
+    international marketplaces. Integrates with Amazon Product Advertising API (PA-API) 5.0
+    to fetch product data and pricing, storing historical price records over time.
+
+    ## Authentication
+
+    All endpoints except `GET /health` require authentication. This API relies entirely on
+    WordPress's own authentication layer - there is no bespoke API-key system. The two
+    supported mechanisms are:
+
+    - **Application Passwords (HTTP Basic Auth)** - the practical choice for external REST
+      clients (Insomnia, Postman, curl, server-to-server integrations). Generate one under
+      the target WordPress user's profile ("Application Passwords" section), then send it as
+      `Authorization: Basic base64(username:application_password)`. Requires either HTTPS or
+      `WP_ENVIRONMENT_TYPE` set to `local` (WordPress disables Application Passwords over
+      plain HTTP otherwise, except for local environments).
+    - **Cookie + nonce auth** - used implicitly by same-origin JavaScript running inside
+      wp-admin (e.g. `wp.apiFetch`). Not practical for external clients and not modeled
+      separately below; treat `basicAuth` as the representative scheme.
+
+    Endpoints marked "Admin only" additionally require the authenticated user to have the
+    `manage_options` WordPress capability (i.e. be an Administrator).
+
+    ## Error shape
+
+    Non-2xx responses always follow WordPress's standard `WP_Error` REST serialization:
+
+    ```json
+    { "code": "ASIN_NOT_FOUND", "message": "Product not found on Amazon", "data": { "status": 400 } }
+    ```
+
+    `data.status` mirrors the HTTP status code. Some error codes add extra fields inside
+    `data` (e.g. `data.errors` for validation failures, `data.limit`/`data.used`/`data.resets_at`
+    for rate limiting) - see the `ErrorResponse` variants under each operation.
+
+    ## Rate limiting
+
+    Non-admin users are capped at a configurable number of product creations per day
+    (default 50, via the `apt_daily_creation_limit` WordPress option). `POST /products` and
+    `POST /products/bulk` add `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and
+    `X-RateLimit-Reset` response headers for non-admin callers. Admins are exempt from the
+    limit entirely (no headers, no 429s).
+
+  contact:
+    name: Amazon Price Tracker
+
+servers:
+  - url: http://localhost:8888/wp-json/amazon-price-tracker/v1
+    description: Local development (php -S / wp-env style install)
+  - url: "https://{domain}/wp-json/amazon-price-tracker/v1"
+    description: Production WordPress installation
+    variables:
+      domain:
+        default: example.com
+        description: The WordPress installation's domain
+
+security:
+  - basicAuth: []
+
+tags:
+  - name: Health
+    description: Public and authenticated health/connectivity checks.
+  - name: Regions
+    description: Supported Amazon marketplace regions.
+  - name: Categories
+    description: Custom categories currently in use across tracked products.
+  - name: Products
+    description: Create, read, refresh, and delete tracked Amazon products, plus their price history.
+  - name: Blacklist
+    description: ASIN/region combinations blocked from being tracked.
+  - name: Settings
+    description: Per-user Amazon PA-API credentials and partner tags.
+  - name: Stats
+    description: Aggregate and per-user usage statistics.
+
+paths:
+  # ============================================================
+  # Health
+  # ============================================================
+  /health:
+    get:
+      tags: [Health]
+      summary: API health check
+      description: |
+        Public liveness check - confirms the plugin is loaded and returns version info.
+        Does **not** verify database connectivity or Amazon PA-API access; see
+        `GET /health/amazon` for that.
+      security: []
+      operationId: getHealth
+      responses:
+        "200":
+          description: The API is up.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+              example:
+                status: healthy
+                version: "1.0.0"
+                wordpress_version: "7.0.1"
+                php_version: "8.5.8"
+                timestamp: "2026-07-13T17:00:21+00:00"
+
+  /health/amazon:
+    get:
+      tags: [Health]
+      summary: Amazon PA-API connectivity check
+      description: |
+        Tests connectivity to Amazon's PA-API using the authenticated user's configured
+        credentials (a lightweight `SearchItems` call for `Keywords: "test"`).
+
+        Always returns `200 OK` - connection failures are reported *inside* the response
+        body via `status`/`message`, not via HTTP error codes.
+      operationId: getAmazonHealth
+      responses:
+        "200":
+          description: |
+            Connection test result. `status` is one of `connected`, `not_configured`, or `error`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmazonHealthStatus"
+              examples:
+                connected:
+                  value:
+                    status: connected
+                    message: Successfully connected to Amazon PA-API
+                    response_time_ms: 342
+                not_configured:
+                  value:
+                    status: not_configured
+                    message: Amazon PA-API credentials not configured
+                error:
+                  value:
+                    status: error
+                    message: "The request signature we calculated does not match the signature you provided."
+                    response_time_ms: 118
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # Regions
+  # ============================================================
+  /regions:
+    get:
+      tags: [Regions]
+      summary: List supported marketplace regions
+      description: Returns all 12 Amazon marketplace regions the plugin can track products in.
+      operationId: listRegions
+      responses:
+        "200":
+          description: Array of supported regions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Region"
+              example:
+                - { code: US, name: United States, marketplace_domain: amazon.com, currency: USD }
+                - { code: CA, name: Canada, marketplace_domain: amazon.ca, currency: CAD }
+                - { code: UK, name: United Kingdom, marketplace_domain: amazon.co.uk, currency: GBP }
+                - { code: DE, name: Germany, marketplace_domain: amazon.de, currency: EUR }
+                - { code: FR, name: France, marketplace_domain: amazon.fr, currency: EUR }
+                - { code: ES, name: Spain, marketplace_domain: amazon.es, currency: EUR }
+                - { code: IT, name: Italy, marketplace_domain: amazon.it, currency: EUR }
+                - { code: AU, name: Australia, marketplace_domain: amazon.com.au, currency: AUD }
+                - { code: JP, name: Japan, marketplace_domain: amazon.co.jp, currency: JPY }
+                - { code: IN, name: India, marketplace_domain: amazon.in, currency: INR }
+                - { code: MX, name: Mexico, marketplace_domain: amazon.com.mx, currency: MXN }
+                - { code: BR, name: Brazil, marketplace_domain: amazon.com.br, currency: BRL }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # Categories
+  # ============================================================
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List custom categories in use
+      description: |
+        Admin only. Returns the distinct `custom_category` values currently set on
+        active products, with a count of products in each.
+      operationId: listCategories
+      responses:
+        "200":
+          description: Array of categories in use.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryCount"
+              example:
+                - { name: Electronics, count: 12 }
+                - { name: Toys, count: 4 }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ============================================================
+  # Products
+  # ============================================================
+  /products:
+    get:
+      tags: [Products]
+      summary: List tracked products
+      description: |
+        Paginated, filterable list of tracked products, joined with each product's most
+        recent price history record.
+
+        **Known gap:** `min_price`, `max_price`, and `availability` are accepted as valid
+        query parameters (type-validated by the WordPress REST arg schema) but are
+        **not currently applied** to the underlying query - they have no filtering effect.
+        Only `is_active`, `region`, `regions`, `custom_category`, and `search` are actually
+        used to build the `WHERE` clause.
+      operationId: listProducts
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
+        - name: region
+          in: query
+          description: Filter to a single region. Takes precedence over `regions` if both are given.
+          schema:
+            $ref: "#/components/schemas/RegionCode"
+        - name: regions
+          in: query
+          description: Comma-separated list of region codes (e.g. `US,UK,DE`). Ignored if `region` is set.
+          schema:
+            type: string
+          example: "US,UK"
+        - name: custom_category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Case-insensitive substring match against product title and brand. Minimum 2 characters.
+          schema:
+            type: string
+            minLength: 2
+        - name: min_price
+          in: query
+          description: Accepted but currently unused - see operation description.
+          schema:
+            type: number
+        - name: max_price
+          in: query
+          description: Accepted but currently unused - see operation description.
+          schema:
+            type: number
+        - name: availability
+          in: query
+          description: Accepted but currently unused - see operation description.
+          schema:
+            type: string
+            enum: [in_stock, out_of_stock, "all"]
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+            default: true
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [created_at, updated_at, current_price, title, asin]
+            default: created_at
+        - name: sort_order
+          in: query
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+      responses:
+        "200":
+          description: Paginated product list.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ProductSummary"
+              example:
+                data:
+                  - id: 12
+                    asin: B019JIACIS
+                    region: UK
+                    title: "Funko POP! Movies: Harry Potter - Dobby - Collectable Vinyl Figure"
+                    custom_category: null
+                    is_active: true
+                    current_price: null
+                    currency: GBP
+                    availability: unknown
+                    created_at: "2026-07-13T17:31:53+00:00"
+                    updated_at: "2026-07-13T17:31:53+00:00"
+                meta:
+                  pagination:
+                    current_page: 1
+                    per_page: 20
+                    total_items: 1
+                    total_pages: 1
+                    has_next: false
+                    has_previous: false
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Products]
+      summary: Create (track) a new product
+      description: |
+        Fetches product data from Amazon PA-API for the given ASIN/region and stores it,
+        along with an initial price history record. Subject, in order, to: rate limiting
+        (non-admins only), blacklist check, and a duplicate check (same ASIN + region
+        already tracked).
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+            example:
+              asin: B08WCQ4TG7
+              region: UK
+      responses:
+        "201":
+          description: Product created.
+          headers:
+            X-RateLimit-Limit:
+              description: Present only for non-admin callers.
+              schema: { type: integer }
+            X-RateLimit-Remaining:
+              description: Present only for non-admin callers.
+              schema: { type: integer }
+            X-RateLimit-Reset:
+              description: Present only for non-admin callers. ISO 8601 timestamp.
+              schema: { type: string, format: date-time }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+              example:
+                id: 13
+                asin: B019JIACIS
+                region: UK
+                custom_category: null
+                images:
+                  - url: "https://m.media-amazon.com/images/I/41O6SHdPulL._SL500_.jpg"
+                    height: 500
+                    width: 500
+                    type: main
+                facts:
+                  title: "Funko POP! Movies: Harry Potter - Dobby - Collectable Vinyl Figure"
+                  brand: Funko
+                  manufacturer: Funko
+                is_active: true
+                created_at: "2026-07-13T17:35:00+00:00"
+                updated_at: "2026-07-13T17:35:00+00:00"
+                created_by: 1
+        "400":
+          description: |
+            One of several validation/business-rule failures, distinguished by `code`:
+            `VALIDATION_ERROR` (malformed asin/region), `ASIN_NOT_FOUND` (Amazon has no
+            such item), `MISSING_PARTNER_TAG` (no partner tag configured for the region),
+            or `NOT_CONFIGURED` (no PA-API credentials at all).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                validation:
+                  value:
+                    code: VALIDATION_ERROR
+                    message: Request validation failed
+                    data:
+                      status: 400
+                      errors:
+                        - field: asin
+                          message: ASIN must be 10 alphanumeric characters
+                asin_not_found:
+                  value:
+                    code: ASIN_NOT_FOUND
+                    message: Product not found on Amazon
+                    data: { status: 400 }
+                missing_partner_tag:
+                  value:
+                    code: MISSING_PARTNER_TAG
+                    message: No partner tag configured for region UK
+                    data: { status: 400 }
+                not_configured:
+                  value:
+                    code: NOT_CONFIGURED
+                    message: Amazon PA-API credentials not configured
+                    data: { status: 400 }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: The ASIN/region combination is blacklisted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: BLACKLISTED
+                message: This ASIN/Region combination is blacklisted
+                data:
+                  status: 403
+                  details: { reason: "Counterfeit concerns" }
+        "409":
+          description: |
+            A product for this ASIN/region already exists - active or previously
+            soft-deleted. `data.details.title` is the title stored from when it was
+            last fetched, so the caller can confirm the ASIN hasn't been recycled for
+            a different product before deciding what to do next.
+            `data.details.is_active` distinguishes a genuine duplicate (`true` - the
+            product is already tracked) from one that's soft-deleted (`false` - you
+            likely want `POST /products/reactivate` instead of treating this as an error).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                active_duplicate:
+                  value:
+                    code: ALREADY_EXISTS
+                    message: Product with this ASIN/Region already exists
+                    data:
+                      status: 409
+                      details: { id: 11, is_active: true, title: "Funko POP! Deluxe: HP Anniversary - Harry Potter Pushing Trolley" }
+                soft_deleted:
+                  value:
+                    code: ALREADY_EXISTS
+                    message: Product with this ASIN/Region already exists
+                    data:
+                      status: 409
+                      details: { id: 11, is_active: false, title: "Funko POP! Deluxe: HP Anniversary - Harry Potter Pushing Trolley" }
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          description: Amazon PA-API request failed (network error, signature error, throttling, etc).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: AMAZON_API_ERROR
+                message: "Operation timed out after 30001 milliseconds."
+                data: { status: 502 }
+
+  /products/reactivate:
+    post:
+      tags: [Products]
+      summary: Reactivate a previously soft-deleted product
+      description: |
+        Brings a soft-deleted (`is_active: false`) product back, re-fetching current
+        data from Amazon PA-API rather than reusing whatever was last stored, and
+        recording a fresh price history entry. The existing row's `id`, `created_at`,
+        and `created_by` are preserved - this updates the existing row, it does not
+        create a new one.
+
+        A deliberately separate endpoint from `POST /products` (rather than having
+        creation silently revive a soft-deleted row) so reactivation is a distinct,
+        auditable action rather than an implicit side effect of create.
+
+        Subject to the same blacklist check as `POST /products`. Also subject to the
+        same non-admin daily rate limit *as a gate* (blocked if you're already at
+        today's cap) - but note it does **not** itself count against that cap, since
+        it updates an existing row rather than inserting a new one, and the rate
+        limit is derived from counting rows created that day.
+      operationId: reactivateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+            example:
+              asin: B019JIACIS
+              region: UK
+      responses:
+        "200":
+          description: Reactivated product, with freshly fetched data.
+          headers:
+            X-RateLimit-Limit: { schema: { type: integer } }
+            X-RateLimit-Remaining: { schema: { type: integer } }
+            X-RateLimit-Reset: { schema: { type: string, format: date-time } }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: "`VALIDATION_ERROR` (malformed asin/region), `ASIN_NOT_FOUND`, `MISSING_PARTNER_TAG`, or `NOT_CONFIGURED`."
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          description: The ASIN/region combination is blacklisted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+              example:
+                code: BLACKLISTED
+                message: This ASIN/Region combination is blacklisted
+                data: { status: 403 }
+        "404":
+          description: No existing product (active or inactive) found for this ASIN/region - there's nothing to reactivate. Use `POST /products` instead.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+              example:
+                code: NOT_FOUND
+                message: No existing product found for this ASIN/region to reactivate
+                data: { status: 404 }
+        "429":
+          $ref: "#/components/responses/RateLimitExceeded"
+        "502":
+          description: Amazon PA-API request failed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /products/bulk:
+    post:
+      tags: [Products]
+      summary: Bulk-create products
+      description: |
+        Creates up to 100 products in one call by internally invoking the same logic as
+        `POST /products` per item. Duplicate ASIN/region pairs *within the request* are
+        detected and skipped before any Amazon calls are made; everything else (rate
+        limiting, blacklist, existing-product conflicts) is evaluated per item exactly as
+        it would be for a single `POST /products` call.
+      operationId: bulkCreateProducts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [products]
+              properties:
+                products:
+                  type: array
+                  maxItems: 100
+                  items:
+                    type: object
+                    properties:
+                      asin: { type: string }
+                      region: { $ref: "#/components/schemas/RegionCode" }
+            example:
+              products:
+                - { asin: B08WCQ4TG7, region: UK }
+                - { asin: B019JIACIS, region: UK }
+      responses:
+        "200":
+          description: Per-item results. HTTP 200 regardless of individual item outcomes.
+          headers:
+            X-RateLimit-Limit: { schema: { type: integer } }
+            X-RateLimit-Remaining: { schema: { type: integer } }
+            X-RateLimit-Reset: { schema: { type: string, format: date-time } }
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkCreateResult"
+              example:
+                success_count: 1
+                failure_count: 1
+                results:
+                  - asin: B08WCQ4TG7
+                    region: UK
+                    success: true
+                    product: { id: 11, asin: B08WCQ4TG7, region: UK }
+                  - asin: B019JIACIS
+                    region: UK
+                    success: false
+                    error: { code: ALREADY_EXISTS, message: "Product with this ASIN/Region already exists" }
+        "400":
+          description: Missing/empty `products`, or more than 100 items.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /products/refresh:
+    post:
+      tags: [Products]
+      summary: Bulk-refresh product prices
+      description: |
+        Admin only. Re-fetches pricing for multiple products from Amazon PA-API in
+        batches of 10 (the PA-API `GetItems` limit), with a 100ms pause between batches.
+        With no filters, refreshes all active products (subject to `limit`).
+      operationId: bulkRefreshProducts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_ids:
+                  type: array
+                  items: { type: integer }
+                  description: Restrict to specific product IDs.
+                regions:
+                  type: array
+                  items: { $ref: "#/components/schemas/RegionCode" }
+                  description: Restrict to specific regions.
+                limit:
+                  type: integer
+                  default: 100
+                  maximum: 1000
+            example:
+              regions: [UK, US]
+              limit: 50
+      responses:
+        "200":
+          description: Per-product refresh results.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkRefreshResult"
+              example:
+                success_count: 2
+                failure_count: 0
+                results:
+                  - { product_id: 11, asin: B08WCQ4TG7, region: UK, success: true }
+                  - { product_id: 12, asin: B019JIACIS, region: UK, success: true }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /products/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ProductIdParam"
+    get:
+      tags: [Products]
+      summary: Get a single product
+      operationId: getProduct
+      responses:
+        "200":
+          description: The product.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Products]
+      summary: Delete (or deactivate) a product
+      description: |
+        Admin only. By default performs a **soft delete** (`is_active` set to `false`,
+        row and price history retained). Pass `force=true` to hard-delete the product row
+        and all of its price history permanently.
+      operationId: deleteProduct
+      parameters:
+        - name: force
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "204":
+          description: Deleted (or deactivated). No body.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/{id}/category:
+    parameters:
+      - $ref: "#/components/parameters/ProductIdParam"
+    put:
+      tags: [Products]
+      summary: Update a product's custom category
+      description: Admin only. Set `custom_category` to `null` (or omit/empty string) to clear it.
+      operationId: updateProductCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                custom_category:
+                  type: [string, "null"]
+                  maxLength: 255
+            example:
+              custom_category: Electronics
+      responses:
+        "200":
+          description: Updated product.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/{id}/prices:
+    parameters:
+      - $ref: "#/components/parameters/ProductIdParam"
+    get:
+      tags: [Products]
+      summary: Get a product's price history
+      operationId: getProductPrices
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
+        - $ref: "#/components/parameters/FromParam"
+        - $ref: "#/components/parameters/ToParam"
+        - $ref: "#/components/parameters/PriceSortOrderParam"
+        - $ref: "#/components/parameters/AggregateParam"
+      responses:
+        "200":
+          description: Price history, optionally with period aggregations.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PriceHistoryResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/{id}/refresh:
+    parameters:
+      - $ref: "#/components/parameters/ProductIdParam"
+    post:
+      tags: [Products]
+      summary: Refresh a single product's price
+      description: |
+        Admin only. Re-fetches the product from Amazon PA-API and records a new price
+        history entry. On failure, the existing stored price is left unchanged.
+      operationId: refreshProduct
+      responses:
+        "200":
+          description: Updated product (post-refresh).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "400":
+          description: "`MISSING_PARTNER_TAG` or `NOT_CONFIGURED`."
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "502":
+          description: Amazon PA-API request failed, or an otherwise-unrecognized error code.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /products/by-asin/{asin}:
+    get:
+      tags: [Products]
+      summary: Get all tracked products for an ASIN (across regions)
+      description: Only returns **active** products. Use `by-asin/{asin}/{region}` for a specific region including inactive products.
+      operationId: getProductsByAsin
+      parameters:
+        - $ref: "#/components/parameters/AsinPathParam"
+      responses:
+        "200":
+          description: One or more matching products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/by-asin/{asin}/{region}:
+    get:
+      tags: [Products]
+      summary: Get a tracked product by ASIN and region
+      description: Unlike `by-asin/{asin}`, this does **not** filter by `is_active` - it will return a soft-deleted (inactive) product too.
+      operationId: getProductByAsinRegion
+      parameters:
+        - $ref: "#/components/parameters/AsinPathParam"
+        - $ref: "#/components/parameters/RegionPathParam"
+      responses:
+        "200":
+          description: The product.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /products/by-asin/{asin}/{region}/prices:
+    get:
+      tags: [Products]
+      summary: Get price history by ASIN and region
+      operationId: getProductPricesByAsinRegion
+      parameters:
+        - $ref: "#/components/parameters/AsinPathParam"
+        - $ref: "#/components/parameters/RegionPathParam"
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
+        - $ref: "#/components/parameters/FromParam"
+        - $ref: "#/components/parameters/ToParam"
+        - $ref: "#/components/parameters/PriceSortOrderParam"
+        - $ref: "#/components/parameters/AggregateParam"
+      responses:
+        "200":
+          description: Price history, optionally with period aggregations.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PriceHistoryResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ============================================================
+  # Blacklist
+  # ============================================================
+  /blacklist:
+    get:
+      tags: [Blacklist]
+      summary: List blacklisted ASIN/region combinations
+      description: Admin only.
+      operationId: listBlacklist
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
+        - name: region
+          in: query
+          schema: { $ref: "#/components/schemas/RegionCode" }
+        - name: search
+          in: query
+          description: Substring match against ASIN.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated blacklist entries.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/PaginatedResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items: { $ref: "#/components/schemas/BlacklistEntry" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    post:
+      tags: [Blacklist]
+      summary: Blacklist an ASIN/region combination
+      description: |
+        Admin only. If a matching product is currently tracked, it is soft-deleted
+        (`is_active = false`) as a side effect.
+      operationId: createBlacklistEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asin, region]
+              properties:
+                asin: { type: string }
+                region: { $ref: "#/components/schemas/RegionCode" }
+                reason: { type: string, maxLength: 500 }
+            example:
+              asin: B000000001
+              region: US
+              reason: Counterfeit concerns
+      responses:
+        "201":
+          description: Blacklist entry created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BlacklistEntry" }
+        "400":
+          description: Invalid ASIN or region.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: This ASIN/region is already blacklisted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /blacklist/check:
+    get:
+      tags: [Blacklist]
+      summary: Check whether an ASIN/region is blacklisted
+      description: Admin only.
+      operationId: checkBlacklist
+      parameters:
+        - name: asin
+          in: query
+          required: true
+          schema: { type: string }
+        - name: region
+          in: query
+          required: true
+          schema: { $ref: "#/components/schemas/RegionCode" }
+      responses:
+        "200":
+          description: Blacklist status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  blacklisted: { type: boolean }
+                  entry: { $ref: "#/components/schemas/BlacklistEntry" }
+              examples:
+                blacklisted:
+                  value:
+                    blacklisted: true
+                    entry: { id: 1, asin: B000000001, region: US, reason: "Test blacklist entry", created_at: "2026-07-08T00:00:00+00:00", created_by: 1 }
+                clear:
+                  value:
+                    blacklisted: false
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /blacklist/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer }
+    get:
+      tags: [Blacklist]
+      summary: Get a single blacklist entry
+      description: Admin only.
+      operationId: getBlacklistEntry
+      responses:
+        "200":
+          description: The blacklist entry.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BlacklistEntry" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [Blacklist]
+      summary: Remove a blacklist entry
+      description: Admin only. Does not restore any product that was soft-deleted when the entry was created.
+      operationId: deleteBlacklistEntry
+      responses:
+        "204":
+          description: Deleted. No body.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ============================================================
+  # Settings
+  # ============================================================
+  /settings:
+    get:
+      tags: [Settings]
+      summary: Get the current user's PA-API settings
+      description: "`access_key` is returned masked (e.g. `AKIA****WXYZ`); `secret_key` is never returned."
+      operationId: getSettings
+      responses:
+        "200":
+          description: Current settings.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Settings" }
+              example:
+                id: 1
+                user_id: 1
+                access_key: "test****"
+                partner_tags: { UK: "getyourself0a-21" }
+                created_at: "2026-07-13T17:38:12+00:00"
+                updated_at: "2026-07-13T17:38:12+00:00"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: No settings configured for this user yet.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+    put:
+      tags: [Settings]
+      summary: Create or update the current user's PA-API settings
+      description: |
+        On first setup, `access_key` and `secret_key` are both required. On subsequent
+        calls, any omitted field is left unchanged; `partner_tags` is **merged** into the
+        existing map (per-region keys are overwritten, others untouched) rather than
+        replaced wholesale - use `DELETE /settings/partner-tags/{region}` to remove one.
+      operationId: updateSettings
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateSettingsRequest" }
+            example:
+              access_key: test
+              secret_key: test+test
+              partner_tags: { UK: "test-21" }
+      responses:
+        "200":
+          description: Settings updated (already existed).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Settings" }
+        "201":
+          description: Settings created (first-time setup).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Settings" }
+        "400":
+          description: Missing `access_key`/`secret_key` on first setup, or an invalid entry in `partner_tags`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /settings/partner-tags/{region}:
+    delete:
+      tags: [Settings]
+      summary: Remove a partner tag for a region
+      operationId: deletePartnerTag
+      parameters:
+        - $ref: "#/components/parameters/RegionPathParam"
+      responses:
+        "204":
+          description: Removed. No body.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: No settings configured, or no partner tag set for that region.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+
+  /settings/validate:
+    post:
+      tags: [Settings]
+      summary: Validate the current user's PA-API credentials
+      description: Thin wrapper around the same connectivity test as `GET /health/amazon`.
+      operationId: validateSettings
+      responses:
+        "200":
+          description: Validation result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid: { type: boolean }
+                  message: { type: string }
+              examples:
+                valid:
+                  value: { valid: true, message: Successfully connected to Amazon PA-API }
+                invalid:
+                  value: { valid: false, message: "The request signature we calculated does not match the signature you provided." }
+        "400":
+          description: No credentials configured at all (`NOT_CONFIGURED`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorResponse" }
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ============================================================
+  # Stats
+  # ============================================================
+  /stats:
+    get:
+      tags: [Stats]
+      summary: Overall API statistics
+      description: |
+        Global counts are cached for 5 minutes (`apt_stats_cache` transient); `user_stats`
+        is always computed fresh. `last_refresh` is only included for admin callers.
+      operationId: getStats
+      responses:
+        "200":
+          description: Aggregate statistics.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Stats" }
+              example:
+                total_products: 10
+                active_products: 10
+                total_price_records: 160
+                products_by_region:
+                  - { region: US, count: 4 }
+                  - { region: UK, count: 3 }
+                categories_count: 5
+                user_stats:
+                  products_created_today: 2
+                  daily_limit: 50
+                  remaining_today: 48
+                last_refresh: "2026-07-13T18:00:00+00:00"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /stats/user:
+    get:
+      tags: [Stats]
+      summary: Current user's statistics
+      operationId: getUserStats
+      responses:
+        "200":
+          description: Per-user statistics.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserStats" }
+              example:
+                products_created_today: 2
+                products_created_total: 14
+                daily_limit: 50
+                remaining_today: 48
+                is_admin: false
+                configured_regions: [UK, US]
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: |
+        WordPress Application Password. Username is the WordPress user's login name;
+        password is the generated Application Password (spaces optional).
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    PerPageParam:
+      name: per_page
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    ProductIdParam:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer }
+    AsinPathParam:
+      name: asin
+      in: path
+      required: true
+      description: 10-character alphanumeric ASIN.
+      schema:
+        type: string
+        pattern: "^[A-Za-z0-9]{10}$"
+      example: B08WCQ4TG7
+    RegionPathParam:
+      name: region
+      in: path
+      required: true
+      schema:
+        allOf: [{ $ref: "#/components/schemas/RegionCode" }]
+      example: UK
+    FromParam:
+      name: from
+      in: query
+      description: Only include price records recorded at or after this datetime. Any format PHP's `strtotime()` accepts.
+      schema: { type: string, format: date-time }
+    ToParam:
+      name: to
+      in: query
+      description: Only include price records recorded at or before this datetime. Any format PHP's `strtotime()` accepts.
+      schema: { type: string, format: date-time }
+    PriceSortOrderParam:
+      name: sort_order
+      in: query
+      schema: { $ref: "#/components/schemas/SortOrder" }
+    AggregateParam:
+      name: aggregate
+      in: query
+      description: Group price records into periods and return summary stats instead of (in addition to) raw records.
+      schema:
+        type: string
+        enum: [none, daily, weekly, monthly]
+        default: none
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+          example:
+            code: rest_forbidden
+            message: Authentication required.
+            data: { status: 401 }
+    Forbidden:
+      description: Authenticated, but the user lacks the required (Administrator) capability.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+          example:
+            code: FORBIDDEN
+            message: Administrator access required.
+            data: { status: 403 }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+          example:
+            code: NOT_FOUND
+            message: Product not found
+            data: { status: 404 }
+    RateLimitExceeded:
+      description: Non-admin daily product-creation limit exceeded.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorResponse" }
+          example:
+            code: RATE_LIMIT_EXCEEDED
+            message: Daily creation limit exceeded
+            data:
+              status: 429
+              limit: 50
+              used: 50
+              resets_at: "2026-07-14T00:00:00+00:00"
+
+  schemas:
+    RegionCode:
+      type: string
+      enum: [US, CA, UK, DE, FR, ES, IT, AU, JP, IN, MX, BR]
+
+    CurrencyCode:
+      type: string
+      enum: [USD, CAD, GBP, EUR, AUD, JPY, INR, MXN, BRL]
+
+    AvailabilityStatus:
+      type: string
+      enum: [in_stock, out_of_stock, limited_stock, preorder, unknown]
+      description: |
+        `in_stock`/`out_of_stock`/`limited_stock` are derived from Amazon's Availability
+        message text (best-effort string matching). `unknown` covers both "Amazon didn't
+        say" and "Amazon returned no Offers resource at all" - see
+        `docs/testing-roadmap.md` for the latter's cause (an Associates account sales
+        threshold, not a bug).
+
+    SortOrder:
+      type: string
+      enum: [asc, desc]
+      default: desc
+
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string, example: healthy }
+        version: { type: string, example: "1.0.0" }
+        wordpress_version: { type: string, example: "7.0.1" }
+        php_version: { type: string, example: "8.5.8" }
+        timestamp: { type: string, format: date-time }
+
+    AmazonHealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [connected, not_configured, error]
+        message: { type: string }
+        response_time_ms: { type: integer }
+
+    Region:
+      type: object
+      properties:
+        code: { $ref: "#/components/schemas/RegionCode" }
+        name: { type: string }
+        marketplace_domain: { type: string }
+        currency: { $ref: "#/components/schemas/CurrencyCode" }
+
+    CategoryCount:
+      type: object
+      properties:
+        name: { type: string }
+        count: { type: integer }
+
+    Pagination:
+      type: object
+      properties:
+        current_page: { type: integer }
+        per_page: { type: integer }
+        total_items: { type: integer }
+        total_pages: { type: integer }
+        has_next: { type: boolean }
+        has_previous: { type: boolean }
+
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+        meta:
+          type: object
+          properties:
+            pagination: { $ref: "#/components/schemas/Pagination" }
+
+    ProductImage:
+      type: object
+      properties:
+        url: { type: string, format: uri }
+        height: { type: [integer, "null"] }
+        width: { type: [integer, "null"] }
+        type: { type: string, enum: [main, variant] }
+
+    ProductFacts:
+      type: object
+      description: |
+        Free-form bag of whatever Amazon returned for the requested `ItemInfo`
+        resources - only `title` is guaranteed present; every other key
+        (`brand`, `manufacturer`, `features`, `color`, `size`, `dimensions`,
+        `model_number`, `ean`, `upc`, `isbn`, `amazon_category`, `parent_asin`, etc.)
+        is included only when Amazon supplied it for that item.
+      properties:
+        title: { type: string }
+      additionalProperties: true
+
+    Product:
+      type: object
+      description: Full product representation, as returned by create/get/refresh/by-asin endpoints.
+      properties:
+        id: { type: integer }
+        asin: { type: string }
+        region: { $ref: "#/components/schemas/RegionCode" }
+        custom_category: { type: [string, "null"] }
+        images:
+          type: array
+          items: { $ref: "#/components/schemas/ProductImage" }
+        facts: { $ref: "#/components/schemas/ProductFacts" }
+        is_active: { type: boolean }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        created_by: { type: integer, description: WordPress user ID of the creator. }
+
+    ProductSummary:
+      type: object
+      description: Slimmer representation used in `GET /products` list results, joined with the latest price history row.
+      properties:
+        id: { type: integer }
+        asin: { type: string }
+        region: { $ref: "#/components/schemas/RegionCode" }
+        title: { type: [string, "null"] }
+        custom_category: { type: [string, "null"] }
+        is_active: { type: boolean }
+        current_price: { type: [number, "null"] }
+        currency: { $ref: "#/components/schemas/CurrencyCode" }
+        availability: { $ref: "#/components/schemas/AvailabilityStatus" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    CreateProductRequest:
+      type: object
+      required: [asin, region]
+      properties:
+        asin:
+          type: string
+          description: 10-character alphanumeric ASIN. Normalized to uppercase server-side.
+          pattern: "^[A-Za-z0-9]{10}$"
+        region:
+          $ref: "#/components/schemas/RegionCode"
+
+    PriceHistoryRecord:
+      type: object
+      properties:
+        id: { type: integer }
+        product_id: { type: integer }
+        rrp: { type: [number, "null"] }
+        current_price: { type: [number, "null"] }
+        is_prime_price: { type: boolean }
+        availability: { $ref: "#/components/schemas/AvailabilityStatus" }
+        recorded_at: { type: string, format: date-time }
+
+    PriceAggregation:
+      type: object
+      properties:
+        period_start: { type: string, format: date-time }
+        period_end: { type: string, format: date-time }
+        min_price: { type: [number, "null"] }
+        max_price: { type: [number, "null"] }
+        avg_price: { type: [number, "null"] }
+        min_rrp: { type: [number, "null"] }
+        max_rrp: { type: [number, "null"] }
+        avg_rrp: { type: [number, "null"] }
+        record_count: { type: integer }
+
+    PriceHistoryResponse:
+      type: object
+      properties:
+        product:
+          type: object
+          properties:
+            id: { type: integer }
+            asin: { type: string }
+            region: { $ref: "#/components/schemas/RegionCode" }
+            title: { type: [string, "null"] }
+        currency: { $ref: "#/components/schemas/CurrencyCode" }
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/PriceHistoryRecord" }
+        meta:
+          type: object
+          properties:
+            pagination: { $ref: "#/components/schemas/Pagination" }
+        aggregations:
+          type: array
+          description: Present only when `?aggregate=daily|weekly|monthly` was requested.
+          items: { $ref: "#/components/schemas/PriceAggregation" }
+
+    BulkCreateResultItem:
+      type: object
+      properties:
+        asin: { type: string }
+        region: { $ref: "#/components/schemas/RegionCode" }
+        success: { type: boolean }
+        product:
+          description: Present when `success` is `true`.
+          allOf: [{ $ref: "#/components/schemas/Product" }]
+        error:
+          type: object
+          description: Present when `success` is `false`.
+          properties:
+            code: { type: string }
+            message: { type: string }
+
+    BulkCreateResult:
+      type: object
+      properties:
+        success_count: { type: integer }
+        failure_count: { type: integer }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/BulkCreateResultItem" }
+
+    BulkRefreshResultItem:
+      type: object
+      properties:
+        product_id: { type: integer }
+        asin: { type: string }
+        region: { $ref: "#/components/schemas/RegionCode" }
+        success: { type: boolean }
+        error: { type: string, description: Present when `success` is `false`. }
+
+    BulkRefreshResult:
+      type: object
+      properties:
+        success_count: { type: integer }
+        failure_count: { type: integer }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/BulkRefreshResultItem" }
+
+    BlacklistEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        asin: { type: string }
+        region: { $ref: "#/components/schemas/RegionCode" }
+        reason: { type: [string, "null"] }
+        created_at: { type: string, format: date-time }
+        created_by: { type: integer }
+
+    Settings:
+      type: object
+      properties:
+        id: { type: integer }
+        user_id: { type: integer }
+        access_key:
+          type: string
+          description: Masked (first/last 4 characters visible). `secret_key` is never returned by any endpoint.
+        partner_tags:
+          type: object
+          description: Map of region code to Amazon Associates partner/tracking tag.
+          additionalProperties: { type: string }
+          example: { UK: "getyourself0a-21", US: "myaccount-20" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    UpdateSettingsRequest:
+      type: object
+      properties:
+        access_key:
+          type: string
+          description: Required on first setup (when no settings exist yet for this user).
+        secret_key:
+          type: string
+          description: Required on first setup. Write-only - never echoed back in responses.
+        partner_tags:
+          type: object
+          additionalProperties: { type: string }
+          description: Merged into any existing partner tags map; per-region keys are overwritten.
+
+    Stats:
+      type: object
+      properties:
+        total_products: { type: integer }
+        active_products: { type: integer }
+        total_price_records: { type: integer }
+        products_by_region:
+          type: array
+          items:
+            type: object
+            properties:
+              region: { $ref: "#/components/schemas/RegionCode" }
+              count: { type: integer }
+        categories_count: { type: integer }
+        user_stats:
+          type: object
+          properties:
+            products_created_today: { type: integer }
+            daily_limit: { type: [integer, "null"], description: "null for admins (unlimited)." }
+            remaining_today: { type: [integer, "null"] }
+        last_refresh:
+          type: [string, "null"]
+          format: date-time
+          description: Admin only - omitted entirely for non-admin callers.
+
+    UserStats:
+      type: object
+      properties:
+        products_created_today: { type: integer }
+        products_created_total: { type: integer }
+        daily_limit: { type: [integer, "null"] }
+        remaining_today: { type: [integer, "null"] }
+        is_admin: { type: boolean }
+        configured_regions:
+          type: array
+          items: { $ref: "#/components/schemas/RegionCode" }
+
+    ValidationErrorDetail:
+      type: object
+      properties:
+        field: { type: string }
+        message: { type: string }
+
+    ErrorResponse:
+      type: object
+      description: Standard WordPress `WP_Error` REST serialization.
+      required: [code, message, data]
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code (e.g. `VALIDATION_ERROR`, `ASIN_NOT_FOUND`, `RATE_LIMIT_EXCEEDED`, `NOT_FOUND`, `FORBIDDEN`, `rest_forbidden`).
+        message:
+          type: string
+        data:
+          type: object
+          required: [status]
+          properties:
+            status: { type: integer, description: Mirrors the HTTP status code. }
+            errors:
+              type: array
+              items: { $ref: "#/components/schemas/ValidationErrorDetail" }
+              description: Present only for `VALIDATION_ERROR`.
+            details:
+              type: object
+              description: Present only for a few error codes (e.g. `ALREADY_EXISTS` includes `{id}`, `BLACKLISTED` includes `{reason}`).
+            limit: { type: integer, description: Present only for `RATE_LIMIT_EXCEEDED`. }
+            used: { type: integer, description: Present only for `RATE_LIMIT_EXCEEDED`. }
+            resets_at: { type: string, format: date-time, description: Present only for `RATE_LIMIT_EXCEEDED`. }

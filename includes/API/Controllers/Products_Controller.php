@@ -69,6 +69,31 @@ class Products_Controller extends Base_Controller {
             ],
         ]);
 
+        // POST /products/reactivate - Reactivate a soft-deleted product
+        register_rest_route($this->namespace, '/' . $this->rest_base . '/reactivate', [
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'reactivate'],
+                'permission_callback' => [$this, 'check_authenticated'],
+                'args' => [
+                    'asin' => [
+                        'required' => true,
+                        'type' => 'string',
+                        'sanitize_callback' => function($value) {
+                            return Validation::normalize_asin($value);
+                        },
+                    ],
+                    'region' => [
+                        'required' => true,
+                        'type' => 'string',
+                        'sanitize_callback' => function($value) {
+                            return Validation::normalize_region($value);
+                        },
+                    ],
+                ],
+            ],
+        ]);
+
         // POST /products/bulk - Bulk create products
         register_rest_route($this->namespace, '/' . $this->rest_base . '/bulk', [
             [
@@ -395,12 +420,20 @@ class Products_Controller extends Base_Controller {
             return $blacklist_check;
         }
 
-        // Check if already exists
+        // Check if already exists (active or previously soft-deleted)
         $existing = $this->get_product_by_asin_region($asin, $region);
         if ($existing) {
+            $existing_facts = json_decode($existing->facts, true) ?: [];
+
             return Response::conflict(
                 'Product with this ASIN/Region already exists',
-                ['id' => (int) $existing->id]
+                [
+                    'id' => (int) $existing->id,
+                    'is_active' => (bool) $existing->is_active,
+                    // Lets the caller confirm the ASIN hasn't been recycled for a
+                    // different product before deciding whether to reactivate it.
+                    'title' => $existing_facts['title'] ?? null,
+                ]
             );
         }
 
@@ -433,6 +466,81 @@ class Products_Controller extends Base_Controller {
         }
 
         return Response::created($this->format_product($result['product']));
+    }
+
+    /**
+     * Reactivate a previously soft-deleted product
+     *
+     * Distinct from create_item() (rather than having create silently revive a
+     * soft-deleted row) so reactivation is separately observable/auditable,
+     * and so a caller who hits the 409 from create_item() makes an explicit,
+     * deliberate choice to bring the existing product back rather than it
+     * happening as a side effect of a create call.
+     *
+     * Re-fetches from Amazon (same as create) rather than just flipping
+     * is_active, since the previously stored data may be stale. Subject to
+     * the same blacklist check as create_item(). Also subject to the same
+     * rate limit *gate* for non-admins (blocked once already at today's cap),
+     * though note it does not itself count towards that cap the way create
+     * does - it updates the existing row rather than inserting a new one, so
+     * there's no new created_at to count.
+     *
+     * @param WP_REST_Request $request Request object
+     * @return WP_REST_Response|WP_Error
+     */
+    public function reactivate($request) {
+        $asin = $request->get_param('asin');
+        $region = $request->get_param('region');
+
+        if (!Validation::is_valid_asin($asin)) {
+            return Response::validation_error([
+                ['field' => 'asin', 'message' => 'ASIN must be 10 alphanumeric characters'],
+            ]);
+        }
+
+        if (!Validation::is_valid_region($region)) {
+            return Response::validation_error([
+                ['field' => 'region', 'message' => 'Invalid region code'],
+            ]);
+        }
+
+        if (!$this->is_admin()) {
+            $rate_check = $this->check_rate_limit();
+            if (is_wp_error($rate_check)) {
+                return $rate_check;
+            }
+        }
+
+        $blacklist_check = $this->check_blacklist($asin, $region);
+        if (is_wp_error($blacklist_check)) {
+            return $blacklist_check;
+        }
+
+        $service = new Product_Service();
+        $result = $service->reactivate_product($asin, $region, $this->get_current_user_id());
+
+        if (!$result['success']) {
+            $error_code = $result['error_code'] ?? 'UNKNOWN_ERROR';
+            $error_message = $result['error'] ?? 'Unknown error occurred';
+
+            return match($error_code) {
+                'NOT_FOUND' => Response::not_found($error_message),
+                'ASIN_NOT_FOUND' => Response::asin_not_found(),
+                'MISSING_PARTNER_TAG' => Response::missing_partner_tag($region),
+                'AMAZON_API_ERROR' => Response::amazon_api_error($error_message),
+                'NOT_CONFIGURED' => Response::not_configured($error_message),
+                default => Response::error($error_code, $error_message, 500),
+            };
+        }
+
+        $response = Response::success($this->format_product($result['product']));
+
+        if (!$this->is_admin()) {
+            $rate_info = $this->get_rate_limit_info();
+            Response::add_rate_limit_headers($response, $rate_info['limit'], $rate_info['remaining'], $rate_info['reset']);
+        }
+
+        return $response;
     }
 
     /**

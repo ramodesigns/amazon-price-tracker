@@ -168,6 +168,14 @@ class Amazon_API {
         foreach ($response['ItemsResult']['Items'] as $item) {
             $asin = $item['ASIN'] ?? null;
             if ($asin) {
+                if (!isset($item['Offers']) && defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log(
+                        "Amazon PA-API: response for {$asin} had no Offers resource despite a successful " .
+                        'request - Amazon omits pricing/availability (rather than erroring) for Associates ' .
+                        'accounts that have not referred at least 3 qualifying sales in the trailing 180 ' .
+                        'days. current_price/availability will be saved as null/unknown for this item.'
+                    );
+                }
                 $results[$asin] = $this->parse_item($item);
             }
         }

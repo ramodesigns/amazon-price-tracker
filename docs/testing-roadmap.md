@@ -10,6 +10,7 @@ Working backlog for the plugin's testing effort. Ordered roughly by what comes n
 - [x] One real example: `tests/integration/test-products-controller.php` - full REST dispatch through `POST /products`, real DB writes, real network call to Amazon PA-API. Credentials come from env vars (`APT_TEST_PA_API_*`), never hardcoded.
 - [x] Found and fixed a real bug this surfaced: `Amazon_API.php` was building request paths in PascalCase (`/paapi5/GetItems`) instead of the lowercase paths Amazon's routes require (`/paapi5/getitems`) - every live API call was silently broken.
 - [x] Found and fixed a related bug: `Product_Service::create_product()`'s internal transaction used `catch (\Exception $e)`, which misses `\Error`/`\TypeError` and could leave a transaction open on a crash. Now `catch (\Throwable $e)`.
+- [x] Diagnosed (via manual local WP env, not a bug): real PA-API responses were coming back with no `Offers` resource at all despite a successful 200, so `current_price`/`availability` always saved as null/unknown. Root cause is an Amazon account-level restriction - PA-API omits `Offers` for Associates accounts without 3+ qualifying sales in the trailing 180 days. Added a `WP_DEBUG` log line in `Amazon_API::get_items()` for this, plus a real-network canary test, `tests/integration/test-amazon-api-pricing.php`, that asserts pricing is currently null - it's meant to start *failing* once the account clears that threshold and Amazon starts returning real offers, as the signal to update expectations elsewhere.
 
 ## Testing tiers: unit vs. component vs. integration
 
@@ -31,9 +32,9 @@ Three tiers now, split by what's real vs. faked and where they live:
 
 **Next actions:**
 
-- [ ] Create `tests/component/` and add a `component` testsuite entry to `phpunit.xml.dist`.
-- [ ] Build the `pre_http_request` mocking helper (parallel to `tests/unit/encryption-function-overrides.php`'s pattern: a small fixture file, not a framework).
-- [ ] Port tonight's `Products_Controller` create-path test to a component version with canned success/failure fixtures (ASIN not found, malformed response, timeout) - keep the one real-network integration test as the sole "does the wire format work" check for that endpoint.
+- [x] Create `tests/component/` and add a `component` testsuite entry to `phpunit.xml.dist`.
+- [x] Build the `pre_http_request` mocking helper (parallel to `tests/unit/encryption-function-overrides.php`'s pattern: a small fixture file, not a framework) - `tests/component/pa-api-mock.php`.
+- [x] Port the `Products_Controller` create-path test to a component version with canned success/failure fixtures (ASIN not found, malformed response, timeout) - `tests/component/test-products-controller.php` (class `Test_Products_Controller_Component`, renamed to avoid a class-name collision with the integration test when the full suite runs in one process) - keep the one real-network integration test as the sole "does the wire format work" check for that endpoint.
 - [ ] Add component coverage for the rest, in rough order of cheapness: `Health_Controller` (no Amazon dependency), `Regions_Controller` + `Categories_Controller` (read-only, no Amazon dependency), `Settings_Controller` (credential storage/encryption round-trip), `Blacklist_Controller` (admin-only permission checks), then the remaining `Products_Controller` endpoints (list/filter, get by id, get by ASIN/region, price history + aggregations, refresh, bulk create, bulk refresh, delete).
 - [ ] Integration tier stays deliberately thin: one or two real-network smoke tests per Amazon-touching operation (create, refresh), not a full endpoint sweep.
 - [ ] Consider factoring the repeated `WP_REST_Server` boot + route registration out of `setUp()` into a shared base test case once a few more controller test files exist across both tiers (not yet - only one file today, premature to abstract).
