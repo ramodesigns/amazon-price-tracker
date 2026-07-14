@@ -793,16 +793,20 @@ class Amazon_Creators_API {
                 default => 'unknown',
             };
 
-            // Check availability message for more details
+            // Check availability message for more details. Most-specific
+            // match first: Amazon's limited-stock phrasing ("Only 3 left in
+            // stock - order soon") contains "in stock", so a bare 'in stock'
+            // check running earlier would classify every limited-stock item
+            // as plain in_stock and the limited branch could never fire.
             if (isset($listing['availability']['message'])) {
                 $message = strtolower($listing['availability']['message']);
-                if (str_contains($message, 'in stock')) {
-                    $pricing['availability'] = 'in_stock';
-                } elseif (str_contains($message, 'out of stock') || str_contains($message, 'unavailable')) {
+                if (str_contains($message, 'out of stock') || str_contains($message, 'unavailable')) {
                     $pricing['availability'] = 'out_of_stock';
                     $pricing['current_price'] = null;
                 } elseif (str_contains($message, 'only') && str_contains($message, 'left')) {
                     $pricing['availability'] = 'limited_stock';
+                } elseif (str_contains($message, 'in stock')) {
+                    $pricing['availability'] = 'in_stock';
                 }
             }
         }

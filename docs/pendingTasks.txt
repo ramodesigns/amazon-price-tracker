@@ -186,6 +186,39 @@
 - [ ] FEAT-03: Add product import from CSV
 - [ ] FEAT-04: Add email notifications for scheduled refresh failures
 - [ ] FEAT-05: Add REST API rate limiting headers (X-RateLimit-*)
+- [ ] FEAT-07: Batch bulk create's Amazon calls (PRIORITY: MEDIUM)
+      CONTEXT (discovered 2026-07-15 while designing integration tests):
+      Products_Controller::bulk_create() loops create_item() per product,
+      so N items cost N single-ASIN getItems calls. The Creators API
+      accepts up to 10 itemIds per getItems call - Product_Service::
+      bulk_refresh() already batches this way (array_chunk 10 + 100ms
+      inter-batch delay), so bulk create of 100 products currently makes
+      100 Amazon calls where ~10 would do. Faster for the caller, and an
+      order of magnitude kinder to Amazon's rate limits.
+      DESIGN CONSTRAINTS (so the refactor doesn't regress behavior):
+        - Run ALL per-item pre-checks first (in-request duplicate detection,
+          blacklist, already-exists conflict, and the non-admin daily rate
+          limit - capping accepted items at the caller's remaining quota),
+          then batch-fetch only the survivors, grouped by region like
+          bulk_refresh (each region needs its own client/marketplace).
+        - An ASIN absent from an otherwise-healthy batch response is a
+          per-item ASIN_NOT_FOUND failure (mirror bulk_refresh's handling;
+          note the Creators API has no per-item not-found error - absence
+          IS the signal, see MIGR-09 notes).
+        - Response shape (success_count/failure_count/results) must not
+          change - docs/openapi.yaml documents it and consumers rely on it.
+          Per-item error codes must survive the refactor too.
+        - create_product()'s per-item transaction/rollback semantics must
+          be preserved per inserted row, not wrapped around the whole batch.
+      TESTS TO UPDATE WHEN THIS LANDS:
+        - tests/component/test-products-controller.php bulk-create tests
+          (mock consumption changes: one queued response per 10-item batch,
+          not one per item).
+        - tests/integration/test-bulk-create.php - its docblock explicitly
+          documents the current fan-out behavior and drives bulk REFRESH
+          for the batch wire shape; after this lands, bulk create becomes
+          a true batch sender and the file should be reworded (and the
+          batch-payload live test could then use either operation).
 - [x] FEAT-06: Add dashboard widget for at-a-glance stats (DONE 2025-12-06)
       FILE: /includes/Admin/Dashboard_Widget.php
       FEATURES:
@@ -196,6 +229,22 @@
         - Quick action buttons (View All, Run Refresh)
         - AJAX-powered manual refresh with status feedback
         - 5-minute data caching for performance
+
+================================================================================
+=== SECTION 7B: STANDALONE PORT (POST-MVP, SEPARATE REPO) ===
+================================================================================
+# PRIORITY: MEDIUM (Paul-initiated 2026-07-15)
+# ACTION: Full plan of action lives in docs/standalone-port-plan.md - read
+#         that first; it contains phases, skeleton, port order, test
+#         strategy, and the institutional knowledge that must carry over.
+
+- [ ] PORT-01: Port core functionality (Creators API fetch, MariaDB product
+      storage/manage/refresh, auth-header-protected REST endpoints) to a new
+      repo with zero WordPress dependencies, per docs/standalone-port-plan.md.
+      Estimated 2-4 focused days + comparable test-confidence effort.
+      STARTS WITH: the Phase 0 decisions checklist (single-tenant?, endpoint
+      survivors, auth style, framework choice) - confirm with Paul before
+      writing code. Suggested kickoff prompt is at the bottom of the plan doc.
 
 ================================================================================
 === SECTION 8: ENVIRONMENT SETUP (MANUAL) ===
@@ -524,7 +573,8 @@ TESTING:    3/3 complete
 QUALITY:    4/4 complete
 SECURITY:   5/5 complete
 PERFORMANCE: 3/3 complete
-FEATURES:   1/6 complete (post-MVP bonus: dashboard widget)
+FEATURES:   1/7 complete (post-MVP bonus: dashboard widget; FEAT-07
+  bulk-create batching added 2026-07-15)
 CREATORS API MIGRATION: 13/13 complete (MIGR-01 through MIGR-10, plus
   MIGR-11 Settings_Controller Creators support, MIGR-12 full repo-wide
   PA-API reference sweep, MIGR-13 refresh/bulk_refresh coverage - all
@@ -558,18 +608,15 @@ STILL OPEN, LOWER PRIORITY (not blocking, not part of the PA-API migration -
     inactive-product exclusion, custom retention options, prune counters,
     run_maintenance/run_manual/cron-hook entry points, last-run
     bookkeeping, idempotency, and storage stats (delta-based assertions).
-  - Scheduled_Refresh.php: 0% (76 lines) - the cron entry point itself
-    (distinct from Product_Service::bulk_refresh(), which it calls and
-    which MIGR-13 already covered) - scheduling/locking/batching logic
-    untested.
-  - Stats_Controller: 11.97% (14/117 lines) - never scoped, per
-    testing-roadmap.md.
-  - Dashboard_Widget: 0% (243 lines) - admin display UI, lower stakes
-    than the above since it's not data-integrity-critical.
-  Recommended next, in priority order if picked up: Scheduled_Refresh
-  (the actual cron path in production) > Amazon_Creators_API's Cognito
-  flow (real but narrow - only matters for v2.x credential holders) >
-  Stats_Controller > Dashboard_Widget.
+  - [DONE 2026-07-14/15, see testing-roadmap.md for details] Scheduled_Refresh
+    (0% -> 97.33%), Stats_Controller (11.97% -> 100%), Dashboard_Widget
+    (0% -> 94.19%), Product_Service (78.5% -> 93.16%), and
+    Amazon_Creators_API's parsing layer (67.67% -> 93%, incl. a real
+    limited_stock classification bug found and fixed).
+  Remaining from this list: only Amazon_Creators_API's Cognito (v2.x)
+  credential flow - real but narrow gap, only matters if a user is ever
+  issued a v2.x credential; needs either a smarter token mock or a real
+  v2.x account to test against.
 
 TOTAL REQUIRED FOR PRE-PROD: 31/31 complete (100%)
 BONUS FEATURES IMPLEMENTED: 1/6 (Dashboard Widget)

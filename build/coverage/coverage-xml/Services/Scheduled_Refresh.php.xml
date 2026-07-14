@@ -1,0 +1,2268 @@
+<?xml version="1.0"?>
+<phpunit xmlns="https://schema.phpunit.de/coverage/1.0">
+  <file name="Scheduled_Refresh.php" path="/Services">
+    <totals>
+      <lines total="247" comments="92" code="155" executable="77" executed="73" percent="94.81"/>
+      <methods count="12" tested="11" percent="91.67"/>
+      <functions count="0" tested="0" percent="0"/>
+      <classes count="1" tested="0" percent="0.00"/>
+      <traits count="0" tested="0" percent="0"/>
+    </totals>
+    <class name="APT\Services\Scheduled_Refresh" start="20" executable="75" executed="73" crap="24">
+      <namespace name="APT\Services"/>
+      <method name="init" signature="init(): void" start="40" end="46" crap="2" executable="2" executed="0" coverage="0"/>
+      <method name="add_cron_schedules" signature="add_cron_schedules(array $schedules): array" start="54" end="68" crap="1" executable="9" executed="9" coverage="100"/>
+      <method name="schedule" signature="schedule(string $recurrence): void" start="75" end="86" crap="2" executable="4" executed="4" coverage="100"/>
+      <method name="unschedule" signature="unschedule(): void" start="91" end="99" crap="2" executable="4" executed="4" coverage="100"/>
+      <method name="is_scheduled" signature="is_scheduled(): bool" start="106" end="108" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="get_next_run" signature="get_next_run()" start="115" end="117" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="get_schedule" signature="get_schedule(): ?string" start="124" end="126" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="run_scheduled_refresh" signature="run_scheduled_refresh(): void" start="133" end="168" crap="2" executable="23" executed="23" coverage="100"/>
+      <method name="get_last_refresh" signature="get_last_refresh(): ?array" start="175" end="177" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="get_admin_user_id" signature="get_admin_user_id(): ?int" start="184" end="215" crap="6" executable="17" executed="17" coverage="100"/>
+      <method name="log" signature="log(string $message): void" start="222" end="226" crap="3" executable="2" executed="2" coverage="100"/>
+      <method name="get_status" signature="get_status(): array" start="233" end="245" crap="3" executable="10" executed="10" coverage="100"/>
+    </class>
+    <coverage>
+      <line nr="57">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="58">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="56">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="63">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="64">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="62">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="67">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="77">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="80">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="81">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="85">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="92">
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="93">
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="94">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="98">
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="107">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="116">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="125">
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="135">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="137">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="138">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+      </line>
+      <line nr="139">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+      </line>
+      <line nr="142">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="143">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="146">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="147">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="149">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="153">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="154">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="155">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="156">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="157">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="152">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="160">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="162">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="163">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="164">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="165">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="176">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="186">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="187">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="188">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+      </line>
+      <line nr="193">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="195">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="196">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="201">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="203">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="204">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="208">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="209">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+      </line>
+      <line nr="214">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="223">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="224">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="234">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="235">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="236">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="239">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="240">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="241">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="242">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="243">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="59">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="65">
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent"/>
+        <covered by="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="158">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="166">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="167">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="197">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="198">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="199">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="205">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="206">
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings"/>
+      </line>
+      <line nr="238">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+      <line nr="244">
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled"/>
+      </line>
+    </coverage>
+    <source>
+      <line no="1">
+        <token name="T_OPEN_TAG">&lt;?php</token>
+      </line>
+      <line no="2">
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="3">
+        <token name="T_DOC_COMMENT"> * Scheduled Refresh Service</token>
+      </line>
+      <line no="4">
+        <token name="T_DOC_COMMENT"> *</token>
+      </line>
+      <line no="5">
+        <token name="T_DOC_COMMENT"> * Handles automated price refresh via WP-Cron.</token>
+      </line>
+      <line no="6">
+        <token name="T_DOC_COMMENT"> *</token>
+      </line>
+      <line no="7">
+        <token name="T_DOC_COMMENT"> * @package AmazonPriceTracker</token>
+      </line>
+      <line no="8">
+        <token name="T_DOC_COMMENT"> */</token>
+      </line>
+      <line no="9"/>
+      <line no="10">
+        <token name="T_NAMESPACE">namespace</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_NAME_QUALIFIED">APT\Services</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="11"/>
+      <line no="12">
+        <token name="T_COMMENT">// Prevent direct access</token>
+      </line>
+      <line no="13">
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_STRING">defined</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ABSPATH'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="14">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_EXIT">exit</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="15">
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="16"/>
+      <line no="17">
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="18">
+        <token name="T_DOC_COMMENT"> * Class Scheduled_Refresh</token>
+      </line>
+      <line no="19">
+        <token name="T_DOC_COMMENT"> */</token>
+      </line>
+      <line no="20">
+        <token name="T_CLASS">class</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">Scheduled_Refresh</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="21"/>
+      <line no="22">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="23">
+        <token name="T_DOC_COMMENT">     * Cron hook name</token>
+      </line>
+      <line no="24">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="25">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONST">const</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_scheduled_price_refresh'</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="26"/>
+      <line no="27">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="28">
+        <token name="T_DOC_COMMENT">     * Option name for storing last refresh info</token>
+      </line>
+      <line no="29">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="30">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONST">const</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">LAST_REFRESH_OPTION</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_last_scheduled_refresh'</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="31"/>
+      <line no="32">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="33">
+        <token name="T_DOC_COMMENT">     * Default batch size for scheduled refresh</token>
+      </line>
+      <line no="34">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="35">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONST">const</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">DEFAULT_BATCH_SIZE</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">50</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="36"/>
+      <line no="37">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="38">
+        <token name="T_DOC_COMMENT">     * Initialize scheduled refresh</token>
+      </line>
+      <line no="39">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="40">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">init</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">void</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="41">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Register the cron action</token>
+      </line>
+      <line no="42">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">add_action</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_CLASS">class</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'run_scheduled_refresh'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="43"/>
+      <line no="44">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Register custom cron schedules</token>
+      </line>
+      <line no="45">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">add_filter</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'cron_schedules'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_CLASS">class</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'add_cron_schedules'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="46">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="47"/>
+      <line no="48">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="49">
+        <token name="T_DOC_COMMENT">     * Add custom cron schedules</token>
+      </line>
+      <line no="50">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="51">
+        <token name="T_DOC_COMMENT">     * @param array $schedules Existing schedules</token>
+      </line>
+      <line no="52">
+        <token name="T_DOC_COMMENT">     * @return array Modified schedules</token>
+      </line>
+      <line no="53">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="54">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">add_cron_schedules</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$schedules</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="55">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Every 6 hours</token>
+      </line>
+      <line no="56">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$schedules</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_six_hours'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="57">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'interval'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">6</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_MULT">*</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">HOUR_IN_SECONDS</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="58">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'display'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">__</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Every 6 Hours'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon-price-tracker'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="59">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="60"/>
+      <line no="61">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Every 12 hours</token>
+      </line>
+      <line no="62">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$schedules</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_twelve_hours'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="63">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'interval'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">12</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_MULT">*</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">HOUR_IN_SECONDS</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="64">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'display'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">__</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Every 12 Hours'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon-price-tracker'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="65">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="66"/>
+      <line no="67">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$schedules</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="68">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="69"/>
+      <line no="70">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="71">
+        <token name="T_DOC_COMMENT">     * Schedule the price refresh cron job</token>
+      </line>
+      <line no="72">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="73">
+        <token name="T_DOC_COMMENT">     * @param string $recurrence Recurrence interval (hourly, twicedaily, daily, apt_six_hours, apt_twelve_hours)</token>
+      </line>
+      <line no="74">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="75">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">schedule</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$recurrence</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'twicedaily'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">void</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="76">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Clear any existing schedule</token>
+      </line>
+      <line no="77">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">unschedule</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="78"/>
+      <line no="79">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Schedule new cron job</token>
+      </line>
+      <line no="80">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_STRING">wp_next_scheduled</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="81">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_STRING">wp_schedule_event</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">time</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$recurrence</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="82">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="83"/>
+      <line no="84">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Store the schedule setting</token>
+      </line>
+      <line no="85">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">update_option</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_refresh_schedule'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$recurrence</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="86">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="87"/>
+      <line no="88">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="89">
+        <token name="T_DOC_COMMENT">     * Unschedule the price refresh cron job</token>
+      </line>
+      <line no="90">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="91">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">unschedule</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">void</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="92">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$timestamp</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">wp_next_scheduled</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="93">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$timestamp</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="94">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_STRING">wp_unschedule_event</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$timestamp</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="95">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="96"/>
+      <line no="97">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Clear all events with this hook</token>
+      </line>
+      <line no="98">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">wp_clear_scheduled_hook</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="99">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="100"/>
+      <line no="101">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="102">
+        <token name="T_DOC_COMMENT">     * Check if scheduled refresh is active</token>
+      </line>
+      <line no="103">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="104">
+        <token name="T_DOC_COMMENT">     * @return bool</token>
+      </line>
+      <line no="105">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="106">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">is_scheduled</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">bool</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="107">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOL_CAST">(bool)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">wp_next_scheduled</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="108">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="109"/>
+      <line no="110">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="111">
+        <token name="T_DOC_COMMENT">     * Get next scheduled run time</token>
+      </line>
+      <line no="112">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="113">
+        <token name="T_DOC_COMMENT">     * @return int|false Timestamp or false if not scheduled</token>
+      </line>
+      <line no="114">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="115">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_next_run</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="116">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">wp_next_scheduled</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">CRON_HOOK</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="117">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="118"/>
+      <line no="119">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="120">
+        <token name="T_DOC_COMMENT">     * Get current schedule recurrence</token>
+      </line>
+      <line no="121">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="122">
+        <token name="T_DOC_COMMENT">     * @return string|null</token>
+      </line>
+      <line no="123">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="124">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_schedule</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="125">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_option</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_refresh_schedule'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="126">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="127"/>
+      <line no="128">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="129">
+        <token name="T_DOC_COMMENT">     * Run the scheduled price refresh</token>
+      </line>
+      <line no="130">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="131">
+        <token name="T_DOC_COMMENT">     * This is called by WP-Cron</token>
+      </line>
+      <line no="132">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="133">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">run_scheduled_refresh</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">void</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="134">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Get admin user ID for API calls (use the first admin)</token>
+      </line>
+      <line no="135">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$admin_user_id</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get_admin_user_id</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="136"/>
+      <line no="137">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_VARIABLE">$admin_user_id</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="138">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">log</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'No admin user found for scheduled refresh'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="139">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="140">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="141"/>
+      <line no="142">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$batch_size</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_INT_CAST">(int)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_option</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_refresh_batch_size'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">DEFAULT_BATCH_SIZE</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="143">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$start_time</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">microtime</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="144"/>
+      <line no="145">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Use the Product Service to refresh products</token>
+      </line>
+      <line no="146">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$service</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_NEW">new</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">Product_Service</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="147">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$service</token>
+        <token name="T_OBJECT_OPERATOR">-&gt;</token>
+        <token name="T_STRING">bulk_refresh</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$batch_size</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$admin_user_id</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="148"/>
+      <line no="149">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$duration</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">round</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">microtime</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_MINUS">-</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$start_time</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">2</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="150"/>
+      <line no="151">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Store refresh info</token>
+      </line>
+      <line no="152">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$refresh_info</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="153">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'timestamp'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">current_time</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'mysql'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="154">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'success_count'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'success_count'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="155">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'failure_count'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'failure_count'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="156">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'duration_seconds'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$duration</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="157">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'batch_size'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$batch_size</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="158">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="159"/>
+      <line no="160">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">update_option</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">LAST_REFRESH_OPTION</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$refresh_info</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="161"/>
+      <line no="162">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">log</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">sprintf</token>
+        <token name="T_OPEN_BRACKET">(</token>
+      </line>
+      <line no="163">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Scheduled refresh completed: %d success, %d failed in %.2f seconds'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="164">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'success_count'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="165">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'failure_count'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="166">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$duration</token>
+      </line>
+      <line no="167">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="168">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="169"/>
+      <line no="170">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="171">
+        <token name="T_DOC_COMMENT">     * Get last refresh info</token>
+      </line>
+      <line no="172">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="173">
+        <token name="T_DOC_COMMENT">     * @return array|null</token>
+      </line>
+      <line no="174">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="175">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_last_refresh</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="176">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_option</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">LAST_REFRESH_OPTION</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="177">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="178"/>
+      <line no="179">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="180">
+        <token name="T_DOC_COMMENT">     * Get an admin user ID for API operations</token>
+      </line>
+      <line no="181">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="182">
+        <token name="T_DOC_COMMENT">     * @return int|null</token>
+      </line>
+      <line no="183">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="184">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PRIVATE">private</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_admin_user_id</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">int</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="185">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// First check if there's a configured admin for scheduled tasks</token>
+      </line>
+      <line no="186">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$configured_admin</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_option</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_scheduled_refresh_admin_id'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="187">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$configured_admin</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOLEAN_AND">&amp;&amp;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">user_can</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$configured_admin</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'manage_options'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="188">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_INT_CAST">(int)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$configured_admin</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="189">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="190"/>
+      <line no="191">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Fall back to finding any admin with configured API settings</token>
+      </line>
+      <line no="192">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_GLOBAL">global</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$wpdb</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="193">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$settings_table</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$wpdb</token>
+        <token name="T_OBJECT_OPERATOR">-&gt;</token>
+        <token name="T_STRING">prefix</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOT">.</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'apt_user_settings'</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="194"/>
+      <line no="195">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$admin_ids</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_users</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="196">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'role'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'administrator'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="197">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'fields'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ID'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="198">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'number'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">10</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="199">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="200"/>
+      <line no="201">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_FOREACH">foreach</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$admin_ids</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_AS">as</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$admin_id</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="202">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_COMMENT">// Check if this admin has API settings configured</token>
+      </line>
+      <line no="203">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$has_settings</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$wpdb</token>
+        <token name="T_OBJECT_OPERATOR">-&gt;</token>
+        <token name="T_STRING">get_var</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$wpdb</token>
+        <token name="T_OBJECT_OPERATOR">-&gt;</token>
+        <token name="T_STRING">prepare</token>
+        <token name="T_OPEN_BRACKET">(</token>
+      </line>
+      <line no="204">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_DOUBLE_QUOTES">"</token>
+        <token name="T_ENCAPSED_AND_WHITESPACE">SELECT COUNT(*) FROM </token>
+        <token name="T_CURLY_OPEN">{</token>
+        <token name="T_VARIABLE">$settings_table</token>
+        <token name="T_CLOSE_CURLY">}</token>
+        <token name="T_ENCAPSED_AND_WHITESPACE"> WHERE user_id = %d</token>
+        <token name="T_DOUBLE_QUOTES">"</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="205">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_VARIABLE">$admin_id</token>
+      </line>
+      <line no="206">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="207"/>
+      <line no="208">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$has_settings</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="209">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_INT_CAST">(int)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$admin_id</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="210">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="211">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="212"/>
+      <line no="213">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_COMMENT">// Return first admin if none have settings (will fail gracefully)</token>
+      </line>
+      <line no="214">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_EMPTY">empty</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$admin_ids</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_INT_CAST">(int)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$admin_ids</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_LNUMBER">0</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="215">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="216"/>
+      <line no="217">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="218">
+        <token name="T_DOC_COMMENT">     * Log a message (uses error_log in development)</token>
+      </line>
+      <line no="219">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="220">
+        <token name="T_DOC_COMMENT">     * @param string $message Message to log</token>
+      </line>
+      <line no="221">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="222">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PRIVATE">private</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">log</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$message</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">void</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="223">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">defined</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'WP_DEBUG'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOLEAN_AND">&amp;&amp;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">WP_DEBUG</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="224">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_STRING">error_log</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'[Amazon Price Tracker] '</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOT">.</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$message</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="225">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="226">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="227"/>
+      <line no="228">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="229">
+        <token name="T_DOC_COMMENT">     * Get refresh status for admin display</token>
+      </line>
+      <line no="230">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="231">
+        <token name="T_DOC_COMMENT">     * @return array</token>
+      </line>
+      <line no="232">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="233">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_status</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="234">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$next_run</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get_next_run</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="235">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$last_refresh</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get_last_refresh</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="236">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$schedule</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get_schedule</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="237"/>
+      <line no="238">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="239">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'is_scheduled'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">is_scheduled</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="240">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'schedule'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$schedule</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="241">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'next_run'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$next_run</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">gmdate</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'c'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$next_run</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="242">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'next_run_human'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$next_run</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">human_time_diff</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$next_run</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="243">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'last_refresh'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$last_refresh</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="244">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="245">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="246">
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="247"/>
+    </source>
+  </file>
+</phpunit>

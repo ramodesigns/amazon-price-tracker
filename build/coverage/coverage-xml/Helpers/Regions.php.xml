@@ -1,0 +1,1816 @@
+<?xml version="1.0"?>
+<phpunit xmlns="https://schema.phpunit.de/coverage/1.0">
+  <file name="Regions.php" path="/Helpers">
+    <totals>
+      <lines total="207" comments="63" code="144" executable="27" executed="26" percent="96.30"/>
+      <methods count="8" tested="8" percent="100.00"/>
+      <functions count="0" tested="0" percent="0"/>
+      <classes count="1" tested="1" percent="100.00"/>
+      <traits count="0" tested="0" percent="0"/>
+    </totals>
+    <class name="APT\Helpers\Regions" start="20" executable="25" executed="25" crap="13">
+      <namespace name="APT\Helpers"/>
+      <method name="get_all" signature="get_all(): array" start="107" end="109" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="get" signature="get(string $code): ?array" start="117" end="120" crap="1" executable="2" executed="2" coverage="100"/>
+      <method name="is_valid" signature="is_valid(string $code): bool" start="128" end="130" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="get_codes" signature="get_codes(): array" start="137" end="139" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="get_currency" signature="get_currency(string $code): ?string" start="147" end="150" crap="2" executable="2" executed="2" coverage="100"/>
+      <method name="get_marketplace_domain" signature="get_marketplace_domain(string $code): ?string" start="158" end="161" crap="2" executable="2" executed="2" coverage="100"/>
+      <method name="get_product_url" signature="get_product_url(string $asin, string $region_code, ?string $partner_tag): ?string" start="171" end="185" crap="3" executable="7" executed="7" coverage="100"/>
+      <method name="get_for_api" signature="get_for_api(): array" start="192" end="205" crap="2" executable="9" executed="9" coverage="100"/>
+    </class>
+    <coverage>
+      <line nr="13">
+        <covered by="Test_Regions::test_get_all_returns_all_regions"/>
+      </line>
+      <line nr="108">
+        <covered by="Test_Regions::test_get_all_returns_all_regions"/>
+        <covered by="Test_Regions::test_get_all_region_entries_have_expected_fields"/>
+      </line>
+      <line nr="118">
+        <covered by="Test_Regions::test_get_with_valid_code"/>
+        <covered by="Test_Regions::test_get_is_case_insensitive"/>
+        <covered by="Test_Regions::test_get_with_invalid_code_returns_null"/>
+        <covered by="Test_Regions::test_get_currency"/>
+        <covered by="Test_Regions::test_get_marketplace_domain"/>
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_maps_every_iteminfo_section_into_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_of_a_minimal_item_drops_null_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_reads_price_rrp_and_in_stock_availability"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_nulls_the_price_when_out_of_stock"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_detects_limited_stock_from_the_message"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_maps_preorder_and_unknown_types"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_connected_when_amazon_reachable"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_error_when_amazon_unreachable"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_keeps_existing_data_on_api_error"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_updates_facts_and_appends_a_price_record"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_regions_without_a_partner_tag_and_refreshes_the_rest"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_items_missing_from_the_amazon_response"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_scopes_to_the_regions_filter"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_splits_a_region_into_batches_of_ten"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_clears_the_stats_cache_only_on_success"/>
+        <covered by="Test_Product_Service_Component::test_connection_succeeds_via_the_first_configured_region_by_default"/>
+        <covered by="Test_Product_Service_Component::test_connection_reports_error_when_the_api_call_fails"/>
+        <covered by="Test_Product_Service_Component::test_env_credentials_stand_in_for_a_missing_settings_row"/>
+        <covered by="Test_Product_Service_Component::test_create_product_rolls_back_on_a_duplicate_row"/>
+        <covered by="Test_Product_Service_Component::test_reactivate_product_is_a_no_op_when_the_amazon_fetch_fails"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_succeeds_and_records_a_new_price"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_returns_amazon_api_error_and_leaves_existing_price_unchanged"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_updates_active_products_and_reports_success"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_excludes_inactive_products"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_filters_by_product_ids"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_reports_mixed_success_and_failure"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_valid_when_amazon_reachable"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_invalid_when_amazon_unreachable"/>
+      </line>
+      <line nr="119">
+        <covered by="Test_Regions::test_get_with_valid_code"/>
+        <covered by="Test_Regions::test_get_is_case_insensitive"/>
+        <covered by="Test_Regions::test_get_with_invalid_code_returns_null"/>
+        <covered by="Test_Regions::test_get_currency"/>
+        <covered by="Test_Regions::test_get_marketplace_domain"/>
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_maps_every_iteminfo_section_into_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_of_a_minimal_item_drops_null_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_reads_price_rrp_and_in_stock_availability"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_nulls_the_price_when_out_of_stock"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_detects_limited_stock_from_the_message"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_maps_preorder_and_unknown_types"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_connected_when_amazon_reachable"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_error_when_amazon_unreachable"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_keeps_existing_data_on_api_error"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_updates_facts_and_appends_a_price_record"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_regions_without_a_partner_tag_and_refreshes_the_rest"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_items_missing_from_the_amazon_response"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_scopes_to_the_regions_filter"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_splits_a_region_into_batches_of_ten"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_clears_the_stats_cache_only_on_success"/>
+        <covered by="Test_Product_Service_Component::test_connection_succeeds_via_the_first_configured_region_by_default"/>
+        <covered by="Test_Product_Service_Component::test_connection_reports_error_when_the_api_call_fails"/>
+        <covered by="Test_Product_Service_Component::test_env_credentials_stand_in_for_a_missing_settings_row"/>
+        <covered by="Test_Product_Service_Component::test_create_product_rolls_back_on_a_duplicate_row"/>
+        <covered by="Test_Product_Service_Component::test_reactivate_product_is_a_no_op_when_the_amazon_fetch_fails"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_succeeds_and_records_a_new_price"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_returns_amazon_api_error_and_leaves_existing_price_unchanged"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_updates_active_products_and_reports_success"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_excludes_inactive_products"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_filters_by_product_ids"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_reports_mixed_success_and_failure"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_valid_when_amazon_reachable"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_invalid_when_amazon_unreachable"/>
+      </line>
+      <line nr="129">
+        <covered by="Test_Regions::test_is_valid"/>
+        <covered by="Test_Validation::test_is_valid_region_with_valid_regions"/>
+        <covered by="Test_Validation::test_is_valid_region_with_invalid_regions"/>
+        <covered by="Test_Validation::test_is_valid_region_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_succeeds_and_normalizes_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_rejects_duplicate"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_soft_deletes_matching_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_not_found_when_no_existing_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_unconfigured"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_region_not_configured"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_removes_region_and_returns_no_content"/>
+      </line>
+      <line nr="138">
+        <covered by="Test_Regions::test_get_codes"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_creates_new_settings_row"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_initial_setup_requires_full_creators_credential_set"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_region_code_in_partner_tags"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_empty_partner_tag_value"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_merges_partner_tags_rather_than_replacing"/>
+      </line>
+      <line nr="148">
+        <covered by="Test_Regions::test_get_currency"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="149">
+        <covered by="Test_Regions::test_get_currency"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="159">
+        <covered by="Test_Regions::test_get_marketplace_domain"/>
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_maps_every_iteminfo_section_into_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_of_a_minimal_item_drops_null_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_reads_price_rrp_and_in_stock_availability"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_nulls_the_price_when_out_of_stock"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_detects_limited_stock_from_the_message"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_maps_preorder_and_unknown_types"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_connected_when_amazon_reachable"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_error_when_amazon_unreachable"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_keeps_existing_data_on_api_error"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_updates_facts_and_appends_a_price_record"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_regions_without_a_partner_tag_and_refreshes_the_rest"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_items_missing_from_the_amazon_response"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_scopes_to_the_regions_filter"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_splits_a_region_into_batches_of_ten"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_clears_the_stats_cache_only_on_success"/>
+        <covered by="Test_Product_Service_Component::test_connection_succeeds_via_the_first_configured_region_by_default"/>
+        <covered by="Test_Product_Service_Component::test_connection_reports_error_when_the_api_call_fails"/>
+        <covered by="Test_Product_Service_Component::test_env_credentials_stand_in_for_a_missing_settings_row"/>
+        <covered by="Test_Product_Service_Component::test_create_product_rolls_back_on_a_duplicate_row"/>
+        <covered by="Test_Product_Service_Component::test_reactivate_product_is_a_no_op_when_the_amazon_fetch_fails"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_succeeds_and_records_a_new_price"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_returns_amazon_api_error_and_leaves_existing_price_unchanged"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_updates_active_products_and_reports_success"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_excludes_inactive_products"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_filters_by_product_ids"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_reports_mixed_success_and_failure"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_valid_when_amazon_reachable"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_invalid_when_amazon_unreachable"/>
+      </line>
+      <line nr="160">
+        <covered by="Test_Regions::test_get_marketplace_domain"/>
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_maps_every_iteminfo_section_into_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_item_of_a_minimal_item_drops_null_facts"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_reads_price_rrp_and_in_stock_availability"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_nulls_the_price_when_out_of_stock"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_detects_limited_stock_from_the_message"/>
+        <covered by="Test_Creators_API_Parsing_Component::test_parse_pricing_maps_preorder_and_unknown_types"/>
+        <covered by="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_connected_when_amazon_reachable"/>
+        <covered by="Test_Health_Controller_Component::test_get_amazon_health_reports_error_when_amazon_unreachable"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_keeps_existing_data_on_api_error"/>
+        <covered by="Test_Product_Service_Component::test_refresh_product_updates_facts_and_appends_a_price_record"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_regions_without_a_partner_tag_and_refreshes_the_rest"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_fails_items_missing_from_the_amazon_response"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_scopes_to_the_regions_filter"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_splits_a_region_into_batches_of_ten"/>
+        <covered by="Test_Product_Service_Component::test_bulk_refresh_clears_the_stats_cache_only_on_success"/>
+        <covered by="Test_Product_Service_Component::test_connection_succeeds_via_the_first_configured_region_by_default"/>
+        <covered by="Test_Product_Service_Component::test_connection_reports_error_when_the_api_call_fails"/>
+        <covered by="Test_Product_Service_Component::test_env_credentials_stand_in_for_a_missing_settings_row"/>
+        <covered by="Test_Product_Service_Component::test_create_product_rolls_back_on_a_duplicate_row"/>
+        <covered by="Test_Product_Service_Component::test_reactivate_product_is_a_no_op_when_the_amazon_fetch_fails"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_succeeds_and_records_a_new_price"/>
+        <covered by="Test_Products_Controller_Component::test_refresh_item_returns_amazon_api_error_and_leaves_existing_price_unchanged"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_updates_active_products_and_reports_success"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_excludes_inactive_products"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_filters_by_product_ids"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_refresh_reports_mixed_success_and_failure"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin"/>
+        <covered by="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_valid_when_amazon_reachable"/>
+        <covered by="Test_Settings_Controller_Component::test_validate_credentials_invalid_when_amazon_unreachable"/>
+      </line>
+      <line nr="172">
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+      </line>
+      <line nr="174">
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+      </line>
+      <line nr="175">
+        <covered by="Test_Regions::test_get_product_url_with_invalid_region_returns_null"/>
+      </line>
+      <line nr="178">
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+      </line>
+      <line nr="180">
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+      </line>
+      <line nr="181">
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+      </line>
+      <line nr="184">
+        <covered by="Test_Regions::test_get_product_url_without_partner_tag"/>
+        <covered by="Test_Regions::test_get_product_url_with_partner_tag"/>
+      </line>
+      <line nr="193">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="195">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="197">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="198">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="199">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="200">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="196">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="204">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+      <line nr="201">
+        <covered by="Test_Regions::test_get_for_api"/>
+        <covered by="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated"/>
+      </line>
+    </coverage>
+    <source>
+      <line no="1">
+        <token name="T_OPEN_TAG">&lt;?php</token>
+      </line>
+      <line no="2">
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="3">
+        <token name="T_DOC_COMMENT"> * Regions Helper</token>
+      </line>
+      <line no="4">
+        <token name="T_DOC_COMMENT"> *</token>
+      </line>
+      <line no="5">
+        <token name="T_DOC_COMMENT"> * Manages Amazon marketplace region data.</token>
+      </line>
+      <line no="6">
+        <token name="T_DOC_COMMENT"> *</token>
+      </line>
+      <line no="7">
+        <token name="T_DOC_COMMENT"> * @package AmazonPriceTracker</token>
+      </line>
+      <line no="8">
+        <token name="T_DOC_COMMENT"> */</token>
+      </line>
+      <line no="9"/>
+      <line no="10">
+        <token name="T_NAMESPACE">namespace</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_NAME_QUALIFIED">APT\Helpers</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="11"/>
+      <line no="12">
+        <token name="T_COMMENT">// Prevent direct access</token>
+      </line>
+      <line no="13">
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_STRING">defined</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ABSPATH'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="14">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_EXIT">exit</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="15">
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="16"/>
+      <line no="17">
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="18">
+        <token name="T_DOC_COMMENT"> * Class Regions</token>
+      </line>
+      <line no="19">
+        <token name="T_DOC_COMMENT"> */</token>
+      </line>
+      <line no="20">
+        <token name="T_CLASS">class</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">Regions</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="21"/>
+      <line no="22">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="23">
+        <token name="T_DOC_COMMENT">     * Supported Amazon marketplace regions</token>
+      </line>
+      <line no="24">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="25">
+        <token name="T_DOC_COMMENT">     * @var array</token>
+      </line>
+      <line no="26">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="27">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PRIVATE">private</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="28">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'US'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="29">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'US'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="30">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'United States'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="31">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.com'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="32">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'USD'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="33">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="34">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'CA'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="35">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'CA'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="36">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Canada'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="37">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.ca'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="38">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'CAD'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="39">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="40">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'UK'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="41">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'UK'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="42">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'United Kingdom'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="43">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.co.uk'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="44">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'GBP'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="45">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="46">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'DE'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="47">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'DE'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="48">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Germany'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="49">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.de'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="50">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'EUR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="51">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="52">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'FR'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="53">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'FR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="54">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'France'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="55">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.fr'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="56">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'EUR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="57">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="58">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ES'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="59">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ES'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="60">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Spain'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="61">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.es'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="62">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'EUR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="63">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="64">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'IT'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="65">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'IT'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="66">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Italy'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="67">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.it'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="68">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'EUR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="69">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="70">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'AU'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="71">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'AU'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="72">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Australia'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="73">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.com.au'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="74">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'AUD'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="75">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="76">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'JP'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="77">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'JP'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="78">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Japan'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="79">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.co.jp'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="80">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'JPY'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="81">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="82">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'IN'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="83">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'IN'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="84">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'India'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="85">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.in'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="86">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'INR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="87">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="88">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'MX'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="89">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'MX'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="90">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Mexico'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="91">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.com.mx'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="92">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'MXN'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="93">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="94">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'BR'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="95">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'BR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="96">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Brazil'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="97">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'amazon.com.br'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="98">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'BRL'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="99">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="100">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="101"/>
+      <line no="102">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="103">
+        <token name="T_DOC_COMMENT">     * Get all regions</token>
+      </line>
+      <line no="104">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="105">
+        <token name="T_DOC_COMMENT">     * @return array</token>
+      </line>
+      <line no="106">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="107">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_all</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="108">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="109">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="110"/>
+      <line no="111">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="112">
+        <token name="T_DOC_COMMENT">     * Get region by code</token>
+      </line>
+      <line no="113">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="114">
+        <token name="T_DOC_COMMENT">     * @param string $code Region code (e.g., 'US', 'UK')</token>
+      </line>
+      <line no="115">
+        <token name="T_DOC_COMMENT">     * @return array|null Region data or null if not found</token>
+      </line>
+      <line no="116">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="117">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="118">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtoupper</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="119">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COALESCE">??</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="120">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="121"/>
+      <line no="122">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="123">
+        <token name="T_DOC_COMMENT">     * Check if region code is valid</token>
+      </line>
+      <line no="124">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="125">
+        <token name="T_DOC_COMMENT">     * @param string $code Region code</token>
+      </line>
+      <line no="126">
+        <token name="T_DOC_COMMENT">     * @return bool</token>
+      </line>
+      <line no="127">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="128">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">is_valid</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">bool</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="129">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ISSET">isset</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_STRING">strtoupper</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="130">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="131"/>
+      <line no="132">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="133">
+        <token name="T_DOC_COMMENT">     * Get all region codes</token>
+      </line>
+      <line no="134">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="135">
+        <token name="T_DOC_COMMENT">     * @return array</token>
+      </line>
+      <line no="136">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="137">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_codes</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="138">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">array_keys</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="139">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="140"/>
+      <line no="141">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="142">
+        <token name="T_DOC_COMMENT">     * Get currency for region</token>
+      </line>
+      <line no="143">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="144">
+        <token name="T_DOC_COMMENT">     * @param string $code Region code</token>
+      </line>
+      <line no="145">
+        <token name="T_DOC_COMMENT">     * @return string|null Currency code or null if region not found</token>
+      </line>
+      <line no="146">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="147">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_currency</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="148">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="149">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="150">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="151"/>
+      <line no="152">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="153">
+        <token name="T_DOC_COMMENT">     * Get marketplace domain for region</token>
+      </line>
+      <line no="154">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="155">
+        <token name="T_DOC_COMMENT">     * @param string $code Region code</token>
+      </line>
+      <line no="156">
+        <token name="T_DOC_COMMENT">     * @return string|null Domain or null if region not found</token>
+      </line>
+      <line no="157">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="158">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_marketplace_domain</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="159">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="160">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="161">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="162"/>
+      <line no="163">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="164">
+        <token name="T_DOC_COMMENT">     * Get product URL for ASIN and region</token>
+      </line>
+      <line no="165">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="166">
+        <token name="T_DOC_COMMENT">     * @param string $asin Product ASIN</token>
+      </line>
+      <line no="167">
+        <token name="T_DOC_COMMENT">     * @param string $region_code Region code</token>
+      </line>
+      <line no="168">
+        <token name="T_DOC_COMMENT">     * @param string|null $partner_tag Optional partner tag</token>
+      </line>
+      <line no="169">
+        <token name="T_DOC_COMMENT">     * @return string|null Product URL or null if region not found</token>
+      </line>
+      <line no="170">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="171">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_product_url</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$asin</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region_code</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$partner_tag</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="172">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$domain</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">get_marketplace_domain</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$region_code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="173"/>
+      <line no="174">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_VARIABLE">$domain</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="175">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="176">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="177"/>
+      <line no="178">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$url</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_QUOTES">"</token>
+        <token name="T_ENCAPSED_AND_WHITESPACE">https://www.</token>
+        <token name="T_CURLY_OPEN">{</token>
+        <token name="T_VARIABLE">$domain</token>
+        <token name="T_CLOSE_CURLY">}</token>
+        <token name="T_ENCAPSED_AND_WHITESPACE">/dp/</token>
+        <token name="T_CURLY_OPEN">{</token>
+        <token name="T_VARIABLE">$asin</token>
+        <token name="T_CLOSE_CURLY">}</token>
+        <token name="T_DOUBLE_QUOTES">"</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="179"/>
+      <line no="180">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$partner_tag</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="181">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$url</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONCAT_EQUAL">.=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_QUOTES">"</token>
+        <token name="T_ENCAPSED_AND_WHITESPACE">?tag=</token>
+        <token name="T_CURLY_OPEN">{</token>
+        <token name="T_VARIABLE">$partner_tag</token>
+        <token name="T_CLOSE_CURLY">}</token>
+        <token name="T_DOUBLE_QUOTES">"</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="182">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="183"/>
+      <line no="184">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$url</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="185">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="186"/>
+      <line no="187">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="188">
+        <token name="T_DOC_COMMENT">     * Get regions formatted for API response</token>
+      </line>
+      <line no="189">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="190">
+        <token name="T_DOC_COMMENT">     * @return array</token>
+      </line>
+      <line no="191">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="192">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">get_for_api</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="193">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="194"/>
+      <line no="195">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_FOREACH">foreach</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_AS">as</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="196">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="197">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="198">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'name'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="199">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'marketplace_domain'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="200">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'currency'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="201">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="202">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="203"/>
+      <line no="204">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$result</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="205">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="206">
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="207"/>
+    </source>
+  </file>
+</phpunit>

@@ -1,8 +1,13 @@
 {
     "$schema": "vendor/infection/infection/resources/schema.json",
+    // Loaded by Infection's own process so plugin classes are reflectable
+    // outside WordPress - see the file's docblock.
+    "bootstrap": "tests/infection-bootstrap.php",
     "source": {
         "directories": [
-            "includes/Helpers"
+            "includes/Helpers",
+            "includes/Services",
+            "includes/API/Controllers"
         ]
     },
     "logs": {
@@ -10,8 +15,17 @@
         "summary": "infection-summary.log"
     },
     "mutators": {
-        "@default": true
+        "@default": true,
+        // The bootstrap above makes plugin classes reflectable, but these
+        // two stay off anyway: narrowing a method's visibility is the
+        // lowest-signal mutation Infection offers, and at ~1 DB-bound
+        // second per mutant here they aren't worth the runtime.
+        "PublicVisibility": false,
+        "ProtectedVisibility": false
     },
     "testFramework": "phpunit",
-    "testFrameworkOptions": "--testsuite unit"
+    // Component tests share one MySQL test DB, and several wipe tables or
+    // COMMIT past the test transaction - parallel mutant processes would
+    // interfere with each other, so keep --threads=1 when running this.
+    "testFrameworkOptions": "--testsuite unit,component"
 }

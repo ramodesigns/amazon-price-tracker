@@ -1,0 +1,2336 @@
+<?xml version="1.0"?>
+<phpunit xmlns="https://schema.phpunit.de/coverage/1.0">
+  <file name="Validation.php" path="/Helpers">
+    <totals>
+      <lines total="251" comments="119" code="132" executable="57" executed="56" percent="98.25"/>
+      <methods count="17" tested="17" percent="100.00"/>
+      <functions count="0" tested="0" percent="0"/>
+      <classes count="1" tested="1" percent="100.00"/>
+      <traits count="0" tested="0" percent="0"/>
+    </totals>
+    <class name="APT\Helpers\Validation" start="20" executable="55" executed="55" crap="33">
+      <namespace name="APT\Helpers"/>
+      <method name="is_valid_asin" signature="is_valid_asin(string $asin): bool" start="30" end="32" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="normalize_asin" signature="normalize_asin(string $asin): string" start="40" end="42" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="is_valid_region" signature="is_valid_region(string $region): bool" start="50" end="52" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="normalize_region" signature="normalize_region(string $region): string" start="60" end="62" crap="1" executable="1" executed="1" coverage="100"/>
+      <method name="validate_pagination" signature="validate_pagination(int $page, int $per_page, int $max_per_page): array" start="72" end="77" crap="1" executable="4" executed="4" coverage="100"/>
+      <method name="validate_sort_order" signature="validate_sort_order(string $order): string" start="85" end="88" crap="2" executable="2" executed="2" coverage="100"/>
+      <method name="validate_availability" signature="validate_availability(string $status): ?string" start="96" end="100" crap="2" executable="3" executed="3" coverage="100"/>
+      <method name="validate_aggregation" signature="validate_aggregation(string $type): string" start="108" end="112" crap="2" executable="3" executed="3" coverage="100"/>
+      <method name="validate_product_sort_field" signature="validate_product_sort_field(string $field): string" start="120" end="124" crap="2" executable="3" executed="3" coverage="100"/>
+      <method name="validate_search_query" signature="validate_search_query(string $query, int $min_length): ?string" start="133" end="136" crap="2" executable="2" executed="2" coverage="100"/>
+      <method name="validate_datetime" signature="validate_datetime(string $datetime): ?string" start="144" end="152" crap="2" executable="4" executed="4" coverage="100"/>
+      <method name="validate_price" signature="validate_price($price): ?float" start="160" end="167" crap="3" executable="4" executed="4" coverage="100"/>
+      <method name="validate_bool" signature="validate_bool($value): bool" start="175" end="186" crap="3" executable="6" executed="6" coverage="100"/>
+      <method name="validate_region_list" signature="validate_region_list(string $regions): array" start="194" end="206" crap="4" executable="7" executed="7" coverage="100"/>
+      <method name="validate_category" signature="validate_category(?string $category): ?string" start="214" end="221" crap="4" executable="4" executed="4" coverage="100"/>
+      <method name="build_validation_error" signature="build_validation_error(array $errors): array" start="229" end="235" crap="1" executable="5" executed="5" coverage="100"/>
+      <method name="add_field_error" signature="add_field_error(array $errors, string $field, string $message): void" start="244" end="249" crap="1" executable="4" executed="4" coverage="100"/>
+    </class>
+    <coverage>
+      <line nr="13">
+        <covered by="Test_Validation::test_is_valid_asin_with_valid_asins"/>
+      </line>
+      <line nr="31">
+        <covered by="Test_Validation::test_is_valid_asin_with_valid_asins"/>
+        <covered by="Test_Validation::test_is_valid_asin_with_invalid_asins"/>
+        <covered by="Test_Validation::test_is_valid_asin_is_case_insensitive"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_succeeds_and_normalizes_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_rejects_duplicate"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_soft_deletes_matching_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_not_found_when_no_existing_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+      </line>
+      <line nr="41">
+        <covered by="Test_Validation::test_normalize_asin"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_search"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_succeeds_and_normalizes_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_rejects_duplicate"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_soft_deletes_matching_active_product"/>
+        <covered by="Test_Blacklist_Controller_Component::test_check_blacklist_returns_false_when_not_blacklisted"/>
+        <covered by="Test_Blacklist_Controller_Component::test_check_blacklist_returns_true_with_entry_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_not_found_when_no_existing_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_returns_all_regions_for_that_asin"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_excludes_inactive_products"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_region_returns_single_matching_product"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_region_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+      </line>
+      <line nr="51">
+        <covered by="Test_Validation::test_is_valid_region_with_valid_regions"/>
+        <covered by="Test_Validation::test_is_valid_region_with_invalid_regions"/>
+        <covered by="Test_Validation::test_is_valid_region_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_succeeds_and_normalizes_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_rejects_duplicate"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_soft_deletes_matching_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_not_found_when_no_existing_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_unconfigured"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_region_not_configured"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_removes_region_and_returns_no_content"/>
+      </line>
+      <line nr="61">
+        <covered by="Test_Validation::test_normalize_region"/>
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_succeeds_and_normalizes_asin_and_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_rejects_duplicate"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_soft_deletes_matching_active_product"/>
+        <covered by="Test_Blacklist_Controller_Component::test_check_blacklist_returns_false_when_not_blacklisted"/>
+        <covered by="Test_Blacklist_Controller_Component::test_check_blacklist_returns_true_with_entry_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product"/>
+        <covered by="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_not_found_when_no_existing_product"/>
+        <covered by="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_region_returns_single_matching_product"/>
+        <covered by="Test_Products_Controller_Component::test_get_by_asin_region_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request"/>
+        <covered by="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit"/>
+        <covered by="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_unconfigured"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_region_not_configured"/>
+        <covered by="Test_Settings_Controller_Component::test_delete_partner_tag_removes_region_and_returns_no_content"/>
+      </line>
+      <line nr="74">
+        <covered by="Test_Validation::test_validate_pagination_within_bounds"/>
+        <covered by="Test_Validation::test_validate_pagination_defaults"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_above_max"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_against_default_max"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_returns_paginated_entries"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_search"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="75">
+        <covered by="Test_Validation::test_validate_pagination_within_bounds"/>
+        <covered by="Test_Validation::test_validate_pagination_defaults"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_above_max"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_against_default_max"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_returns_paginated_entries"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_search"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="86">
+        <covered by="Test_Validation::test_validate_sort_order"/>
+        <covered by="Test_Validation::test_validate_sort_order_trims_whitespace"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="87">
+        <covered by="Test_Validation::test_validate_sort_order"/>
+        <covered by="Test_Validation::test_validate_sort_order_trims_whitespace"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="97">
+        <covered by="Test_Validation::test_validate_availability_with_valid_statuses"/>
+        <covered by="Test_Validation::test_validate_availability_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_availability_with_invalid_status_returns_null"/>
+      </line>
+      <line nr="98">
+        <covered by="Test_Validation::test_validate_availability_with_valid_statuses"/>
+        <covered by="Test_Validation::test_validate_availability_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_availability_with_invalid_status_returns_null"/>
+      </line>
+      <line nr="99">
+        <covered by="Test_Validation::test_validate_availability_with_valid_statuses"/>
+        <covered by="Test_Validation::test_validate_availability_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_availability_with_invalid_status_returns_null"/>
+      </line>
+      <line nr="109">
+        <covered by="Test_Validation::test_validate_aggregation"/>
+        <covered by="Test_Validation::test_validate_aggregation_trims_and_lowercases"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="110">
+        <covered by="Test_Validation::test_validate_aggregation"/>
+        <covered by="Test_Validation::test_validate_aggregation_trims_and_lowercases"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="111">
+        <covered by="Test_Validation::test_validate_aggregation"/>
+        <covered by="Test_Validation::test_validate_aggregation_trims_and_lowercases"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="121">
+        <covered by="Test_Validation::test_validate_product_sort_field_with_valid_fields"/>
+        <covered by="Test_Validation::test_validate_product_sort_field_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_product_sort_field_defaults_to_created_at"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+      </line>
+      <line nr="122">
+        <covered by="Test_Validation::test_validate_product_sort_field_with_valid_fields"/>
+        <covered by="Test_Validation::test_validate_product_sort_field_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_product_sort_field_defaults_to_created_at"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+      </line>
+      <line nr="123">
+        <covered by="Test_Validation::test_validate_product_sort_field_with_valid_fields"/>
+        <covered by="Test_Validation::test_validate_product_sort_field_is_case_insensitive"/>
+        <covered by="Test_Validation::test_validate_product_sort_field_defaults_to_created_at"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+      </line>
+      <line nr="134">
+        <covered by="Test_Validation::test_validate_search_query_with_valid_query"/>
+        <covered by="Test_Validation::test_validate_search_query_trims_whitespace"/>
+        <covered by="Test_Validation::test_validate_search_query_too_short_returns_null"/>
+        <covered by="Test_Validation::test_validate_search_query_at_default_min_length"/>
+        <covered by="Test_Validation::test_validate_search_query_respects_custom_min_length"/>
+      </line>
+      <line nr="135">
+        <covered by="Test_Validation::test_validate_search_query_with_valid_query"/>
+        <covered by="Test_Validation::test_validate_search_query_trims_whitespace"/>
+        <covered by="Test_Validation::test_validate_search_query_too_short_returns_null"/>
+        <covered by="Test_Validation::test_validate_search_query_at_default_min_length"/>
+        <covered by="Test_Validation::test_validate_search_query_respects_custom_min_length"/>
+      </line>
+      <line nr="145">
+        <covered by="Test_Validation::test_validate_datetime"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+      </line>
+      <line nr="147">
+        <covered by="Test_Validation::test_validate_datetime"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+      </line>
+      <line nr="148">
+        <covered by="Test_Validation::test_validate_datetime"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+      </line>
+      <line nr="151">
+        <covered by="Test_Validation::test_validate_datetime"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+      </line>
+      <line nr="161">
+        <covered by="Test_Validation::test_validate_price_with_valid_values"/>
+        <covered by="Test_Validation::test_validate_price_rounds_to_two_decimals"/>
+        <covered by="Test_Validation::test_validate_price_with_negative_value_returns_null"/>
+        <covered by="Test_Validation::test_validate_price_with_non_numeric_value_returns_null"/>
+      </line>
+      <line nr="162">
+        <covered by="Test_Validation::test_validate_price_with_non_numeric_value_returns_null"/>
+      </line>
+      <line nr="165">
+        <covered by="Test_Validation::test_validate_price_with_valid_values"/>
+        <covered by="Test_Validation::test_validate_price_rounds_to_two_decimals"/>
+        <covered by="Test_Validation::test_validate_price_with_negative_value_returns_null"/>
+      </line>
+      <line nr="166">
+        <covered by="Test_Validation::test_validate_price_with_valid_values"/>
+        <covered by="Test_Validation::test_validate_price_rounds_to_two_decimals"/>
+        <covered by="Test_Validation::test_validate_price_with_negative_value_returns_null"/>
+      </line>
+      <line nr="176">
+        <covered by="Test_Validation::test_validate_bool"/>
+        <covered by="Test_Validation::test_validate_bool_trims_and_lowercases_strings"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_delete_item_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_delete_item_soft_deletes_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_delete_item_force_hard_deletes_product_and_price_history"/>
+      </line>
+      <line nr="177">
+        <covered by="Test_Validation::test_validate_bool"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_delete_item_not_found"/>
+        <covered by="Test_Products_Controller_Component::test_delete_item_soft_deletes_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_delete_item_force_hard_deletes_product_and_price_history"/>
+      </line>
+      <line nr="180">
+        <covered by="Test_Validation::test_validate_bool"/>
+        <covered by="Test_Validation::test_validate_bool_trims_and_lowercases_strings"/>
+      </line>
+      <line nr="181">
+        <covered by="Test_Validation::test_validate_bool"/>
+        <covered by="Test_Validation::test_validate_bool_trims_and_lowercases_strings"/>
+      </line>
+      <line nr="182">
+        <covered by="Test_Validation::test_validate_bool"/>
+        <covered by="Test_Validation::test_validate_bool_trims_and_lowercases_strings"/>
+      </line>
+      <line nr="185">
+        <covered by="Test_Validation::test_validate_bool"/>
+      </line>
+      <line nr="195">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="196">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="198">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="199">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="200">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="201">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="205">
+        <covered by="Test_Validation::test_validate_region_list"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+      </line>
+      <line nr="215">
+        <covered by="Test_Validation::test_validate_category"/>
+        <covered by="Test_Validation::test_validate_category_truncates_long_values"/>
+        <covered by="Test_Products_Controller_Component::test_update_category_sets_new_category"/>
+        <covered by="Test_Products_Controller_Component::test_update_category_truncates_overly_long_value"/>
+      </line>
+      <line nr="216">
+        <covered by="Test_Validation::test_validate_category"/>
+      </line>
+      <line nr="219">
+        <covered by="Test_Validation::test_validate_category"/>
+        <covered by="Test_Validation::test_validate_category_truncates_long_values"/>
+        <covered by="Test_Products_Controller_Component::test_update_category_sets_new_category"/>
+        <covered by="Test_Products_Controller_Component::test_update_category_truncates_overly_long_value"/>
+      </line>
+      <line nr="220">
+        <covered by="Test_Validation::test_validate_category"/>
+        <covered by="Test_Validation::test_validate_category_truncates_long_values"/>
+        <covered by="Test_Products_Controller_Component::test_update_category_sets_new_category"/>
+        <covered by="Test_Products_Controller_Component::test_update_category_truncates_overly_long_value"/>
+      </line>
+      <line nr="231">
+        <covered by="Test_Validation::test_build_validation_error"/>
+      </line>
+      <line nr="232">
+        <covered by="Test_Validation::test_build_validation_error"/>
+      </line>
+      <line nr="233">
+        <covered by="Test_Validation::test_build_validation_error"/>
+      </line>
+      <line nr="246">
+        <covered by="Test_Validation::test_add_field_error_appends_to_empty_array"/>
+        <covered by="Test_Validation::test_add_field_error_appends_to_existing_array"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_initial_setup_requires_full_creators_credential_set"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_region_code_in_partner_tags"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_empty_partner_tag_value"/>
+      </line>
+      <line nr="247">
+        <covered by="Test_Validation::test_add_field_error_appends_to_empty_array"/>
+        <covered by="Test_Validation::test_add_field_error_appends_to_existing_array"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_initial_setup_requires_full_creators_credential_set"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_region_code_in_partner_tags"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_empty_partner_tag_value"/>
+      </line>
+      <line nr="245">
+        <covered by="Test_Validation::test_add_field_error_appends_to_empty_array"/>
+        <covered by="Test_Validation::test_add_field_error_appends_to_existing_array"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_initial_setup_requires_full_creators_credential_set"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_region_code_in_partner_tags"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_empty_partner_tag_value"/>
+      </line>
+      <line nr="73">
+        <covered by="Test_Validation::test_validate_pagination_within_bounds"/>
+        <covered by="Test_Validation::test_validate_pagination_defaults"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_above_max"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_against_default_max"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_returns_paginated_entries"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_search"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="76">
+        <covered by="Test_Validation::test_validate_pagination_within_bounds"/>
+        <covered by="Test_Validation::test_validate_pagination_defaults"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_below_one"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_above_max"/>
+        <covered by="Test_Validation::test_validate_pagination_clamps_per_page_against_default_max"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_returns_paginated_entries"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_region"/>
+        <covered by="Test_Blacklist_Controller_Component::test_get_items_filters_by_search"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_single_region"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_filters_by_custom_category"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history"/>
+        <covered by="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_filters_by_date_range"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day"/>
+        <covered by="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices"/>
+      </line>
+      <line nr="230">
+        <covered by="Test_Validation::test_build_validation_error"/>
+      </line>
+      <line nr="234">
+        <covered by="Test_Validation::test_build_validation_error"/>
+      </line>
+      <line nr="248">
+        <covered by="Test_Validation::test_add_field_error_appends_to_empty_array"/>
+        <covered by="Test_Validation::test_add_field_error_appends_to_existing_array"/>
+        <covered by="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_initial_setup_requires_full_creators_credential_set"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_region_code_in_partner_tags"/>
+        <covered by="Test_Settings_Controller_Component::test_put_settings_rejects_empty_partner_tag_value"/>
+      </line>
+    </coverage>
+    <source>
+      <line no="1">
+        <token name="T_OPEN_TAG">&lt;?php</token>
+      </line>
+      <line no="2">
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="3">
+        <token name="T_DOC_COMMENT"> * Validation Helper</token>
+      </line>
+      <line no="4">
+        <token name="T_DOC_COMMENT"> *</token>
+      </line>
+      <line no="5">
+        <token name="T_DOC_COMMENT"> * Handles input validation for API requests.</token>
+      </line>
+      <line no="6">
+        <token name="T_DOC_COMMENT"> *</token>
+      </line>
+      <line no="7">
+        <token name="T_DOC_COMMENT"> * @package AmazonPriceTracker</token>
+      </line>
+      <line no="8">
+        <token name="T_DOC_COMMENT"> */</token>
+      </line>
+      <line no="9"/>
+      <line no="10">
+        <token name="T_NAMESPACE">namespace</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_NAME_QUALIFIED">APT\Helpers</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="11"/>
+      <line no="12">
+        <token name="T_COMMENT">// Prevent direct access</token>
+      </line>
+      <line no="13">
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_STRING">defined</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ABSPATH'</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="14">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_EXIT">exit</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="15">
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="16"/>
+      <line no="17">
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="18">
+        <token name="T_DOC_COMMENT"> * Class Validation</token>
+      </line>
+      <line no="19">
+        <token name="T_DOC_COMMENT"> */</token>
+      </line>
+      <line no="20">
+        <token name="T_CLASS">class</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">Validation</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="21"/>
+      <line no="22">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="23">
+        <token name="T_DOC_COMMENT">     * Validate ASIN format</token>
+      </line>
+      <line no="24">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="25">
+        <token name="T_DOC_COMMENT">     * ASIN must be exactly 10 alphanumeric characters.</token>
+      </line>
+      <line no="26">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="27">
+        <token name="T_DOC_COMMENT">     * @param string $asin ASIN to validate</token>
+      </line>
+      <line no="28">
+        <token name="T_DOC_COMMENT">     * @return bool</token>
+      </line>
+      <line no="29">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="30">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">is_valid_asin</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$asin</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">bool</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="31">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOL_CAST">(bool)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">preg_match</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'/^[A-Z0-9]{10}$/i'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$asin</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="32">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="33"/>
+      <line no="34">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="35">
+        <token name="T_DOC_COMMENT">     * Normalize ASIN to uppercase</token>
+      </line>
+      <line no="36">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="37">
+        <token name="T_DOC_COMMENT">     * @param string $asin ASIN to normalize</token>
+      </line>
+      <line no="38">
+        <token name="T_DOC_COMMENT">     * @return string</token>
+      </line>
+      <line no="39">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="40">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">normalize_asin</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$asin</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="41">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtoupper</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$asin</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="42">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="43"/>
+      <line no="44">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="45">
+        <token name="T_DOC_COMMENT">     * Validate region code</token>
+      </line>
+      <line no="46">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="47">
+        <token name="T_DOC_COMMENT">     * @param string $region Region code to validate</token>
+      </line>
+      <line no="48">
+        <token name="T_DOC_COMMENT">     * @return bool</token>
+      </line>
+      <line no="49">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="50">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">is_valid_region</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">bool</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="51">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">Regions</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">is_valid</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="52">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="53"/>
+      <line no="54">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="55">
+        <token name="T_DOC_COMMENT">     * Normalize region code to uppercase</token>
+      </line>
+      <line no="56">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="57">
+        <token name="T_DOC_COMMENT">     * @param string $region Region code to normalize</token>
+      </line>
+      <line no="58">
+        <token name="T_DOC_COMMENT">     * @return string</token>
+      </line>
+      <line no="59">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="60">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">normalize_region</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="61">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtoupper</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$region</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="62">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="63"/>
+      <line no="64">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="65">
+        <token name="T_DOC_COMMENT">     * Validate pagination parameters</token>
+      </line>
+      <line no="66">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="67">
+        <token name="T_DOC_COMMENT">     * @param int $page Page number</token>
+      </line>
+      <line no="68">
+        <token name="T_DOC_COMMENT">     * @param int $per_page Items per page</token>
+      </line>
+      <line no="69">
+        <token name="T_DOC_COMMENT">     * @param int $max_per_page Maximum items per page (default: 100)</token>
+      </line>
+      <line no="70">
+        <token name="T_DOC_COMMENT">     * @return array Validated pagination parameters</token>
+      </line>
+      <line no="71">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="72">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_pagination</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">int</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$page</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">1</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">int</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$per_page</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">20</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">int</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$max_per_page</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">100</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="73">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="74">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'page'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">max</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_LNUMBER">1</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$page</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="75">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'per_page'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">min</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">max</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_LNUMBER">1</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$per_page</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$max_per_page</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="76">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="77">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="78"/>
+      <line no="79">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="80">
+        <token name="T_DOC_COMMENT">     * Validate sort order</token>
+      </line>
+      <line no="81">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="82">
+        <token name="T_DOC_COMMENT">     * @param string $order Sort order</token>
+      </line>
+      <line no="83">
+        <token name="T_DOC_COMMENT">     * @return string Validated sort order ('ASC' or 'DESC')</token>
+      </line>
+      <line no="84">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="85">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_sort_order</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$order</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="86">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$order</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtoupper</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$order</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="87">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">in_array</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$order</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'ASC'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'DESC'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$order</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'DESC'</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="88">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="89"/>
+      <line no="90">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="91">
+        <token name="T_DOC_COMMENT">     * Validate availability status</token>
+      </line>
+      <line no="92">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="93">
+        <token name="T_DOC_COMMENT">     * @param string $status Availability status</token>
+      </line>
+      <line no="94">
+        <token name="T_DOC_COMMENT">     * @return string|null Validated status or null if invalid</token>
+      </line>
+      <line no="95">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="96">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_availability</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$status</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="97">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$valid_statuses</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'in_stock'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'out_of_stock'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'limited_stock'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'preorder'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'unknown'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="98">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$status</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtolower</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$status</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="99">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">in_array</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$status</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$valid_statuses</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$status</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="100">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="101"/>
+      <line no="102">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="103">
+        <token name="T_DOC_COMMENT">     * Validate aggregation type</token>
+      </line>
+      <line no="104">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="105">
+        <token name="T_DOC_COMMENT">     * @param string $type Aggregation type</token>
+      </line>
+      <line no="106">
+        <token name="T_DOC_COMMENT">     * @return string Validated aggregation type</token>
+      </line>
+      <line no="107">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="108">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_aggregation</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$type</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="109">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$valid_types</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'none'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'daily'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'weekly'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'monthly'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="110">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$type</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtolower</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$type</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="111">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">in_array</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$type</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$valid_types</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$type</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'none'</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="112">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="113"/>
+      <line no="114">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="115">
+        <token name="T_DOC_COMMENT">     * Validate product sort field</token>
+      </line>
+      <line no="116">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="117">
+        <token name="T_DOC_COMMENT">     * @param string $field Sort field</token>
+      </line>
+      <line no="118">
+        <token name="T_DOC_COMMENT">     * @return string Validated sort field</token>
+      </line>
+      <line no="119">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="120">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_product_sort_field</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="121">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$valid_fields</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'created_at'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'updated_at'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'current_price'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'title'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'asin'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="122">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtolower</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="123">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">in_array</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$valid_fields</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'created_at'</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="124">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="125"/>
+      <line no="126">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="127">
+        <token name="T_DOC_COMMENT">     * Validate and sanitize search query</token>
+      </line>
+      <line no="128">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="129">
+        <token name="T_DOC_COMMENT">     * @param string $query Search query</token>
+      </line>
+      <line no="130">
+        <token name="T_DOC_COMMENT">     * @param int $min_length Minimum length required</token>
+      </line>
+      <line no="131">
+        <token name="T_DOC_COMMENT">     * @return string|null Sanitized query or null if too short</token>
+      </line>
+      <line no="132">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="133">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_search_query</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$query</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">int</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$min_length</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">2</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="134">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$query</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">sanitize_text_field</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$query</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="135">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strlen</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$query</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_IS_GREATER_OR_EQUAL">&gt;=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$min_length</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$query</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="136">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="137"/>
+      <line no="138">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="139">
+        <token name="T_DOC_COMMENT">     * Validate datetime string</token>
+      </line>
+      <line no="140">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="141">
+        <token name="T_DOC_COMMENT">     * @param string $datetime Datetime string</token>
+      </line>
+      <line no="142">
+        <token name="T_DOC_COMMENT">     * @return string|null Validated datetime in MySQL format or null if invalid</token>
+      </line>
+      <line no="143">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="144">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_datetime</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$datetime</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="145">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$timestamp</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtotime</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$datetime</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="146"/>
+      <line no="147">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$timestamp</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_IS_IDENTICAL">===</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">false</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="148">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="149">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="150"/>
+      <line no="151">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">gmdate</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Y-m-d H:i:s'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$timestamp</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="152">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="153"/>
+      <line no="154">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="155">
+        <token name="T_DOC_COMMENT">     * Validate price value</token>
+      </line>
+      <line no="156">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="157">
+        <token name="T_DOC_COMMENT">     * @param mixed $price Price value</token>
+      </line>
+      <line no="158">
+        <token name="T_DOC_COMMENT">     * @return float|null Validated price or null if invalid</token>
+      </line>
+      <line no="159">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="160">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_price</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$price</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">float</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="161">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_STRING">is_numeric</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$price</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="162">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="163">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="164"/>
+      <line no="165">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$price</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_CAST">(float)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$price</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="166">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$price</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_IS_GREATER_OR_EQUAL">&gt;=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">0</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">round</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$price</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">2</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="167">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="168"/>
+      <line no="169">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="170">
+        <token name="T_DOC_COMMENT">     * Validate boolean value</token>
+      </line>
+      <line no="171">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="172">
+        <token name="T_DOC_COMMENT">     * @param mixed $value Value to validate</token>
+      </line>
+      <line no="173">
+        <token name="T_DOC_COMMENT">     * @return bool</token>
+      </line>
+      <line no="174">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="175">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_bool</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">bool</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="176">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">is_bool</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="177">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="178">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="179"/>
+      <line no="180">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">is_string</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="181">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strtolower</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="182">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">in_array</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'true'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'1'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'yes'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'on'</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="183">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="184"/>
+      <line no="185">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOL_CAST">(bool)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$value</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="186">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="187"/>
+      <line no="188">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="189">
+        <token name="T_DOC_COMMENT">     * Validate and parse comma-separated region codes</token>
+      </line>
+      <line no="190">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="191">
+        <token name="T_DOC_COMMENT">     * @param string $regions Comma-separated region codes</token>
+      </line>
+      <line no="192">
+        <token name="T_DOC_COMMENT">     * @return array Valid region codes</token>
+      </line>
+      <line no="193">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="194">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_region_list</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="195">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$region_codes</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">array_map</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'trim'</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">explode</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">','</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$regions</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="196">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$valid_regions</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="197"/>
+      <line no="198">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_FOREACH">foreach</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$region_codes</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_AS">as</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="199">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">normalize_region</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="200">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">self</token>
+        <token name="T_DOUBLE_COLON">::</token>
+        <token name="T_STRING">is_valid_region</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOLEAN_AND">&amp;&amp;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EXCLAMATION_MARK">!</token>
+        <token name="T_STRING">in_array</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$valid_regions</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">true</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="201">
+        <token name="T_WHITESPACE">                </token>
+        <token name="T_VARIABLE">$valid_regions</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$code</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="202">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="203">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="204"/>
+      <line no="205">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$valid_regions</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="206">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="207"/>
+      <line no="208">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="209">
+        <token name="T_DOC_COMMENT">     * Validate custom category</token>
+      </line>
+      <line no="210">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="211">
+        <token name="T_DOC_COMMENT">     * @param string|null $category Category name</token>
+      </line>
+      <line no="212">
+        <token name="T_DOC_COMMENT">     * @return string|null Sanitized category or null</token>
+      </line>
+      <line no="213">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="214">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">validate_category</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="215">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_IF">if</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_IS_IDENTICAL">===</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_BOOLEAN_OR">||</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_IS_IDENTICAL">===</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">''</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="216">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">null</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="217">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="218"/>
+      <line no="219">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">sanitize_text_field</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_STRING">trim</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="220">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">strlen</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_IS_SMALLER_OR_EQUAL">&lt;=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">255</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_QUESTION_MARK">?</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">substr</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_VARIABLE">$category</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">0</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_LNUMBER">255</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="221">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="222"/>
+      <line no="223">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="224">
+        <token name="T_DOC_COMMENT">     * Build validation error response</token>
+      </line>
+      <line no="225">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="226">
+        <token name="T_DOC_COMMENT">     * @param array $errors Array of field errors</token>
+      </line>
+      <line no="227">
+        <token name="T_DOC_COMMENT">     * @return array</token>
+      </line>
+      <line no="228">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="229">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">build_validation_error</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$errors</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="230">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_RETURN">return</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="231">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'code'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'VALIDATION_ERROR'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="232">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'message'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'Request validation failed'</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="233">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'errors'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$errors</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="234">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="235">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="236"/>
+      <line no="237">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_DOC_COMMENT">/**</token>
+      </line>
+      <line no="238">
+        <token name="T_DOC_COMMENT">     * Add a field error to errors array</token>
+      </line>
+      <line no="239">
+        <token name="T_DOC_COMMENT">     *</token>
+      </line>
+      <line no="240">
+        <token name="T_DOC_COMMENT">     * @param array $errors Errors array (passed by reference)</token>
+      </line>
+      <line no="241">
+        <token name="T_DOC_COMMENT">     * @param string $field Field name</token>
+      </line>
+      <line no="242">
+        <token name="T_DOC_COMMENT">     * @param string $message Error message</token>
+      </line>
+      <line no="243">
+        <token name="T_DOC_COMMENT">     */</token>
+      </line>
+      <line no="244">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_PUBLIC">public</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STATIC">static</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_FUNCTION">function</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">add_field_error</token>
+        <token name="T_OPEN_BRACKET">(</token>
+        <token name="T_ARRAY">array</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG">&amp;</token>
+        <token name="T_VARIABLE">$errors</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_COMMA">,</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">string</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$message</token>
+        <token name="T_CLOSE_BRACKET">)</token>
+        <token name="T_COLON">:</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_STRING">void</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_CURLY">{</token>
+      </line>
+      <line no="245">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_VARIABLE">$errors</token>
+        <token name="T_OPEN_SQUARE">[</token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_EQUAL">=</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_OPEN_SQUARE">[</token>
+      </line>
+      <line no="246">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'field'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$field</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="247">
+        <token name="T_WHITESPACE">            </token>
+        <token name="T_CONSTANT_ENCAPSED_STRING">'message'</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_DOUBLE_ARROW">=&gt;</token>
+        <token name="T_WHITESPACE"> </token>
+        <token name="T_VARIABLE">$message</token>
+        <token name="T_COMMA">,</token>
+      </line>
+      <line no="248">
+        <token name="T_WHITESPACE">        </token>
+        <token name="T_CLOSE_SQUARE">]</token>
+        <token name="T_SEMICOLON">;</token>
+      </line>
+      <line no="249">
+        <token name="T_WHITESPACE">    </token>
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="250">
+        <token name="T_CLOSE_CURLY">}</token>
+      </line>
+      <line no="251"/>
+    </source>
+  </file>
+</phpunit>

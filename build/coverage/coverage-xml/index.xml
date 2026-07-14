@@ -1,0 +1,533 @@
+<?xml version="1.0"?>
+<phpunit xmlns="https://schema.phpunit.de/coverage/1.0">
+  <build time="Tue Jul 14 18:48:54 UTC 2026" phpunit="9.6.35" coverage="9.2.32">
+    <runtime name="PHP" version="8.5.8" url="https://secure.php.net/"/>
+    <driver name="pcov" version="1.0.12"/>
+  </build>
+  <project source="/Users/paulramotowski/Documents/GitHub/amazon-price-tracker/includes">
+    <tests>
+      <test name="Test_Encryption::test_encrypt_decrypt_round_trip" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_encrypt_decrypt_round_trip_with_unicode" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_encrypt_empty_string" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_decrypt_empty_string" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_encrypt_uses_random_iv" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_decrypt_invalid_data_returns_empty_string" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_mask_default_visible_chars" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_mask_just_above_threshold_is_partially_redacted" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_mask_custom_visible_chars" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_mask_short_string_fully_redacted" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_mask_boundary_length_fully_redacted" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_encrypt_returns_empty_string_when_openssl_encrypt_fails" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_decrypt_returns_empty_string_when_base64_decode_fails" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Encryption::test_get_key_derives_from_auth_key" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_all_returns_all_regions" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_all_region_entries_have_expected_fields" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_with_valid_code" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_is_case_insensitive" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_with_invalid_code_returns_null" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_is_valid" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_codes" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_currency" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_marketplace_domain" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_product_url_without_partner_tag" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_product_url_with_partner_tag" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_product_url_with_invalid_region_returns_null" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions::test_get_for_api" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_success_defaults_to_200" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_success_with_custom_status" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_paginated" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_build_pagination_middle_page" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_build_pagination_first_page" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_build_pagination_last_page" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_build_pagination_with_zero_items" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_build_pagination_with_zero_per_page" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_build_pagination_rounds_up_not_to_nearest" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_error" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_error_defaults_to_400" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_error_with_details" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_validation_error" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_forbidden" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_conflict" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_rate_limit_exceeded" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_blacklisted_without_reason" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_blacklisted_with_reason" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_amazon_api_error" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_asin_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_missing_partner_tag" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_not_configured" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_bulk_result" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_no_content" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_created" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_created_with_rate_limit" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Response::test_add_rate_limit_headers_clamps_negative_remaining" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_is_valid_asin_with_valid_asins" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_is_valid_asin_with_invalid_asins" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_is_valid_asin_is_case_insensitive" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_normalize_asin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_is_valid_region_with_valid_regions" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_is_valid_region_with_invalid_regions" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_is_valid_region_is_case_insensitive" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_normalize_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_region_list" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_bool" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_bool_trims_and_lowercases_strings" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_sort_order" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_sort_order_trims_whitespace" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_aggregation" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_aggregation_trims_and_lowercases" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_category" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_category_truncates_long_values" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_datetime" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_pagination_within_bounds" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_pagination_defaults" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_pagination_clamps_page_below_one" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_pagination_clamps_per_page_below_one" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_pagination_clamps_per_page_above_max" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_pagination_clamps_per_page_against_default_max" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_availability_with_valid_statuses" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_availability_is_case_insensitive" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_availability_with_invalid_status_returns_null" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_product_sort_field_with_valid_fields" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_product_sort_field_is_case_insensitive" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_product_sort_field_defaults_to_created_at" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_search_query_with_valid_query" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_search_query_trims_whitespace" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_search_query_too_short_returns_null" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_search_query_at_default_min_length" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_search_query_respects_custom_min_length" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_price_with_valid_values" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_price_rounds_to_two_decimals" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_price_with_negative_value_returns_null" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_validate_price_with_non_numeric_value_returns_null" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_build_validation_error" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_add_field_error_appends_to_empty_array" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Validation::test_add_field_error_appends_to_existing_array" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_items_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_items_forbidden_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_items_returns_paginated_entries" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_items_filters_by_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_items_filters_by_search" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_create_item_validates_asin_and_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_create_item_succeeds_and_normalizes_asin_and_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_create_item_rejects_duplicate" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_create_item_soft_deletes_matching_active_product" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_check_blacklist_returns_false_when_not_blacklisted" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_check_blacklist_returns_true_with_entry_when_blacklisted" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_item_returns_not_found_for_unknown_id" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_get_item_returns_entry_by_id" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_delete_item_returns_not_found_for_unknown_id" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Blacklist_Controller_Component::test_delete_item_removes_entry" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Categories_Controller_Component::test_get_categories_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Categories_Controller_Component::test_get_categories_forbidden_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Categories_Controller_Component::test_get_categories_returns_distinct_categories_with_counts_for_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Categories_Controller_Component::test_get_categories_excludes_null_empty_and_inactive_products" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Creators_API_Parsing_Component::test_parse_item_maps_every_iteminfo_section_into_facts" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Creators_API_Parsing_Component::test_parse_item_of_a_minimal_item_drops_null_facts" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Creators_API_Parsing_Component::test_parse_pricing_reads_price_rrp_and_in_stock_availability" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Creators_API_Parsing_Component::test_parse_pricing_nulls_the_price_when_out_of_stock" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Creators_API_Parsing_Component::test_parse_pricing_detects_limited_stock_from_the_message" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Creators_API_Parsing_Component::test_parse_pricing_maps_preorder_and_unknown_types" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Component::test_widget_is_registered_for_admins_only" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Component::test_styles_are_only_added_on_the_dashboard_screen" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Component::test_empty_state_renders_zeros_and_omits_optional_sections" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Component::test_populated_state_renders_stats_drops_attention_and_regions" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Component::test_price_increases_are_not_reported_as_drops" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Component::test_widget_data_is_cached_until_cleared" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Ajax::test_refresh_widget_returns_the_widget_data" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Ajax::test_refresh_widget_denies_non_admins" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Ajax::test_run_refresh_refreshes_products_and_clears_caches" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Dashboard_Widget_Ajax::test_run_refresh_denies_non_admins" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Health_Controller_Component::test_get_health_is_publicly_accessible_without_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Health_Controller_Component::test_get_health_response_shape" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Health_Controller_Component::test_get_amazon_health_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Health_Controller_Component::test_get_amazon_health_reports_not_configured_without_settings" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Health_Controller_Component::test_get_amazon_health_reports_connected_when_amazon_reachable" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Health_Controller_Component::test_get_amazon_health_reports_error_when_amazon_unreachable" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_schedule_registers_a_weekly_cron_event" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_schedule_is_idempotent" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_unschedule_clears_the_cron_event" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_records_within_the_full_retention_window_are_never_pruned" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_daily_retention_keeps_only_the_first_record_per_day" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_weekly_retention_keeps_only_the_first_record_per_week" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_monthly_retention_keeps_only_the_first_record_per_month" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_custom_retention_options_override_the_defaults" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_all_time_price_milestones_survive_pruning" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_availability_change_records_survive_pruning" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_inactive_products_are_not_pruned" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_prune_history_reports_accurate_counts" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_run_maintenance_records_the_last_run_summary" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_cron_hook_triggers_maintenance" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_run_manual_flags_the_last_run_as_manual" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Price_History_Maintenance_Component::test_get_storage_stats_buckets_records_by_age" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_refresh_product_returns_not_found_for_unknown_id" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_refresh_product_returns_not_configured_without_settings" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_refresh_product_returns_missing_partner_tag_for_unconfigured_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_refresh_product_keeps_existing_data_on_api_error" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_refresh_product_updates_facts_and_appends_a_price_record" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_bulk_refresh_without_settings_fails_every_selected_product" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_bulk_refresh_fails_regions_without_a_partner_tag_and_refreshes_the_rest" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_bulk_refresh_fails_items_missing_from_the_amazon_response" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_bulk_refresh_scopes_to_the_regions_filter" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_bulk_refresh_splits_a_region_into_batches_of_ten" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_bulk_refresh_clears_the_stats_cache_only_on_success" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_connection_reports_not_configured_without_settings" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_connection_reports_not_configured_with_empty_partner_tags" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_connection_reports_not_configured_for_an_unconfigured_explicit_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_connection_succeeds_via_the_first_configured_region_by_default" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_connection_reports_error_when_the_api_call_fails" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_connection_reports_error_when_credentials_are_empty" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_env_credentials_stand_in_for_a_missing_settings_row" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_env_fallback_requires_the_complete_credential_set" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_create_product_rolls_back_on_a_duplicate_row" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_create_product_returns_not_configured_without_settings" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_create_product_returns_missing_partner_tag_for_unconfigured_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Product_Service_Component::test_reactivate_product_is_a_no_op_when_the_amazon_fetch_fails" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_product_succeeds_with_canned_amazon_response" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_product_returns_asin_not_found_for_amazon_not_found_error" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_for_malformed_response" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_product_returns_amazon_api_error_on_timeout" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_active_product" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_product_conflict_includes_title_and_active_status_for_inactive_product" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_reactivate_product_succeeds_and_preserves_original_row" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_reactivate_returns_not_found_when_no_existing_product" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_reactivate_returns_forbidden_when_blacklisted" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_defaults_to_active_products_only" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_can_include_inactive_products_explicitly" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_filters_by_single_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_region_takes_precedence_over_regions_when_both_given" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_filters_by_multiple_regions" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_filters_by_custom_category" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_searches_title_from_facts_json_case_insensitively" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_sorts_by_current_price_via_joined_latest_price" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_uses_latest_price_when_product_has_price_history" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_items_pagination_meta_reflects_total_and_page" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_item_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_item_returns_full_product_shape" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_by_asin_returns_all_regions_for_that_asin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_by_asin_excludes_inactive_products" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_by_asin_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_by_asin_region_returns_single_matching_product" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_by_asin_region_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_delete_item_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_delete_item_forbidden_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_delete_item_soft_deletes_by_default" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_delete_item_force_hard_deletes_product_and_price_history" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_update_category_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_update_category_forbidden_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_update_category_sets_new_category" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_update_category_truncates_overly_long_value" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_returns_history_ordered_newest_first_by_default" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_honors_ascending_sort_order" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_filters_by_date_range" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_ignores_unparseable_date_filters" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_includes_currency_and_title" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_without_aggregate_param_omits_aggregations_key" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_daily_aggregation_computes_min_max_avg_per_day" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_get_prices_by_asin_region_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_create_requires_products_array" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_create_rejects_more_than_100_products" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_create_reports_mixed_success_and_failure" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_item_returns_429_once_daily_limit_reached" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_item_admin_users_bypass_the_daily_limit" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_create_item_includes_rate_limit_headers_reflecting_remaining_quota" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_refresh_item_succeeds_and_records_a_new_price" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_refresh_item_not_found" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_refresh_item_forbidden_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_refresh_item_returns_amazon_api_error_and_leaves_existing_price_unchanged" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_refresh_item_returns_not_configured_when_no_credentials" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_refresh_item_returns_missing_partner_tag_for_unconfigured_region" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_refresh_updates_active_products_and_reports_success" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_refresh_excludes_inactive_products" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_refresh_filters_by_product_ids" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_refresh_reports_mixed_success_and_failure" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_refresh_forbidden_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Products_Controller_Component::test_bulk_refresh_returns_all_failures_when_not_configured" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions_Controller_Component::test_get_regions_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Regions_Controller_Component::test_get_regions_returns_all_supported_regions_when_authenticated" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_custom_cron_intervals_are_registered" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_schedule_registers_the_cron_event_and_stores_the_recurrence" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_rescheduling_replaces_the_existing_event_instead_of_stacking" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_unschedule_clears_the_cron_event" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_get_status_when_unscheduled" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_get_status_when_scheduled" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_refreshes_products_and_records_the_summary" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_cron_hook_triggers_the_run" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_respects_the_batch_size_option" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_bails_out_when_no_admin_user_exists" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_prefers_the_configured_admin_over_the_settings_fallback" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_ignores_a_configured_user_who_is_not_an_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_falls_back_to_an_admin_with_settings_skipping_those_without" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Scheduled_Refresh_Component::test_run_uses_the_first_admin_when_none_have_settings" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_get_settings_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_get_settings_returns_not_found_when_unconfigured" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_get_settings_returns_masked_creators_credential_and_version_but_never_the_secret" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_creates_new_settings_row" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_initial_setup_requires_full_creators_credential_set" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_creators_credential_version" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_rejects_non_object_partner_tags" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_rejects_invalid_region_code_in_partner_tags" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_rejects_empty_partner_tag_value" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_partial_update_leaves_other_fields_untouched" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_put_settings_merges_partner_tags_rather_than_replacing" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_unconfigured" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_delete_partner_tag_returns_not_found_when_region_not_configured" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_delete_partner_tag_removes_region_and_returns_no_content" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_validate_credentials_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_validate_credentials_not_configured" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_validate_credentials_valid_when_amazon_reachable" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Settings_Controller_Component::test_validate_credentials_invalid_when_amazon_unreachable" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_user_stats_requires_authentication" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_returns_global_counts" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_includes_fresh_user_stats_for_subscriber" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_omits_last_refresh_for_non_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_includes_last_refresh_for_admin" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_last_refresh_is_null_for_admin_with_no_price_records" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_stats_global_counts_are_cached_but_user_stats_are_not" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_clear_cache_forces_global_recompute" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_user_stats_counts_and_limits_for_subscriber" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_user_stats_remaining_today_is_clamped_at_zero" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_user_stats_admin_has_no_limit" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_user_stats_configured_regions_from_partner_tags" size="unknown" result="0" status="PASSED"/>
+      <test name="Test_Stats_Controller_Component::test_get_user_stats_configured_regions_empty_without_settings" size="unknown" result="0" status="PASSED"/>
+    </tests>
+    <directory name="/">
+      <totals>
+        <lines total="6572" comments="1846" code="4726" executable="2673" executed="2516" percent="94.13"/>
+        <methods count="186" tested="162" percent="87.10"/>
+        <functions count="0" tested="0" percent="0"/>
+        <classes count="18" tested="8" percent="44.44"/>
+        <traits count="0" tested="0" percent="0"/>
+      </totals>
+      <directory name="API">
+        <totals>
+          <lines total="2585" comments="609" code="1976" executable="1261" executed="1207" percent="95.72"/>
+          <methods count="66" tested="57" percent="86.36"/>
+          <functions count="0" tested="0" percent="0"/>
+          <classes count="8" tested="5" percent="62.50"/>
+          <traits count="0" tested="0" percent="0"/>
+        </totals>
+        <directory name="Controllers">
+          <totals>
+            <lines total="2585" comments="609" code="1976" executable="1261" executed="1207" percent="95.72"/>
+            <methods count="66" tested="57" percent="86.36"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="8" tested="5" percent="62.50"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+          <file name="Base_Controller.php" href="API/Controllers/Base_Controller.php.xml">
+            <totals>
+              <lines total="188" comments="89" code="99" executable="36" executed="34" percent="94.44"/>
+              <methods count="10" tested="9" percent="90.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="0" percent="0.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Blacklist_Controller.php" href="API/Controllers/Blacklist_Controller.php.xml">
+            <totals>
+              <lines total="329" comments="65" code="264" executable="178" executed="177" percent="99.44"/>
+              <methods count="7" tested="7" percent="100.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="1" percent="100.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Categories_Controller.php" href="API/Controllers/Categories_Controller.php.xml">
+            <totals>
+              <lines total="75" comments="26" code="49" executable="23" executed="22" percent="95.65"/>
+              <methods count="2" tested="2" percent="100.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="1" percent="100.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Health_Controller.php" href="API/Controllers/Health_Controller.php.xml">
+            <totals>
+              <lines total="91" comments="33" code="58" executable="27" executed="26" percent="96.30"/>
+              <methods count="3" tested="3" percent="100.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="1" percent="100.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Products_Controller.php" href="API/Controllers/Products_Controller.php.xml">
+            <totals>
+              <lines total="1187" comments="216" code="971" executable="674" executed="633" percent="93.92"/>
+              <methods count="25" tested="19" percent="76.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="0" percent="0.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Regions_Controller.php" href="API/Controllers/Regions_Controller.php.xml">
+            <totals>
+              <lines total="58" comments="25" code="33" executable="11" executed="10" percent="90.91"/>
+              <methods count="2" tested="2" percent="100.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="1" percent="100.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Settings_Controller.php" href="API/Controllers/Settings_Controller.php.xml">
+            <totals>
+              <lines total="394" comments="84" code="310" executable="193" executed="187" percent="96.89"/>
+              <methods count="10" tested="8" percent="80.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="0" percent="0.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+          <file name="Stats_Controller.php" href="API/Controllers/Stats_Controller.php.xml">
+            <totals>
+              <lines total="263" comments="71" code="192" executable="119" executed="118" percent="99.16"/>
+              <methods count="7" tested="7" percent="100.00"/>
+              <functions count="0" tested="0" percent="0"/>
+              <classes count="1" tested="1" percent="100.00"/>
+              <traits count="0" tested="0" percent="0"/>
+            </totals>
+          </file>
+        </directory>
+      </directory>
+      <directory name="Admin">
+        <totals>
+          <lines total="701" comments="102" code="599" executable="243" executed="227" percent="93.42"/>
+          <methods count="14" tested="10" percent="71.43"/>
+          <functions count="0" tested="0" percent="0"/>
+          <classes count="1" tested="0" percent="0.00"/>
+          <traits count="0" tested="0" percent="0"/>
+        </totals>
+        <file name="Dashboard_Widget.php" href="Admin/Dashboard_Widget.php.xml">
+          <totals>
+            <lines total="699" comments="101" code="598" executable="243" executed="227" percent="93.42"/>
+            <methods count="14" tested="10" percent="71.43"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="index.php" href="Admin/index.php.xml">
+          <totals>
+            <lines total="2" comments="1" code="1" executable="0" executed="0" percent="0"/>
+            <methods count="0" tested="0" percent="0"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="0" tested="0" percent="0"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+      </directory>
+      <directory name="Helpers">
+        <totals>
+          <lines total="963" comments="394" code="569" executable="225" executed="195" percent="86.67"/>
+          <methods count="49" tested="47" percent="95.92"/>
+          <functions count="0" tested="0" percent="0"/>
+          <classes count="5" tested="3" percent="60.00"/>
+          <traits count="0" tested="0" percent="0"/>
+        </totals>
+        <file name="Encryption.php" href="Helpers/Encryption.php.xml">
+          <totals>
+            <lines total="137" comments="43" code="94" executable="48" executed="42" percent="87.50"/>
+            <methods count="4" tested="3" percent="75.00"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Env_File.php" href="Helpers/Env_File.php.xml">
+          <totals>
+            <lines total="82" comments="28" code="54" executable="23" executed="2" percent="8.70"/>
+            <methods count="1" tested="0" percent="0.00"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Regions.php" href="Helpers/Regions.php.xml">
+          <totals>
+            <lines total="207" comments="63" code="144" executable="27" executed="26" percent="96.30"/>
+            <methods count="8" tested="8" percent="100.00"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="1" percent="100.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Response.php" href="Helpers/Response.php.xml">
+          <totals>
+            <lines total="286" comments="141" code="145" executable="70" executed="69" percent="98.57"/>
+            <methods count="19" tested="19" percent="100.00"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="1" percent="100.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Validation.php" href="Helpers/Validation.php.xml">
+          <totals>
+            <lines total="251" comments="119" code="132" executable="57" executed="56" percent="98.25"/>
+            <methods count="17" tested="17" percent="100.00"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="1" percent="100.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+      </directory>
+      <directory name="Services">
+        <totals>
+          <lines total="2322" comments="740" code="1582" executable="944" executed="887" percent="93.96"/>
+          <methods count="57" tested="48" percent="84.21"/>
+          <functions count="0" tested="0" percent="0"/>
+          <classes count="4" tested="0" percent="0.00"/>
+          <traits count="0" tested="0" percent="0"/>
+        </totals>
+        <file name="Amazon_Creators_API.php" href="Services/Amazon_Creators_API.php.xml">
+          <totals>
+            <lines total="817" comments="300" code="517" executable="302" executed="280" percent="92.72"/>
+            <methods count="15" tested="11" percent="73.33"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Price_History_Maintenance.php" href="Services/Price_History_Maintenance.php.xml">
+          <totals>
+            <lines total="506" comments="166" code="340" executable="183" executed="179" percent="97.81"/>
+            <methods count="18" tested="16" percent="88.89"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Product_Service.php" href="Services/Product_Service.php.xml">
+          <totals>
+            <lines total="752" comments="182" code="570" executable="382" executed="355" percent="92.93"/>
+            <methods count="12" tested="10" percent="83.33"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+        <file name="Scheduled_Refresh.php" href="Services/Scheduled_Refresh.php.xml">
+          <totals>
+            <lines total="247" comments="92" code="155" executable="77" executed="73" percent="94.81"/>
+            <methods count="12" tested="11" percent="91.67"/>
+            <functions count="0" tested="0" percent="0"/>
+            <classes count="1" tested="0" percent="0.00"/>
+            <traits count="0" tested="0" percent="0"/>
+          </totals>
+        </file>
+      </directory>
+      <file name="index.php" href="index.php.xml">
+        <totals>
+          <lines total="1" comments="1" code="0" executable="0" executed="0" percent="0"/>
+          <methods count="0" tested="0" percent="0"/>
+          <functions count="0" tested="0" percent="0"/>
+          <classes count="0" tested="0" percent="0"/>
+          <traits count="0" tested="0" percent="0"/>
+        </totals>
+      </file>
+    </directory>
+  </project>
+</phpunit>
