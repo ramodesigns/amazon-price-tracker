@@ -96,20 +96,20 @@
               "host": ["{{api_base}}"],
               "path": ["health", "amazon"]
             },
-            "description": "Test Amazon PA-API connectivity with user's configured credentials.\n\nReturns connection status, message, and response time."
+            "description": "Test Amazon Creators API connectivity with user's configured credentials.\n\nReturns connection status, message, and response time."
           },
           "response": [
             {
               "name": "Connected",
               "status": "OK",
               "code": 200,
-              "body": "{\n  \"status\": \"connected\",\n  \"message\": \"Successfully connected to Amazon PA-API\",\n  \"response_time_ms\": 245\n}"
+              "body": "{\n  \"status\": \"connected\",\n  \"message\": \"Successfully connected to Amazon Creators API\",\n  \"response_time_ms\": 245\n}"
             },
             {
               "name": "Not Configured",
               "status": "OK",
               "code": 200,
-              "body": "{\n  \"status\": \"not_configured\",\n  \"message\": \"Amazon PA-API credentials not configured\"\n}"
+              "body": "{\n  \"status\": \"not_configured\",\n  \"message\": \"Amazon Creators API credentials not configured\"\n}"
             }
           ]
         }
@@ -144,7 +144,7 @@
     },
     {
       "name": "Settings",
-      "description": "User Amazon PA-API settings management",
+      "description": "User Amazon Creators API settings management",
       "item": [
         {
           "name": "GET /settings",
@@ -156,14 +156,14 @@
               "host": ["{{api_base}}"],
               "path": ["settings"]
             },
-            "description": "Get current user's Amazon PA-API settings.\n\nNote: secret_key is NEVER returned in responses."
+            "description": "Get current user's Amazon Creators API settings.\n\nNote: creators_credential_secret is NEVER returned in responses."
           },
           "response": [
             {
               "name": "Success",
               "status": "OK",
               "code": 200,
-              "body": "{\n  \"id\": 1,\n  \"user_id\": 42,\n  \"access_key\": \"AKIA****EXAMPLE\",\n  \"partner_tags\": {\n    \"US\": \"mysite-20\",\n    \"UK\": \"mysite-21\"\n  },\n  \"created_at\": \"2024-01-10T08:00:00+00:00\",\n  \"updated_at\": \"2024-01-15T12:30:00+00:00\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"user_id\": 42,\n  \"creators_credential_id\": \"amzn****mple\",\n  \"creators_credential_version\": \"3.2\",\n  \"partner_tags\": {\n    \"US\": \"mysite-20\",\n    \"UK\": \"mysite-21\"\n  },\n  \"created_at\": \"2024-01-10T08:00:00+00:00\",\n  \"updated_at\": \"2024-01-15T12:30:00+00:00\"\n}"
             },
             {
               "name": "Not Found",
@@ -185,21 +185,21 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n  \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n  \"partner_tags\": {\n    \"US\": \"yoursite-20\",\n    \"UK\": \"yoursite-21\"\n  }\n}"
+              "raw": "{\n  \"creators_credential_id\": \"amzn1.application-oa2-client.example\",\n  \"creators_credential_secret\": \"amzn1.oa2-cs.v1.example\",\n  \"creators_credential_version\": \"3.2\",\n  \"partner_tags\": {\n    \"US\": \"yoursite-20\",\n    \"UK\": \"yoursite-21\"\n  }\n}"
             },
             "url": {
               "raw": "{{api_base}}/settings",
               "host": ["{{api_base}}"],
               "path": ["settings"]
             },
-            "description": "Create or update user's Amazon PA-API settings.\n\nPartner tags are MERGED with existing values. Use DELETE endpoint to remove specific tags.\n\nFor first-time setup, access_key and secret_key are required."
+            "description": "Create or update user's Amazon Creators API settings.\n\nPartner tags are MERGED with existing values. Use DELETE endpoint to remove specific tags.\n\nFor first-time setup, creators_credential_id, creators_credential_secret and creators_credential_version are required."
           },
           "response": [
             {
               "name": "Created",
               "status": "Created",
               "code": 201,
-              "body": "{\n  \"id\": 1,\n  \"user_id\": 42,\n  \"access_key\": \"AKIA****EXAMPLE\",\n  \"partner_tags\": {\n    \"US\": \"yoursite-20\",\n    \"UK\": \"yoursite-21\"\n  },\n  \"created_at\": \"2024-01-15T10:00:00+00:00\",\n  \"updated_at\": \"2024-01-15T10:00:00+00:00\"\n}"
+              "body": "{\n  \"id\": 1,\n  \"user_id\": 42,\n  \"creators_credential_id\": \"amzn****mple\",\n  \"creators_credential_version\": \"3.2\",\n  \"partner_tags\": {\n    \"US\": \"yoursite-20\",\n    \"UK\": \"yoursite-21\"\n  },\n  \"created_at\": \"2024-01-15T10:00:00+00:00\",\n  \"updated_at\": \"2024-01-15T10:00:00+00:00\"\n}"
             }
           ]
         },
@@ -240,7 +240,7 @@
               "host": ["{{api_base}}"],
               "path": ["settings", "validate"]
             },
-            "description": "Validate Amazon PA-API credentials by making a test request to Amazon.\n\nReturns whether credentials are valid and a status message."
+            "description": "Validate Amazon Creators API credentials by making a test request to Amazon.\n\nReturns whether credentials are valid and a status message."
           },
           "response": [
             {
@@ -317,7 +317,7 @@
               "host": ["{{api_base}}"],
               "path": ["products"]
             },
-            "description": "Create a new tracked product.\n\nProcess:\n1. Validate ASIN format (10 alphanumeric)\n2. Check blacklist\n3. Check if already exists\n4. Validate user has partner tag for region\n5. Fetch from Amazon PA-API\n6. Create product with images, facts, initial price\n\nRate limit: 50/day for non-admin users"
+            "description": "Create a new tracked product.\n\nProcess:\n1. Validate ASIN format (10 alphanumeric)\n2. Check blacklist\n3. Check if already exists\n4. Validate user has partner tag for region\n5. Fetch from Amazon Creators API\n6. Create product with images, facts, initial price\n\nRate limit: 50/day for non-admin users"
           },
           "response": [
             {
@@ -395,7 +395,7 @@
               "host": ["{{api_base}}"],
               "path": ["products", "refresh"]
             },
-            "description": "Trigger price refresh for multiple products (Admin only).\n\nAll parameters are optional:\n- product_ids: Specific product IDs to refresh\n- regions: Filter by regions\n- limit: Max products to refresh (default 100, max 1000)\n\nIf Amazon PA-API fails, existing price remains unchanged."
+            "description": "Trigger price refresh for multiple products (Admin only).\n\nAll parameters are optional:\n- product_ids: Specific product IDs to refresh\n- regions: Filter by regions\n- limit: Max products to refresh (default 100, max 1000)\n\nIf Amazon Creators API fails, existing price remains unchanged."
           },
           "response": [
             {
@@ -532,7 +532,7 @@
               "host": ["{{api_base}}"],
               "path": ["products", "{{test_product_id}}", "refresh"]
             },
-            "description": "Refresh price for a single product (Admin only).\n\nFetches latest price from Amazon PA-API.\nIf API fails, existing price remains unchanged and returns 502."
+            "description": "Refresh price for a single product (Admin only).\n\nFetches latest price from Amazon Creators API.\nIf API fails, existing price remains unchanged and returns 502."
           },
           "response": [
             {

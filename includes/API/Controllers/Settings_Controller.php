@@ -2,7 +2,8 @@
 /**
  * Settings REST Controller
  *
- * Handles the /settings endpoints for user Amazon PA-API settings.
+ * Handles the /settings endpoints for the current user's Amazon Creators API
+ * credentials (creators_credential_id/secret/version) and partner tags.
  *
  * @package AmazonPriceTracker
  */
@@ -71,7 +72,7 @@ class Settings_Controller extends Base_Controller {
             ],
         ]);
 
-        // POST /settings/validate - Validate Amazon PA-API credentials
+        // POST /settings/validate - Validate Amazon Creators API credentials
         register_rest_route($this->namespace, '/' . $this->rest_base . '/validate', [
             [
                 'methods' => 'POST',
@@ -88,11 +89,15 @@ class Settings_Controller extends Base_Controller {
      */
     private function get_update_args(): array {
         return [
-            'access_key' => [
+            'creators_credential_id' => [
                 'type' => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
-            'secret_key' => [
+            'creators_credential_secret' => [
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'creators_credential_version' => [
                 'type' => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
             ],
@@ -129,13 +134,21 @@ class Settings_Controller extends Base_Controller {
         $user_id = $this->get_current_user_id();
         $existing = $this->get_user_settings($user_id);
 
-        $access_key = $request->get_param('access_key');
-        $secret_key = $request->get_param('secret_key');
+        $creators_credential_id = $request->get_param('creators_credential_id');
+        $creators_credential_secret = $request->get_param('creators_credential_secret');
+        $creators_credential_version = $request->get_param('creators_credential_version');
         $partner_tags = $request->get_param('partner_tags');
 
         // Validate partner tags if provided
         if ($partner_tags !== null) {
             $validation_result = $this->validate_partner_tags($partner_tags);
+            if (is_wp_error($validation_result)) {
+                return $validation_result;
+            }
+        }
+
+        if ($creators_credential_version !== null) {
+            $validation_result = $this->validate_creators_version($creators_credential_version);
             if (is_wp_error($validation_result)) {
                 return $validation_result;
             }
@@ -151,12 +164,16 @@ class Settings_Controller extends Base_Controller {
                 'updated_at' => $now,
             ];
 
-            if ($access_key !== null) {
-                $update_data['access_key'] = Encryption::encrypt($access_key);
+            if ($creators_credential_id !== null) {
+                $update_data['creators_credential_id'] = Encryption::encrypt($creators_credential_id);
             }
 
-            if ($secret_key !== null) {
-                $update_data['secret_key'] = Encryption::encrypt($secret_key);
+            if ($creators_credential_secret !== null) {
+                $update_data['creators_credential_secret'] = Encryption::encrypt($creators_credential_secret);
+            }
+
+            if ($creators_credential_version !== null) {
+                $update_data['creators_credential_version'] = ltrim($creators_credential_version, 'vV');
             }
 
             if ($partner_tags !== null) {
@@ -174,12 +191,16 @@ class Settings_Controller extends Base_Controller {
             // Create new settings
             $errors = [];
 
-            if (empty($access_key)) {
-                Validation::add_field_error($errors, 'access_key', 'Access key is required for initial setup');
+            if (empty($creators_credential_id)) {
+                Validation::add_field_error($errors, 'creators_credential_id', 'Creators API credential ID is required for initial setup');
             }
 
-            if (empty($secret_key)) {
-                Validation::add_field_error($errors, 'secret_key', 'Secret key is required for initial setup');
+            if (empty($creators_credential_secret)) {
+                Validation::add_field_error($errors, 'creators_credential_secret', 'Creators API credential secret is required for initial setup');
+            }
+
+            if (empty($creators_credential_version)) {
+                Validation::add_field_error($errors, 'creators_credential_version', 'Creators API credential version is required for initial setup');
             }
 
             if (!empty($errors)) {
@@ -188,8 +209,9 @@ class Settings_Controller extends Base_Controller {
 
             $insert_data = [
                 'user_id' => $user_id,
-                'access_key' => Encryption::encrypt($access_key),
-                'secret_key' => Encryption::encrypt($secret_key),
+                'creators_credential_id' => Encryption::encrypt($creators_credential_id),
+                'creators_credential_secret' => Encryption::encrypt($creators_credential_secret),
+                'creators_credential_version' => ltrim($creators_credential_version, 'vV'),
                 'partner_tags' => wp_json_encode($partner_tags ?: []),
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -244,7 +266,7 @@ class Settings_Controller extends Base_Controller {
     }
 
     /**
-     * Validate Amazon PA-API credentials
+     * Validate Amazon Creators API credentials
      *
      * @param WP_REST_Request $request Request object
      * @return WP_REST_Response|WP_Error
@@ -295,12 +317,13 @@ class Settings_Controller extends Base_Controller {
      * @return array
      */
     private function format_settings(object $settings): array {
-        $access_key = Encryption::decrypt($settings->access_key);
+        $creators_credential_id = !empty($settings->creators_credential_id) ? Encryption::decrypt($settings->creators_credential_id) : '';
 
         return [
             'id' => (int) $settings->id,
             'user_id' => (int) $settings->user_id,
-            'access_key' => $access_key ? Encryption::mask($access_key) : '',
+            'creators_credential_id' => $creators_credential_id ? Encryption::mask($creators_credential_id) : '',
+            'creators_credential_version' => $settings->creators_credential_version ?? '',
             'partner_tags' => json_decode($settings->partner_tags, true) ?: [],
             'created_at' => $this->format_datetime($settings->created_at),
             'updated_at' => $this->format_datetime($settings->updated_at),
@@ -343,6 +366,26 @@ class Settings_Controller extends Base_Controller {
 
         if (!empty($errors)) {
             return Response::validation_error($errors);
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate a Creators API credential version string.
+     *
+     * Accepts an optional leading "v"/"V" (Associates Central displays it
+     * that way) against the six values Amazon_Creators_API::get_token_endpoint()
+     * recognizes - Cognito 2.1/2.2/2.3, Login-with-Amazon 3.1/3.2/3.3.
+     *
+     * @param mixed $version
+     * @return true|WP_Error
+     */
+    private function validate_creators_version($version) {
+        if (!is_string($version) || !in_array(ltrim($version, 'vV'), ['2.1', '2.2', '2.3', '3.1', '3.2', '3.3'], true)) {
+            return Response::validation_error([
+                ['field' => 'creators_credential_version', 'message' => 'Must be one of 2.1, 2.2, 2.3, 3.1, 3.2, 3.3 (optionally prefixed with "v")'],
+            ]);
         }
 
         return true;

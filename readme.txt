@@ -12,7 +12,7 @@ A WordPress REST API plugin for tracking Amazon product prices across multiple i
 
 == Description ==
 
-Amazon Price Tracker is a powerful WordPress plugin that provides a REST API for tracking Amazon product prices across 12 international marketplaces. It integrates with Amazon Product Advertising API 5.0 to fetch real-time pricing and product information, storing historical data for price tracking over time.
+Amazon Price Tracker is a powerful WordPress plugin that provides a REST API for tracking Amazon product prices across 12 international marketplaces. It integrates with Amazon's Creators API to fetch real-time pricing and product information, storing historical data for price tracking over time.
 
 = Features =
 
@@ -23,7 +23,7 @@ Amazon Price Tracker is a powerful WordPress plugin that provides a REST API for
 * **Rate Limiting** - Built-in rate limiting (50 products/day for non-admin users)
 * **Blacklist Management** - Administrators can blacklist specific ASIN/Region combinations
 * **Scheduled Refresh** - Automatic price updates via WP-Cron
-* **Secure Credentials** - Encrypted storage of Amazon PA-API credentials
+* **Secure Credentials** - Encrypted storage of Amazon Creators API credentials
 
 = Supported Regions =
 
@@ -62,13 +62,13 @@ Amazon Price Tracker is a powerful WordPress plugin that provides a REST API for
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to Settings > Amazon Price Tracker to configure scheduled refresh options
 4. Create a WordPress Application Password for API authentication
-5. Configure your Amazon PA-API credentials via the REST API
+5. Configure your Amazon Creators API credentials via the REST API
 
-= Amazon PA-API Setup =
+= Amazon Creators API Setup =
 
 1. Sign up for the [Amazon Associates Program](https://affiliate-program.amazon.com/)
-2. Register for [Product Advertising API access](https://webservices.amazon.com/paapi5/documentation/register-for-pa-api.html)
-3. Create Access Key and Secret Key in your Amazon Associates account
+2. Register for Creators API access in Associates Central under Tools > Creators API
+3. Generate a credential (Credential ID, Credential Secret, and Version) for your account
 4. Note your Partner Tag for each marketplace you want to use
 
 = API Authentication =
@@ -85,9 +85,9 @@ Example with cURL:
 
 == Frequently Asked Questions ==
 
-= What is Amazon PA-API? =
+= What is Amazon Creators API? =
 
-Amazon Product Advertising API (PA-API) is Amazon's official API for accessing product information including prices, images, and descriptions. You need to be an Amazon Associate to access it.
+Amazon Creators API is Amazon's official API for accessing product information including prices, images, and descriptions - the successor to the now-deprecated Product Advertising API (PA-API) 5.0. You need to be an Amazon Associate to access it.
 
 = Why do I need partner tags for each region? =
 

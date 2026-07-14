@@ -4,17 +4,22 @@
  *
  * Exercises POST /products end-to-end through the real WP REST dispatcher:
  * real routing/permission callbacks, a real authenticated user, a real
- * database row insert/read, and a real network call to Amazon's PA-API.
+ * database row insert/read, and a real network call to Amazon's Creators
+ * API (Product_Service now builds Amazon_Creators_API exclusively - see
+ * Product_Service::fetch_amazon_product_data()).
  *
- * This uses real PA-API credentials to verify the full happy path, so it
- * needs real Associates credentials supplied via environment variables
- * (never hardcoded - they'd otherwise end up committed to git history):
+ * This uses real Creators API credentials to verify the full happy path,
+ * so it needs real Associates credentials supplied via environment
+ * variables (never hardcoded - they'd otherwise end up committed to git
+ * history):
  *
- *   APT_TEST_PA_API_ACCESS_KEY
- *   APT_TEST_PA_API_SECRET_KEY
- *   APT_TEST_PA_API_PARTNER_TAG
- *   APT_TEST_PA_API_REGION      (defaults to UK)
- *   APT_TEST_PA_API_ASIN        (defaults to a known-good UK ASIN)
+ *   APT_TEST_CREATORS_API_CREDENTIAL_ID
+ *   APT_TEST_CREATORS_API_CREDENTIAL_SECRET
+ *   APT_TEST_CREATORS_API_VERSION
+ *   APT_TEST_CREATORS_API_PARTNER_TAG
+ *   APT_TEST_CREATORS_API_REGION      (defaults to UK)
+ *   APT_TEST_ASIN                     (shared with the other integration
+ *                                       tests, defaults to a known-good UK ASIN)
  *
  * Without them set, this test is skipped rather than failed, since a fresh
  * checkout has no way to supply real Amazon credentials.
@@ -64,8 +69,8 @@ class Test_Products_Controller extends WP_UnitTestCase {
     public function tearDown(): void {
         global $wpdb;
 
-        $asin = getenv('APT_TEST_PA_API_ASIN') ?: 'B0GWGVC46T';
-        $region = getenv('APT_TEST_PA_API_REGION') ?: 'UK';
+        $asin = getenv('APT_TEST_ASIN') ?: 'B0GWGVC46T';
+        $region = getenv('APT_TEST_CREATORS_API_REGION') ?: 'UK';
 
         $product = $wpdb->get_row($wpdb->prepare(
             "SELECT id FROM {$wpdb->prefix}apt_products WHERE asin = %s AND region = %s",
@@ -93,19 +98,22 @@ class Test_Products_Controller extends WP_UnitTestCase {
 
     /**
      * Test that POST /products, given a real (authenticated, JSON) request
-     * and real PA-API credentials, creates a product from live Amazon data.
+     * and real Creators API credentials, creates a product from live Amazon
+     * data.
      */
     public function test_create_product_succeeds_with_real_amazon_api() {
-        $access_key = getenv('APT_TEST_PA_API_ACCESS_KEY');
-        $secret_key = getenv('APT_TEST_PA_API_SECRET_KEY');
-        $partner_tag = getenv('APT_TEST_PA_API_PARTNER_TAG');
-        $region = getenv('APT_TEST_PA_API_REGION') ?: 'UK';
-        $asin = getenv('APT_TEST_PA_API_ASIN') ?: 'B0GWGVC46T';
+        $credential_id = getenv('APT_TEST_CREATORS_API_CREDENTIAL_ID');
+        $credential_secret = getenv('APT_TEST_CREATORS_API_CREDENTIAL_SECRET');
+        $version = getenv('APT_TEST_CREATORS_API_VERSION');
+        $partner_tag = getenv('APT_TEST_CREATORS_API_PARTNER_TAG');
+        $region = getenv('APT_TEST_CREATORS_API_REGION') ?: 'UK';
+        $asin = getenv('APT_TEST_ASIN') ?: 'B0GWGVC46T';
 
-        if (!$access_key || !$secret_key || !$partner_tag) {
+        if (!$credential_id || !$credential_secret || !$version || !$partner_tag) {
             $this->markTestSkipped(
-                'Set APT_TEST_PA_API_ACCESS_KEY, APT_TEST_PA_API_SECRET_KEY and ' .
-                'APT_TEST_PA_API_PARTNER_TAG to run this test against the real PA-API.'
+                'Set APT_TEST_CREATORS_API_CREDENTIAL_ID, APT_TEST_CREATORS_API_CREDENTIAL_SECRET, ' .
+                'APT_TEST_CREATORS_API_VERSION and APT_TEST_CREATORS_API_PARTNER_TAG to run this test ' .
+                'against the real Creators API.'
             );
         }
 
@@ -117,8 +125,9 @@ class Test_Products_Controller extends WP_UnitTestCase {
 
         $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
             'user_id' => $user_id,
-            'access_key' => Encryption::encrypt($access_key),
-            'secret_key' => Encryption::encrypt($secret_key),
+            'creators_credential_id' => Encryption::encrypt($credential_id),
+            'creators_credential_secret' => Encryption::encrypt($credential_secret),
+            'creators_credential_version' => $version,
             'partner_tags' => wp_json_encode([$region => $partner_tag]),
             'created_at' => current_time('mysql', true),
             'updated_at' => current_time('mysql', true),
@@ -135,13 +144,13 @@ class Test_Products_Controller extends WP_UnitTestCase {
         $data = $response->get_data();
 
         fwrite(STDERR, sprintf(
-            "\n[Products Controller integration test] real Amazon PA-API round trip -> HTTP %d\nBody: %s\n",
+            "\n[Products Controller integration test] real Amazon Creators API round trip -> HTTP %d\nBody: %s\n",
             $response->get_status(),
             wp_json_encode($data)
         ));
 
         $this->assertInstanceOf(WP_REST_Response::class, $response);
-        $this->assertSame(201, $response->get_status(), 'Expected the real Amazon PA-API call to succeed.');
+        $this->assertSame(201, $response->get_status(), 'Expected the real Amazon Creators API call to succeed.');
 
         $this->assertSame($asin, $data['asin']);
         $this->assertSame($region, $data['region']);

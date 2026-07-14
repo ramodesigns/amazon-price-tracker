@@ -272,12 +272,12 @@ class Product_Service {
             return [
                 'success' => false,
                 'error_code' => 'NOT_CONFIGURED',
-                'error' => 'Amazon PA-API credentials not configured',
+                'error' => 'Amazon Creators API credentials not configured',
             ];
         }
 
         // Create Amazon API client
-        $amazon = Amazon_API::from_settings($settings, $product->region);
+        $amazon = Amazon_Creators_API::from_settings($settings, $product->region);
 
         if (!$amazon) {
             return [
@@ -385,7 +385,7 @@ class Product_Service {
                         'asin' => $p->asin,
                         'region' => $p->region,
                         'success' => false,
-                        'error' => 'Amazon PA-API credentials not configured',
+                        'error' => 'Amazon Creators API credentials not configured',
                     ];
                 }, $products),
             ];
@@ -403,7 +403,7 @@ class Product_Service {
 
         foreach ($by_region as $region => $region_products) {
             // Create API client for this region
-            $amazon = Amazon_API::from_settings($settings, $region);
+            $amazon = Amazon_Creators_API::from_settings($settings, $region);
 
             if (!$amazon) {
                 // No partner tag for this region
@@ -420,7 +420,7 @@ class Product_Service {
                 continue;
             }
 
-            // Process in batches of 10 (PA-API limit)
+            // Process in batches of 10 (Creators API's getItems cap)
             $batches = array_chunk($region_products, 10);
 
             foreach ($batches as $batch) {
@@ -513,7 +513,7 @@ class Product_Service {
         if (!$settings) {
             return [
                 'status' => 'not_configured',
-                'message' => 'Amazon PA-API credentials not configured',
+                'message' => 'Amazon Creators API credentials not configured',
             ];
         }
 
@@ -536,7 +536,7 @@ class Product_Service {
             ];
         }
 
-        $amazon = Amazon_API::from_settings($settings, $test_region);
+        $amazon = Amazon_Creators_API::from_settings($settings, $test_region);
 
         if (!$amazon) {
             return [
@@ -550,14 +550,14 @@ class Product_Service {
         if ($connected) {
             return [
                 'status' => 'connected',
-                'message' => 'Successfully connected to Amazon PA-API',
+                'message' => 'Successfully connected to Amazon Creators API',
                 'response_time_ms' => $amazon->get_last_response_time(),
             ];
         }
 
         return [
             'status' => 'error',
-            'message' => $amazon->get_last_error() ?: 'Failed to connect to Amazon PA-API',
+            'message' => $amazon->get_last_error() ?: 'Failed to connect to Amazon Creators API',
             'response_time_ms' => $amazon->get_last_response_time(),
         ];
     }
@@ -588,12 +588,6 @@ class Product_Service {
      * database-backed behavior. A deployed install has no .env file, so this
      * fallback is always inert there.
      *
-     * Covers both PA-API (Amazon_API) and Creators API (Amazon_Creators_API)
-     * credentials - they live under different columns/env keys specifically
-     * so a settings row (or a local .env) can carry either or both at once,
-     * letting the caller choose which implementation to build via
-     * Amazon_API::from_settings() vs. Amazon_Creators_API::from_settings().
-     *
      * @param int $user_id User ID
      * @return object|null
      */
@@ -607,80 +601,38 @@ class Product_Service {
     }
 
     /**
-     * Build a settings-shaped object from .env-supplied credentials.
-     *
-     * Independently checks the PA-API and Creators API env var sets - either
-     * being complete is enough to produce a (partial) settings object; both
-     * missing returns null. A set with only some of its own fields present
-     * is treated as absent (no half-configured fallback).
+     * Build a settings-shaped object from .env-supplied Creators API
+     * credentials, or null if that env var set isn't complete.
      *
      * @return object|null
      */
     private function get_env_fallback_settings(): ?object {
         Env_File::load();
 
-        $legacy = $this->get_legacy_env_credentials();
         $creators = $this->get_creators_env_credentials();
 
-        if (!$legacy && !$creators) {
+        if (!$creators) {
             return null;
         }
 
         $settings = new \stdClass();
-        $partner_tags = [];
 
-        // Re-encrypted here so each API class's from_settings() (which
-        // always decrypts) works identically regardless of which source
-        // the settings came from.
-        if ($legacy) {
-            $settings->access_key = Encryption::encrypt($legacy['access_key']);
-            $settings->secret_key = Encryption::encrypt($legacy['secret_key']);
-            $partner_tags[$legacy['region']] = $legacy['partner_tag'];
-        }
-
-        if ($creators) {
-            $settings->creators_credential_id = Encryption::encrypt($creators['credential_id']);
-            $settings->creators_credential_secret = Encryption::encrypt($creators['credential_secret']);
-            // Not a secret - identifies which auth flavor/region cluster
-            // the credential belongs to (see
-            // Amazon_Creators_API::get_token_endpoint()). Marketplace
-            // itself is deliberately not stored here - Amazon_Creators_API
-            // derives it per request from the region code via
-            // Regions::get_marketplace_domain(), same as the legacy PA-API
-            // client, so one credential can serve every region this user
-            // has a partner tag for rather than being pinned to one.
-            $settings->creators_credential_version = $creators['version'];
-            // A partner/tracking tag belongs to the Associates account and
-            // marketplace, not to which API technology calls it - merge
-            // rather than overwrite so both sources' regions are usable.
-            $partner_tags[$creators['region']] = $creators['partner_tag'];
-        }
-
-        $settings->partner_tags = wp_json_encode($partner_tags);
+        // Re-encrypted here so Amazon_Creators_API::from_settings() (which
+        // always decrypts) works identically regardless of whether the
+        // settings came from this .env fallback or a real DB row.
+        $settings->creators_credential_id = Encryption::encrypt($creators['credential_id']);
+        $settings->creators_credential_secret = Encryption::encrypt($creators['credential_secret']);
+        // Not a secret - identifies which auth flavor/region cluster the
+        // credential belongs to (see Amazon_Creators_API::get_token_endpoint()).
+        // Marketplace itself is deliberately not stored here -
+        // Amazon_Creators_API derives it per request from the region code
+        // via Regions::get_marketplace_domain(), so one credential can serve
+        // every region this user has a partner tag for rather than being
+        // pinned to one.
+        $settings->creators_credential_version = $creators['version'];
+        $settings->partner_tags = wp_json_encode([$creators['region'] => $creators['partner_tag']]);
 
         return $settings;
-    }
-
-    /**
-     * Read the legacy PA-API .env credential set, if complete.
-     *
-     * @return array{access_key: string, secret_key: string, partner_tag: string, region: string}|null
-     */
-    private function get_legacy_env_credentials(): ?array {
-        $access_key = getenv('APT_TEST_PA_API_ACCESS_KEY');
-        $secret_key = getenv('APT_TEST_PA_API_SECRET_KEY');
-        $partner_tag = getenv('APT_TEST_PA_API_PARTNER_TAG');
-
-        if (!$access_key || !$secret_key || !$partner_tag) {
-            return null;
-        }
-
-        return [
-            'access_key' => $access_key,
-            'secret_key' => $secret_key,
-            'partner_tag' => $partner_tag,
-            'region' => strtoupper(getenv('APT_TEST_PA_API_REGION') ?: 'UK'),
-        ];
     }
 
     /**
@@ -690,7 +642,7 @@ class Product_Service {
      * Credential ID, Credential Secret, Version, Marketplace, and Partner
      * Tag - but Marketplace is a per-request value derived from the region
      * (see Amazon_Creators_API), not stored, so it has no env var here;
-     * region takes its place, consistent with the legacy PA-API set below.
+     * region takes its place.
      *
      * @return array{credential_id: string, credential_secret: string, version: string, partner_tag: string, region: string}|null
      */
@@ -727,7 +679,7 @@ class Product_Service {
     }
 
     /**
-     * Fetch and validate product data from Amazon PA-API for a user/region
+     * Fetch and validate product data from Amazon Creators API for a user/region
      *
      * Shared by create_product() and reactivate_product() - both need the
      * same settings lookup, Amazon API client construction, and error
@@ -735,7 +687,7 @@ class Product_Service {
      *
      * @param string $asin Product ASIN
      * @param string $region Region code
-     * @param int $user_id User ID whose PA-API credentials to use
+     * @param int $user_id User ID whose Creators API credentials to use
      * @return array On success: ['success' => true, 'product_data' => array].
      *               On failure: ['success' => false, 'error_code' => string, 'error' => string].
      */
@@ -746,11 +698,11 @@ class Product_Service {
             return [
                 'success' => false,
                 'error_code' => 'NOT_CONFIGURED',
-                'error' => 'Amazon PA-API credentials not configured',
+                'error' => 'Amazon Creators API credentials not configured',
             ];
         }
 
-        $amazon = Amazon_API::from_settings($settings, $region);
+        $amazon = Amazon_Creators_API::from_settings($settings, $region);
 
         if (!$amazon) {
             return [
@@ -765,9 +717,18 @@ class Product_Service {
         if (!$product_data) {
             $error = $amazon->get_last_error();
 
-            if (str_contains(strtolower($error ?? ''), 'itemnotfound') ||
-                str_contains(strtolower($error ?? ''), 'invalid') ||
-                str_contains(strtolower($error ?? ''), 'not found')) {
+            // Creators API has no per-item "not found" error at all: an
+            // unmatched ASIN is just silently absent from itemsResult.items
+            // in an otherwise-200 response (see Amazon_Creators_API::request()'s
+            // docblock), so get_last_error() comes back null/empty for this
+            // case rather than a message we can pattern-match - unlike
+            // PA-API's old ItemNotAccessible-style error text. Treat "no data,
+            // no error" as not-found; keep the substring checks as a fallback
+            // for whatever explicit error text either API does produce.
+            if (empty($error) ||
+                str_contains(strtolower($error), 'itemnotfound') ||
+                str_contains(strtolower($error), 'invalid') ||
+                str_contains(strtolower($error), 'not found')) {
                 return [
                     'success' => false,
                     'error_code' => 'ASIN_NOT_FOUND',

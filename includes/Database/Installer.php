@@ -128,8 +128,6 @@ class Installer {
         $sql = "CREATE TABLE {$table_name} (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id BIGINT(20) UNSIGNED NOT NULL,
-            access_key VARCHAR(255) NOT NULL,
-            secret_key VARCHAR(255) NOT NULL,
             creators_credential_id VARCHAR(255) DEFAULT NULL,
             creators_credential_secret VARCHAR(255) DEFAULT NULL,
             creators_credential_version VARCHAR(10) DEFAULT NULL,

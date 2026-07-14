@@ -4,15 +4,16 @@
  *
  * Exercises GET /health and GET /health/amazon end-to-end through the real
  * WP REST dispatcher - real routing/permission callbacks, a real
- * authenticated user - but with Amazon's PA-API faked via the
- * pre_http_request filter (see pa-api-mock.php) for the connectivity check.
+ * authenticated user - but with Amazon's Creators API faked via the
+ * pre_http_request filter (see creators-api-mock.php) for the connectivity
+ * check.
  *
  * @package AmazonPriceTracker\Tests\Component
  */
 
 use APT\Helpers\Encryption;
 
-require_once __DIR__ . '/pa-api-mock.php';
+require_once __DIR__ . '/creators-api-mock.php';
 
 /**
  * Test case for the Health REST controller.
@@ -41,7 +42,7 @@ class Test_Health_Controller_Component extends WP_UnitTestCase {
     public function tearDown(): void {
         global $wpdb;
 
-        apt_test_reset_pa_api_responses();
+        apt_test_reset_creators_api_responses();
 
         if ($this->created_user_id) {
             $wpdb->delete($wpdb->prefix . 'apt_user_settings', ['user_id' => $this->created_user_id]);
@@ -90,12 +91,12 @@ class Test_Health_Controller_Component extends WP_UnitTestCase {
 
         // Guard against a local .env supplying fallback credentials - this
         // test specifically asserts the *unconfigured* path.
-        $saved_env = apt_test_suppress_pa_api_env_fallback();
+        $saved_env = apt_test_suppress_credential_env_fallback();
         try {
             $response = $this->dispatch_get('/health/amazon');
             $data = $response->get_data();
         } finally {
-            apt_test_restore_pa_api_env_fallback($saved_env);
+            apt_test_restore_credential_env_fallback($saved_env);
         }
 
         $this->assertSame(200, $response->get_status());
@@ -111,17 +112,18 @@ class Test_Health_Controller_Component extends WP_UnitTestCase {
 
         $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
             'user_id' => $user_id,
-            'access_key' => Encryption::encrypt('test-access-key'),
-            'secret_key' => Encryption::encrypt('test-secret-key'),
+            'creators_credential_id' => Encryption::encrypt('test-credential-id'),
+            'creators_credential_secret' => Encryption::encrypt('test-credential-secret'),
+            'creators_credential_version' => '3.2',
             'partner_tags' => wp_json_encode(['UK' => 'test-partner-tag']),
             'created_at' => current_time('mysql', true),
             'updated_at' => current_time('mysql', true),
         ]);
 
-        apt_test_queue_pa_api_response(200, [
-            'SearchResult' => [
-                'Items' => [
-                    ['ASIN' => 'B0TESTASIN'],
+        apt_test_queue_creators_api_response(200, [
+            'searchResult' => [
+                'items' => [
+                    ['asin' => 'B0TESTASIN'],
                 ],
             ],
         ]);
@@ -142,14 +144,15 @@ class Test_Health_Controller_Component extends WP_UnitTestCase {
 
         $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
             'user_id' => $user_id,
-            'access_key' => Encryption::encrypt('test-access-key'),
-            'secret_key' => Encryption::encrypt('test-secret-key'),
+            'creators_credential_id' => Encryption::encrypt('test-credential-id'),
+            'creators_credential_secret' => Encryption::encrypt('test-credential-secret'),
+            'creators_credential_version' => '3.2',
             'partner_tags' => wp_json_encode(['UK' => 'test-partner-tag']),
             'created_at' => current_time('mysql', true),
             'updated_at' => current_time('mysql', true),
         ]);
 
-        apt_test_queue_pa_api_error('http_request_failed', 'Operation timed out after 30001 milliseconds.');
+        apt_test_queue_creators_api_error('http_request_failed', 'Operation timed out after 30001 milliseconds.');
 
         $response = $this->dispatch_get('/health/amazon');
         $data = $response->get_data();

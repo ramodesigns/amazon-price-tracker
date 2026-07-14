@@ -57,7 +57,7 @@ spl_autoload_register(function ($class) {
 });
 
 // Load a local .env file (if present) into the process environment, before
-// anything reads PA-API credentials. Absent in every real deployment - see
+// anything reads Creators API credentials. Absent in every real deployment - see
 // APT\Helpers\Env_File for what this enables and why it's safe.
 \APT\Helpers\Env_File::load();
 
@@ -296,7 +296,7 @@ final class Amazon_Price_Tracker {
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/health/amazon</code></td>
-                                <td><?php esc_html_e('Test Amazon PA-API connectivity with your credentials', 'amazon-price-tracker'); ?></td>
+                                <td><?php esc_html_e('Test Amazon Creators API connectivity with your credentials', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
                                 <td><button type="button" class="button button-small apt-example-btn" data-endpoint="health-amazon">Response</button></td>
                             </tr>
@@ -460,14 +460,14 @@ final class Amazon_Price_Tracker {
                             <tr>
                                 <td><span class="apt-method apt-method-get">GET</span></td>
                                 <td><code>/settings</code></td>
-                                <td><?php esc_html_e('Get your Amazon PA-API settings and partner tags', 'amazon-price-tracker'); ?></td>
+                                <td><?php esc_html_e('Get your Amazon Creators API settings and partner tags', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
                                 <td><button type="button" class="button button-small apt-example-btn" data-endpoint="settings-get">Response</button></td>
                             </tr>
                             <tr>
                                 <td><span class="apt-method apt-method-put">PUT</span></td>
                                 <td><code>/settings</code></td>
-                                <td><?php esc_html_e('Update Amazon PA-API credentials and partner tags', 'amazon-price-tracker'); ?></td>
+                                <td><?php esc_html_e('Update Amazon Creators API credentials and partner tags', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
                                 <td>
                                     <button type="button" class="button button-small apt-example-btn" data-endpoint="settings-update" data-type="request">Request</button>
@@ -484,7 +484,7 @@ final class Amazon_Price_Tracker {
                             <tr>
                                 <td><span class="apt-method apt-method-post">POST</span></td>
                                 <td><code>/settings/validate</code></td>
-                                <td><?php esc_html_e('Validate your Amazon PA-API credentials', 'amazon-price-tracker'); ?></td>
+                                <td><?php esc_html_e('Validate your Amazon Creators API credentials', 'amazon-price-tracker'); ?></td>
                                 <td><span class="apt-auth-user"><?php esc_html_e('User', 'amazon-price-tracker'); ?></span></td>
                                 <td><button type="button" class="button button-small apt-example-btn" data-endpoint="settings-validate">Response</button></td>
                             </tr>
@@ -758,7 +758,7 @@ final class Amazon_Price_Tracker {
                             "success": true,
                             "data": {
                                 "status": "connected",
-                                "message": "Successfully connected to Amazon PA-API",
+                                "message": "Successfully connected to Amazon Creators API",
                                 "region_tested": "US",
                                 "response_time_ms": 245
                             }
@@ -1005,7 +1005,8 @@ final class Amazon_Price_Tracker {
                             "data": {
                                 "id": 1,
                                 "user_id": 1,
-                                "access_key": "AKIA****XXXX",
+                                "creators_credential_id": "amzn****mple",
+                                "creators_credential_version": "3.2",
                                 "partner_tags": {
                                     "US": "mysite-20",
                                     "UK": "mysite-21",
@@ -1018,8 +1019,9 @@ final class Amazon_Price_Tracker {
                     },
                     'settings-update': {
                         request: {
-                            "access_key": "AKIAIOSFODNN7EXAMPLE",
-                            "secret_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+                            "creators_credential_id": "amzn1.application-oa2-client.example",
+                            "creators_credential_secret": "amzn1.oa2-cs.v1.example",
+                            "creators_credential_version": "3.2",
                             "partner_tags": {
                                 "US": "mysite-20",
                                 "UK": "mysite-21"
@@ -1030,7 +1032,8 @@ final class Amazon_Price_Tracker {
                             "data": {
                                 "id": 1,
                                 "user_id": 1,
-                                "access_key": "AKIA****MPLE",
+                                "creators_credential_id": "amzn****mple",
+                                "creators_credential_version": "3.2",
                                 "partner_tags": {
                                     "US": "mysite-20",
                                     "UK": "mysite-21"
@@ -1050,7 +1053,7 @@ final class Amazon_Price_Tracker {
                             "success": true,
                             "data": {
                                 "valid": true,
-                                "message": "Amazon PA-API credentials are valid and working"
+                                "message": "Amazon Creators API credentials are valid and working"
                             }
                         }
                     },

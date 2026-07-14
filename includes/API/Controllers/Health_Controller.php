@@ -45,7 +45,7 @@ class Health_Controller extends Base_Controller {
             ],
         ]);
 
-        // GET /health/amazon - Check Amazon PA-API connectivity
+        // GET /health/amazon - Check Amazon Creators API connectivity
         register_rest_route($this->namespace, '/' . $this->rest_base . '/amazon', [
             [
                 'methods' => 'GET',
@@ -74,7 +74,7 @@ class Health_Controller extends Base_Controller {
     }
 
     /**
-     * Get Amazon PA-API connectivity status
+     * Get Amazon Creators API connectivity status
      *
      * @param WP_REST_Request $request Request object
      * @return WP_REST_Response|WP_Error

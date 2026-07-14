@@ -5,8 +5,8 @@ info:
   version: "1.0.0"
   description: |
     A WordPress REST API plugin for tracking Amazon product prices across multiple
-    international marketplaces. Integrates with Amazon Product Advertising API (PA-API) 5.0
-    to fetch product data and pricing, storing historical price records over time.
+    international marketplaces. Integrates with Amazon's Creators API to fetch product
+    data and pricing, storing historical price records over time.
 
     ## Authentication
 
@@ -75,7 +75,7 @@ tags:
   - name: Blacklist
     description: ASIN/region combinations blocked from being tracked.
   - name: Settings
-    description: Per-user Amazon PA-API credentials and partner tags.
+    description: Per-user Amazon Creators API credentials and partner tags.
   - name: Stats
     description: Aggregate and per-user usage statistics.
 
@@ -89,7 +89,7 @@ paths:
       summary: API health check
       description: |
         Public liveness check - confirms the plugin is loaded and returns version info.
-        Does **not** verify database connectivity or Amazon PA-API access; see
+        Does **not** verify database connectivity or Amazon Creators API access; see
         `GET /health/amazon` for that.
       security: []
       operationId: getHealth
@@ -110,10 +110,10 @@ paths:
   /health/amazon:
     get:
       tags: [Health]
-      summary: Amazon PA-API connectivity check
+      summary: Amazon Creators API connectivity check
       description: |
-        Tests connectivity to Amazon's PA-API using the authenticated user's configured
-        credentials (a lightweight `SearchItems` call for `Keywords: "test"`).
+        Tests connectivity to Amazon's Creators API using the authenticated user's
+        configured credentials (a lightweight `searchItems` call for `keywords: "test"`).
 
         Always returns `200 OK` - connection failures are reported *inside* the response
         body via `status`/`message`, not via HTTP error codes.
@@ -130,16 +130,16 @@ paths:
                 connected:
                   value:
                     status: connected
-                    message: Successfully connected to Amazon PA-API
+                    message: Successfully connected to Amazon Creators API
                     response_time_ms: 342
                 not_configured:
                   value:
                     status: not_configured
-                    message: Amazon PA-API credentials not configured
+                    message: Amazon Creators API credentials not configured
                 error:
                   value:
                     status: error
-                    message: "The request signature we calculated does not match the signature you provided."
+                    message: "The authentication token is invalid or malformed."
                     response_time_ms: 118
         "401":
           $ref: "#/components/responses/Unauthorized"
@@ -320,7 +320,7 @@ paths:
       tags: [Products]
       summary: Create (track) a new product
       description: |
-        Fetches product data from Amazon PA-API for the given ASIN/region and stores it,
+        Fetches product data from Amazon Creators API for the given ASIN/region and stores it,
         along with an initial price history record. Subject, in order, to: rate limiting
         (non-admins only), blacklist check, and a duplicate check (same ASIN + region
         already tracked).
@@ -374,7 +374,7 @@ paths:
             One of several validation/business-rule failures, distinguished by `code`:
             `VALIDATION_ERROR` (malformed asin/region), `ASIN_NOT_FOUND` (Amazon has no
             such item), `MISSING_PARTNER_TAG` (no partner tag configured for the region),
-            or `NOT_CONFIGURED` (no PA-API credentials at all).
+            or `NOT_CONFIGURED` (no Creators API credentials at all).
           content:
             application/json:
               schema:
@@ -402,7 +402,7 @@ paths:
                 not_configured:
                   value:
                     code: NOT_CONFIGURED
-                    message: Amazon PA-API credentials not configured
+                    message: Amazon Creators API credentials not configured
                     data: { status: 400 }
         "401":
           $ref: "#/components/responses/Unauthorized"
@@ -449,7 +449,7 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitExceeded"
         "502":
-          description: Amazon PA-API request failed (network error, signature error, throttling, etc).
+          description: Amazon Creators API request failed (network error, authentication error, throttling, etc).
           content:
             application/json:
               schema:
@@ -465,7 +465,7 @@ paths:
       summary: Reactivate a previously soft-deleted product
       description: |
         Brings a soft-deleted (`is_active: false`) product back, re-fetching current
-        data from Amazon PA-API rather than reusing whatever was last stored, and
+        data from Amazon Creators API rather than reusing whatever was last stored, and
         recording a fresh price history entry. The existing row's `id`, `created_at`,
         and `created_by` are preserved - this updates the existing row, it does not
         create a new one.
@@ -528,7 +528,7 @@ paths:
         "429":
           $ref: "#/components/responses/RateLimitExceeded"
         "502":
-          description: Amazon PA-API request failed.
+          description: Amazon Creators API request failed.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -601,8 +601,8 @@ paths:
       tags: [Products]
       summary: Bulk-refresh product prices
       description: |
-        Admin only. Re-fetches pricing for multiple products from Amazon PA-API in
-        batches of 10 (the PA-API `GetItems` limit), with a 100ms pause between batches.
+        Admin only. Re-fetches pricing for multiple products from Amazon Creators API in
+        batches of 10 (the `getItems` limit), with a 100ms pause between batches.
         With no filters, refreshes all active products (subject to `limit`).
       operationId: bulkRefreshProducts
       requestBody:
@@ -747,7 +747,7 @@ paths:
       tags: [Products]
       summary: Refresh a single product's price
       description: |
-        Admin only. Re-fetches the product from Amazon PA-API and records a new price
+        Admin only. Re-fetches the product from Amazon Creators API and records a new price
         history entry. On failure, the existing stored price is left unchanged.
       operationId: refreshProduct
       responses:
@@ -768,7 +768,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
         "502":
-          description: Amazon PA-API request failed, or an otherwise-unrecognized error code.
+          description: Amazon Creators API request failed, or an otherwise-unrecognized error code.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -1000,8 +1000,8 @@ paths:
   /settings:
     get:
       tags: [Settings]
-      summary: Get the current user's PA-API settings
-      description: "`access_key` is returned masked (e.g. `AKIA****WXYZ`); `secret_key` is never returned."
+      summary: Get the current user's Amazon Creators API settings
+      description: "`creators_credential_id` is returned masked (e.g. `amzn****mple`); `creators_credential_secret` is never returned."
       operationId: getSettings
       responses:
         "200":
@@ -1012,7 +1012,8 @@ paths:
               example:
                 id: 1
                 user_id: 1
-                access_key: "test****"
+                creators_credential_id: "amzn****mple"
+                creators_credential_version: "3.2"
                 partner_tags: { UK: "getyourself0a-21" }
                 created_at: "2026-07-13T17:38:12+00:00"
                 updated_at: "2026-07-13T17:38:12+00:00"
@@ -1025,10 +1026,11 @@ paths:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
     put:
       tags: [Settings]
-      summary: Create or update the current user's PA-API settings
+      summary: Create or update the current user's Amazon Creators API settings
       description: |
-        On first setup, `access_key` and `secret_key` are both required. On subsequent
-        calls, any omitted field is left unchanged; `partner_tags` is **merged** into the
+        On first setup, `creators_credential_id`, `creators_credential_secret` and
+        `creators_credential_version` are all required. On subsequent calls, any
+        omitted field is left unchanged; `partner_tags` is **merged** into the
         existing map (per-region keys are overwritten, others untouched) rather than
         replaced wholesale - use `DELETE /settings/partner-tags/{region}` to remove one.
       operationId: updateSettings
@@ -1037,8 +1039,9 @@ paths:
           application/json:
             schema: { $ref: "#/components/schemas/UpdateSettingsRequest" }
             example:
-              access_key: test
-              secret_key: test+test
+              creators_credential_id: "amzn1.application-oa2-client.example"
+              creators_credential_secret: "amzn1.oa2-cs.v1.example"
+              creators_credential_version: "3.2"
               partner_tags: { UK: "test-21" }
       responses:
         "200":
@@ -1052,7 +1055,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Settings" }
         "400":
-          description: Missing `access_key`/`secret_key` on first setup, or an invalid entry in `partner_tags`.
+          description: A required credential field was missing on first setup, an invalid `creators_credential_version`, or an invalid entry in `partner_tags`.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -1080,7 +1083,7 @@ paths:
   /settings/validate:
     post:
       tags: [Settings]
-      summary: Validate the current user's PA-API credentials
+      summary: Validate the current user's Amazon Creators API credentials
       description: Thin wrapper around the same connectivity test as `GET /health/amazon`.
       operationId: validateSettings
       responses:
@@ -1095,7 +1098,7 @@ paths:
                   message: { type: string }
               examples:
                 valid:
-                  value: { valid: true, message: Successfully connected to Amazon PA-API }
+                  value: { valid: true, message: Successfully connected to Amazon Creators API }
                 invalid:
                   value: { valid: false, message: "The request signature we calculated does not match the signature you provided." }
         "400":
@@ -1510,9 +1513,12 @@ components:
       properties:
         id: { type: integer }
         user_id: { type: integer }
-        access_key:
+        creators_credential_id:
           type: string
-          description: Masked (first/last 4 characters visible). `secret_key` is never returned by any endpoint.
+          description: Creators API credential ID, masked (first/last 4 characters visible). Empty string if not configured. `creators_credential_secret` is never returned by any endpoint.
+        creators_credential_version:
+          type: string
+          description: Creators API credential version (e.g. `"3.2"`), returned as plain text - not a secret, identifies which auth flavor/regional cluster the credential belongs to. Empty string if not configured.
         partner_tags:
           type: object
           description: Map of region code to Amazon Associates partner/tracking tag.
@@ -1524,12 +1530,15 @@ components:
     UpdateSettingsRequest:
       type: object
       properties:
-        access_key:
+        creators_credential_id:
           type: string
-          description: Required on first setup (when no settings exist yet for this user).
-        secret_key:
+          description: Creators API credential ID (from Associates Central, Tools > Creators API).
+        creators_credential_secret:
           type: string
-          description: Required on first setup. Write-only - never echoed back in responses.
+          description: Creators API credential secret. Write-only - never echoed back in responses.
+        creators_credential_version:
+          type: string
+          description: One of `2.1`, `2.2`, `2.3` (Cognito) or `3.1`, `3.2`, `3.3` (Login-with-Amazon). An optional leading `v` is accepted and stripped.
         partner_tags:
           type: object
           additionalProperties: { type: string }

@@ -35,8 +35,6 @@ class Test_Regions extends WP_UnitTestCase {
             $this->assertArrayHasKey('name', $region);
             $this->assertArrayHasKey('marketplace_domain', $region);
             $this->assertArrayHasKey('currency', $region);
-            $this->assertArrayHasKey('host', $region);
-            $this->assertArrayHasKey('region', $region);
         }
     }
 
@@ -97,24 +95,6 @@ class Test_Regions extends WP_UnitTestCase {
         $this->assertSame('GBP', Regions::get_currency('UK'));
         $this->assertSame('EUR', Regions::get_currency('DE'));
         $this->assertNull(Regions::get_currency('XX'));
-    }
-
-    /**
-     * Test get_api_host for valid and invalid regions.
-     */
-    public function test_get_api_host() {
-        $this->assertSame('webservices.amazon.com', Regions::get_api_host('US'));
-        $this->assertSame('webservices.amazon.co.uk', Regions::get_api_host('UK'));
-        $this->assertNull(Regions::get_api_host('XX'));
-    }
-
-    /**
-     * Test get_aws_region for valid and invalid regions.
-     */
-    public function test_get_aws_region() {
-        $this->assertSame('us-east-1', Regions::get_aws_region('US'));
-        $this->assertSame('eu-west-1', Regions::get_aws_region('DE'));
-        $this->assertNull(Regions::get_aws_region('XX'));
     }
 
     /**

@@ -151,13 +151,8 @@ class Amazon_Creators_API {
      * Create instance from user settings
      *
      * Reads the creators_credential_id/creators_credential_secret/
-     * creators_credential_version columns - separate from
-     * Amazon_API::from_settings()'s access_key/secret_key, by design, so a
-     * single settings row (or a local .env, see
-     * Product_Service::get_env_fallback_settings()) can carry both API's
-     * credentials at once. partner_tags is shared between the two: a
-     * partner/tracking tag belongs to the Associates account and
-     * marketplace, not to which API technology is used to call it.
+     * creators_credential_version columns (or a local .env, see
+     * Product_Service::get_env_fallback_settings()).
      *
      * @param object $settings User settings record
      * @param string $region_code Region code
@@ -225,10 +220,27 @@ class Amazon_Creators_API {
 
         $response = $this->request('getItems', $payload);
 
-        if (!$response || !isset($response['itemsResult']['items'])) {
+        if (!$response) {
+            // last_error already set by request().
             return [];
         }
 
+        if (!isset($response['itemsResult']['items'])) {
+            // Distinct from a genuinely-not-found ASIN (see below): a 200
+            // response missing itemsResult.items entirely means something
+            // about the response shape itself is wrong, not that the
+            // requested item doesn't exist. Setting last_error here lets
+            // Product_Service::fetch_amazon_product_data() tell the two
+            // apart, since neither produces a parsed item either way.
+            $this->last_error = 'Unexpected response shape: missing itemsResult.items';
+            return [];
+        }
+
+        // itemsResult.items is present but may simply not contain the
+        // requested ASIN - Creators API has no per-item "not found" error,
+        // an unmatched ASIN is just absent here. last_error stays null in
+        // that case, which is how the caller distinguishes it from the
+        // malformed-response case above.
         $results = [];
 
         foreach ($response['itemsResult']['items'] as $item) {
@@ -495,8 +507,8 @@ class Amazon_Creators_API {
     /**
      * Get the resources to request for item lookups.
      *
-     * Mapped from Amazon_API::get_item_resources()'s PA-API list to
-     * GetItemsResource's equivalents (see
+     * Mapped from PA-API's equivalent resource list (the now-deleted
+     * Amazon_API::get_item_resources()) to GetItemsResource's equivalents (see
      * src/com/amazon/creators/model/GetItemsResource.php in the reference
      * SDK). Two PA-API resources this plugin used have no Creators API
      * equivalent at all and are dropped rather than guessed at:
@@ -765,11 +777,19 @@ class Amazon_Creators_API {
 
         // Availability
         if (isset($listing['availability']['type'])) {
-            $availability_type = strtolower($listing['availability']['type']);
+            // Creators API uses its own SCREAMING_SNAKE_CASE vocabulary
+            // (confirmed live: 'IN_STOCK'), not PA-API's Title Case one
+            // ('Now'/'Out of Stock'/'Pre-order') - normalizing underscores/
+            // hyphens to spaces before matching means both APIs' styles
+            // collapse to the same key set. 'OUT_OF_STOCK'/'PREORDER' are
+            // inferred from the same naming convention, not yet confirmed
+            // against a live out-of-stock/preorder ASIN - the message-text
+            // fallback below is the safety net for exactly that case.
+            $availability_type = strtolower(str_replace(['_', '-'], ' ', $listing['availability']['type']));
             $pricing['availability'] = match ($availability_type) {
-                'now' => 'in_stock',
+                'in stock' => 'in_stock',
                 'out of stock' => 'out_of_stock',
-                'pre-order', 'preorder' => 'preorder',
+                'preorder', 'pre order' => 'preorder',
                 default => 'unknown',
             };
 

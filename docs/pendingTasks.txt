@@ -207,8 +207,10 @@
 - [ ] ENV-01: Set up WordPress 5.9+ test environment
 - [ ] ENV-02: Install PHP 7.4+ with required extensions (json, openssl, curl)
 - [ ] ENV-03: Create Amazon Associates account
-- [ ] ENV-04: Register for Amazon PA-API 5.0 access
-- [ ] ENV-05: Generate PA-API access key and secret key
+- [ ] ENV-04: Register for Amazon Creators API access (PA-API 5.0 access is
+      no longer sufficient - Amazon has deprecated it, see Section 10)
+- [ ] ENV-05: Generate a Creators API credential (ID + secret + version) via
+      Associates Central > Tools > Creators API
 - [ ] ENV-06: Create partner tags for test regions (US, UK minimum)
 - [ ] ENV-07: Create WordPress user with Application Password
 - [ ] ENV-08: Configure HTTPS (required for Application Passwords)
@@ -294,7 +296,7 @@ STEP 10: Test Scheduled Refresh
 
 --- Phase 1: Field parity audit (do first - blocks every later phase) ---
 
-- [ ] MIGR-01: Audit every field Amazon_API::parse_item()/parse_pricing()
+- [x] MIGR-01: Audit every field Amazon_API::parse_item()/parse_pricing()
       extracts from PA-API responses against Amazon_Creators_API's
       parse_item()/parse_pricing() equivalents, field by field. For each
       PA-API field: either (a) confirm a working Creators API equivalent
@@ -309,43 +311,208 @@ STEP 10: Test Scheduled Refresh
           aggregate summary, only per-listing prices
       OUTPUT: a field-by-field parity list (in this file or a new doc),
       each row marked matched / missing-accepted.
+      STATUS (2026-07-14): Audit complete, see docs/creators-api-field-parity.md.
+      Verdict: no plugin-used field is lost - all 20 used facts fields and
+      3/4 used pricing fields (the 4th being the already-accepted
+      is_prime_price gap) have working Creators API equivalents. Also
+      found: a real bug (not a parity gap) in
+      Amazon_Creators_API::parse_pricing()'s availability type-matching
+      (expects PA-API-style 'now'/'out of stock' values, live Creators API
+      actually returns 'IN_STOCK' etc. - currently masked by a message-
+      string fallback, not reliably), and 13 Creators-API-only fields
+      unused by either implementation (customerReviews rating/count,
+      sales rank, detailPageURL notably - see doc for full list).
+      ACCEPTED by user 2026-07-14. The availability type-matching bug was
+      also fixed the same day (Amazon_Creators_API::parse_pricing() now
+      normalizes '_'/'-' to spaces before matching, verified against real
+      captured live data and synthetic OUT_OF_STOCK/PREORDER cases).
 
 --- Phase 2: Remove old API configs (only after Phase 1 is accepted) ---
 
-- [ ] MIGR-02: Remove PA-API credential fields (access_key/secret_key) from
+- [x] MIGR-11 (prerequisite found and fixed 2026-07-14, blocked MIGR-02):
+      Settings_Controller had ZERO support for Creators API credentials -
+      get_update_args()/update_settings()/format_settings() only knew about
+      access_key/secret_key. Since Product_Service now uses Amazon_Creators_API
+      exclusively (MIGR-09), this meant there was NO real production path for
+      any user to configure the API that now powers 100% of the plugin's
+      Amazon-touching functionality - only a local .env fallback, which is
+      dev-only and inert on a real deployed site. Proceeding with MIGR-02 as
+      originally planned would have deleted the only nominally-working
+      settings path and replaced it with nothing.
+      FIXED: added creators_credential_id/secret/version to
+      get_update_args(), update_settings() (both create and update paths -
+      creation now requires either credential set to be fully present, not
+      just the legacy one), format_settings() (masked id, plain version,
+      secret never exposed - same posture as access_key/secret_key), and a
+      new validate_creators_version() check. Updated docs/openapi.yaml
+      (Settings/UpdateSettingsRequest schemas + endpoint descriptions) and
+      added 5 new component tests (masked GET response, creators-only
+      creation, mixed-fields error listing, invalid version rejection,
+      adding creators fields to an existing legacy-only row via update).
+      All 199 unit+component tests pass.
+- [x] MIGR-02: Remove PA-API credential fields (access_key/secret_key) from
       Settings_Controller and the apt_user_settings DB columns, once
       Creators API credentials are the only supported path.
-- [ ] MIGR-03: Remove APT_TEST_PA_API_* env vars from .env.example and any
+      DONE (2026-07-14): removed access_key/secret_key from
+      Settings_Controller entirely (get_update_args/update_settings/
+      format_settings simplified back down to Creators-only, no more
+      has_legacy/has_creators branching - creation now unconditionally
+      requires the full creators_credential_id/secret/version set) and from
+      Installer.php's CREATE TABLE. Also dropped the columns from the local
+      test DB directly (ALTER TABLE ... DROP COLUMN) since dbDelta() only
+      adds columns, never drops them - NOTE for a real future deployment:
+      this same gap means any already-installed site would need an explicit
+      migration/ALTER TABLE to actually drop these columns; Installer.php
+      has no version-bumped upgrade routine at all currently, only fresh-
+      install CREATE TABLE. Not addressed here since there's no real
+      deployed install yet to migrate. Rewrote tests/component/test-settings-controller.php
+      (insert_settings_row() helper now creates creators_credential_* rows;
+      removed/renamed tests that were specifically about access_key/secret_key
+      masking and requirement, which no longer exist). Updated docs/openapi.yaml
+      to drop access_key/secret_key from the Settings/UpdateSettingsRequest
+      schemas. All 195 unit+component tests pass.
+- [x] MIGR-03: Remove APT_TEST_PA_API_* env vars from .env.example and any
       code reading them via getenv() - do this after Phase 3 retires the
       tests that consume them, not before.
-- [ ] MIGR-04: Remove Amazon_API.php (the PA-API request-signing class)
+      DONE (2026-07-14): removed Product_Service::get_legacy_env_credentials()
+      and simplified get_env_fallback_settings() to Creators-only. Removed
+      APT_TEST_PA_API_ACCESS_KEY/SECRET_KEY/PARTNER_TAG/REGION from
+      .env.example and the real .env (via sed, never printing contents - see
+      SECRETS.md). Renamed the shared APT_TEST_PA_API_ASIN to APT_TEST_ASIN
+      (it's not a credential, just a shared test-data constant, but its old
+      name matched the "APT_TEST_PA_API_*" cleanup pattern and was
+      genuinely confusing once nothing else PA-API-related remained) across
+      both .env files and both integration test files that read it.
+- [x] MIGR-04: Remove Amazon_API.php (the PA-API request-signing class)
       entirely, once nothing in includes/ references it.
+      DONE (2026-07-14): confirmed via repo-wide grep that nothing
+      functionally referenced Amazon_API (only its own class declaration and
+      harmless docblock comments elsewhere) before deleting. Plugin uses
+      spl_autoload_register, no explicit require to clean up. All 195
+      unit+component tests still pass after deletion.
 
 --- Phase 3: Remove old API tests ---
 
-- [ ] MIGR-05: Delete tests/integration/test-amazon-api-pricing.php - PA-API
+- [x] MIGR-05: Delete tests/integration/test-amazon-api-pricing.php - PA-API
       -only canary, now permanently broken (hard 403, not the offers-omission
       it was written to detect).
-- [ ] MIGR-06: Update tests/integration/test-products-controller.php to drop
+      DONE (2026-07-14).
+- [x] MIGR-06: Update tests/integration/test-products-controller.php to drop
       its PA-API path (it currently exercises the real PA-API round trip).
-- [ ] MIGR-07: Remove/retire tests/component/pa-api-mock.php and any
+      DONE (2026-07-14): now uses real APT_TEST_CREATORS_API_* credentials
+      and asserts against a real Creators API round trip. Verified: HTTP 201,
+      real product persisted to DB.
+- [x] MIGR-07: Remove/retire tests/component/pa-api-mock.php and any
       component-test fixtures mocking PA-API pre_http_request responses -
       check tests/component/test-products-controller.php for PA-API-specific
       branches/fixtures first.
-- [ ] MIGR-08: Remove any unit tests that exercise Amazon_API directly.
+      DONE (2026-07-14): pa-api-mock.php deleted. Its shared
+      apt_test_suppress_pa_api_env_fallback()/restore() helpers were moved
+      into tests/component/creators-api-mock.php, renamed
+      apt_test_suppress_credential_env_fallback()/restore() (generic name,
+      no longer PA-API-specific), and updated to only suppress
+      APT_TEST_CREATORS_API_* vars now that Product_Service no longer reads
+      any PA-API ones (MIGR-03). All three component test files
+      (test-products-controller.php, test-health-controller.php,
+      test-settings-controller.php) updated to require only
+      creators-api-mock.php and use the renamed functions.
+- [x] MIGR-08: Remove any unit tests that exercise Amazon_API directly.
+      DONE (2026-07-14): confirmed via grep - tests/unit/ never covered
+      Amazon_API (only Helpers: Encryption/Regions/Response/Validation).
+      Nothing to remove.
 
 --- Phase 4: Remove legacy-vs-Creator decision logic (last) ---
 
-- [ ] MIGR-09: In Product_Service, remove the logic that chooses between
-      Amazon_API::from_settings() and Amazon_Creators_API::from_settings()
-      (and any preference/fallback ordering between them) - Creators API
-      becomes the only implementation. Update
-      Product_Service::get_env_fallback_settings() and its call sites
-      accordingly.
-- [ ] MIGR-10: Search for any other legacy-vs-Creators branching outside
-      Product_Service (e.g. Health_Controller's Amazon connectivity check,
-      Settings_Controller::validate_credentials()) and collapse each to
-      Creators-only.
+- [x] MIGR-09: SUPERSEDED - the original framing was wrong. Investigated
+      2026-07-14 while starting Phase 2 and found Product_Service had NO
+      decision logic at all: every Amazon-touching method
+      (fetch_amazon_product_data, refresh_product, bulk_refresh,
+      test_connection) called Amazon_API::from_settings() exclusively.
+      Amazon_Creators_API was referenced nowhere in the actual application -
+      only in this session's own integration test. Since Amazon now hard-
+      rejects every PA-API call, this meant the plugin's core functionality
+      (create/reactivate/refresh/connectivity-test) was 100% non-functional
+      in production, independent of any cleanup work.
+      FIXED: swapped all 4 call sites to Amazon_Creators_API::from_settings(),
+      updated user-facing error strings (PA-API -> Creators API wording).
+      Also found and fixed two real bugs this exposed:
+        1. fetch_amazon_product_data()'s ASIN-not-found detection relied on
+           PA-API's error-message text ('itemnotfound'/'not found'/'invalid'
+           substrings) - Creators API has no per-item not-found error at all,
+           an unmatched ASIN is just silently absent from a 200 response, so
+           get_last_error() comes back empty and the check never fired.
+        2. Amazon_Creators_API::get_items() didn't distinguish that case
+           (itemsResult.items present, ASIN just not in it - no error) from
+           a genuinely malformed response (itemsResult.items missing
+           entirely - should be an error) - both silently returned []. Now
+           the malformed case sets last_error so the two are distinguishable.
+      Verified end-to-end: real POST /products against live Creators API ->
+      HTTP 201, real product persisted (tests/integration/test-products-controller.php).
+      All 194 unit+component tests updated and passing; only remaining
+      failure across the whole suite is the already-known-dead PA-API canary
+      (test-amazon-api-pricing.php, queued for deletion under MIGR-05).
+- [x] MIGR-10: Checked while fixing MIGR-09 - Health_Controller::get_amazon_health()
+      and Settings_Controller::validate_credentials() don't reference either
+      Amazon class directly (confirmed via grep); both delegate to
+      Product_Service::test_connection(), which MIGR-09 already fixed. No
+      separate branching existed to collapse.
+- [x] MIGR-12 (found and fixed 2026-07-14, full repo-wide PA-API sweep):
+      after MIGR-01..11, a case-insensitive repo-wide grep for "pa-api"/
+      "paapi" still turned up ~90 hits. Went through every one individually
+      rather than declaring the migration done on the checklist alone:
+        - Dead code: Regions::get_api_host()/get_aws_region() (AWS SigV4
+          signing helpers only the now-deleted Amazon_API.php ever called)
+          plus their host/region data keys on every region entry and their
+          unit tests - all removed.
+        - Stale defaults/comments with no user-facing impact: Response::amazon_api_error()'s
+          default message param (never hit - every real caller passes an
+          explicit message), comments in Health_Controller, Products_Controller,
+          Env_File.php, and one dangling reference in Amazon_Creators_API.php
+          to the deleted Amazon_API::get_item_resources().
+        - Real user-facing text: 4 admin-UI labels and 2 example responses
+          in the plugin's own embedded API-docs page (amazon-price-tracker.php),
+          plus README.txt's setup instructions, which literally told users
+          to register for now-dead PA-API access.
+        - Living API reference docs, fully reworked (not just spot-fixed):
+          docs/openapi.yaml (every endpoint description, the Settings/
+          UpdateSettingsRequest schemas which still declared access_key/
+          secret_key as existing-but-"non-functional" even though MIGR-02
+          already removed them from the real API, and example error
+          messages - replaced an AWS-signature-specific example with a real
+          OAuth error seen live this session) and docs/api-collection.json
+          (8 endpoint descriptions/example bodies).
+        - docs/api-reference.html: a pre-rendered static ReDoc export, not
+          hand-authored - regenerated via `npx @redocly/cli build-docs`
+          from the fixed openapi.yaml rather than hand-patched (the user
+          confirmed running the external tool).
+      Left alone deliberately: docs/creators-api-field-parity.md and this
+      file (both explicitly about the migration), docs/Tech Spec.txt and
+      CHANGELOG.md (historical records, not living docs), and comparative/
+      historical comments in Amazon_Creators_API.php/Product_Service.php
+      that explain *why* code is shaped the way it is (e.g. field-mapping
+      rationale against PA-API's old resource names) - those aren't stale,
+      they're the reason future readers won't have to rediscover this.
+      Verified clean via the same repo-wide grep returning only those
+      deliberately-kept hits. 193/193 unit+component tests still passed
+      after the Regions dead-code removal (2 tests removed with it).
+- [x] MIGR-13 (coverage hardening, 2026-07-14): Product_Service::refresh_product()
+      and bulk_refresh() - flagged in a coverage review as having 0% test
+      coverage despite being what the cron job and both refresh endpoints
+      actually call, and despite being part of MIGR-09's Creators API swap -
+      now have 12 new component tests (tests/component/test-products-controller.php):
+      refresh_item (success incl. new price_history row, not-found,
+      forbidden, Amazon-API-error *with explicit verification the existing
+      price is left unchanged on failure*, not-configured, missing-partner-
+      tag) and bulk_refresh (multi-product success, inactive-excluded,
+      product_ids filter, mixed success/failure, forbidden, all-fail-when-
+      not-configured). Found and fixed a real bug while writing these: 4
+      test ASINs were 11 characters against the apt_products.asin VARCHAR(10)
+      column, silently failing $wpdb->insert() (WordPress swallows DB
+      errors by default) rather than throwing - the failure showed up as
+      mysteriously-empty result sets, not an obvious error.
+      RESULT: Product_Service.php line coverage 40.5% -> 78.5%;
+      refresh_product()/bulk_refresh() both 0 -> 5 real calls. Full suite:
+      205/205 (193 previous + 12 new).
 
 ================================================================================
 === COMPLETION TRACKING ===
@@ -358,7 +525,51 @@ QUALITY:    4/4 complete
 SECURITY:   5/5 complete
 PERFORMANCE: 3/3 complete
 FEATURES:   1/6 complete (post-MVP bonus: dashboard widget)
-CREATORS API MIGRATION: 0/10 complete (Phase 1 field audit not started)
+CREATORS API MIGRATION: 13/13 complete (MIGR-01 through MIGR-10, plus
+  MIGR-11 Settings_Controller Creators support, MIGR-12 full repo-wide
+  PA-API reference sweep, MIGR-13 refresh/bulk_refresh coverage - all
+  prerequisites/gaps found along the way, not in the original plan). Fully
+  done as of 2026-07-14, all four original phases plus everything the plan
+  didn't anticipate: Amazon_API.php, pa-api-mock.php, and
+  test-amazon-api-pricing.php are all deleted; access_key/secret_key are
+  gone from Settings_Controller, the DB schema, .env, and every doc;
+  Product_Service runs on Amazon_Creators_API exclusively, including the
+  two previously-untested methods the cron job actually calls. 205/205
+  unit+component tests pass. The one live-network integration test that
+  exercises a real POST /products round trip was hitting Amazon's own rate
+  limit earlier this session (heavy real-API usage, not a code issue) -
+  worth a re-run to reconfirm before treating this as fully closed out.
+
+STILL OPEN, LOWER PRIORITY (not blocking, not part of the PA-API migration -
+  pre-existing gaps a 2026-07-14 coverage review surfaced, most already
+  noted in docs/testing-roadmap.md before this session):
+  - Amazon_Creators_API.php: 67.67% line coverage. The Cognito (v2.x)
+    credential flow - form-encoded token body, different OAuth scope,
+    different Authorization header format - has never executed in any
+    test, including the real-network ones (the one real account available
+    is Login-with-Amazon/v3.x). Real gap if any user's Associates account
+    is ever issued a v2.x credential.
+  - [DONE 2026-07-14] Price_History_Maintenance.php: was 0%, now 98.90%
+    lines (180/182, 16/18 methods) via
+    tests/component/test-price-history-maintenance.php - 16 tests covering
+    all three retention tiers (daily/weekly/monthly collapsing), the
+    untouched 0-30 day full-granularity window, milestone preservation
+    (baseline / all-time low / all-time high / availability changes),
+    inactive-product exclusion, custom retention options, prune counters,
+    run_maintenance/run_manual/cron-hook entry points, last-run
+    bookkeeping, idempotency, and storage stats (delta-based assertions).
+  - Scheduled_Refresh.php: 0% (76 lines) - the cron entry point itself
+    (distinct from Product_Service::bulk_refresh(), which it calls and
+    which MIGR-13 already covered) - scheduling/locking/batching logic
+    untested.
+  - Stats_Controller: 11.97% (14/117 lines) - never scoped, per
+    testing-roadmap.md.
+  - Dashboard_Widget: 0% (243 lines) - admin display UI, lower stakes
+    than the above since it's not data-integrity-critical.
+  Recommended next, in priority order if picked up: Scheduled_Refresh
+  (the actual cron path in production) > Amazon_Creators_API's Cognito
+  flow (real but narrow - only matters for v2.x credential holders) >
+  Stats_Controller > Dashboard_Widget.
 
 TOTAL REQUIRED FOR PRE-PROD: 31/31 complete (100%)
 BONUS FEATURES IMPLEMENTED: 1/6 (Dashboard Widget)

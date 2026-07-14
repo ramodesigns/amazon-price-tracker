@@ -182,7 +182,7 @@ class Response {
      * @param string $message Error message
      * @return WP_Error
      */
-    public static function amazon_api_error(string $message = 'Failed to connect to Amazon PA-API'): WP_Error {
+    public static function amazon_api_error(string $message = 'Failed to connect to Amazon Creators API'): WP_Error {
         return self::error('AMAZON_API_ERROR', $message, 502);
     }
 

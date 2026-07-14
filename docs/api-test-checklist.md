@@ -52,17 +52,18 @@ Before testing:
 |-----------|----------|------|
 | Without auth | 401 Unauthorized | [ ] |
 | No settings configured | 404 Not Found | [ ] |
-| Settings exist | 200 OK with masked `access_key` | [ ] |
-| `secret_key` NOT in response | ✓ | [ ] |
+| Settings exist | 200 OK with masked `creators_credential_id` | [ ] |
+| `creators_credential_secret` NOT in response | ✓ | [ ] |
 | `partner_tags` object returned | ✓ | [ ] |
 
 ### PUT /settings
 | Test Case | Expected | Pass |
 |-----------|----------|------|
-| First setup with `access_key` + `secret_key` | 201 Created | [ ] |
+| First setup with `creators_credential_id` + `creators_credential_secret` + `creators_credential_version` | 201 Created | [ ] |
 | Update existing settings | 200 OK | [ ] |
 | Add new partner tag (merged) | Partner tags merged | [ ] |
-| Missing `access_key` on first setup | 400 Validation Error | [ ] |
+| Missing `creators_credential_id` on first setup | 400 Validation Error | [ ] |
+| Invalid `creators_credential_version` (not one of 2.1/2.2/2.3/3.1/3.2/3.3) | 400 Validation Error | [ ] |
 | Invalid region in partner_tags | 400 Validation Error | [ ] |
 
 ### DELETE /settings/partner-tags/{region}

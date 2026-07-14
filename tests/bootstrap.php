@@ -8,7 +8,13 @@
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+	// Deliberately NOT sys_get_temp_dir(): on macOS that resolves to a
+	// per-login-session path under /var/folders/.../T/ that the OS purges
+	// (on reboot, or periodic housekeeping), silently breaking this bootstrap
+	// with "Could not find .../includes/functions.php" until someone re-runs
+	// bin/install-wp-tests.sh. $HOME persists across reboots and isn't
+	// touched by OS temp-file cleanup.
+	$_tests_dir = rtrim( getenv( 'HOME' ), '/\\' ) . '/.wp-tests/wordpress-tests-lib';
 }
 
 // Forward custom PHPUnit Polyfills configuration to PHPUnit bootstrap file.

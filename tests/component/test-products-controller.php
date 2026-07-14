@@ -4,8 +4,8 @@
  *
  * Exercises POST /products end-to-end through the real WP REST dispatcher -
  * real routing/permission callbacks, a real authenticated user, real
- * database writes - but with Amazon's PA-API faked via the pre_http_request
- * filter (see pa-api-mock.php). This is the plugin's own logic under test
+ * database writes - but with Amazon's Creators API faked via the
+ * pre_http_request filter (see creators-api-mock.php). This is the plugin's own logic under test
  * (routing, validation, error mapping, DB row shape, response shape); the
  * canned fixtures let every branch (success, not-found, malformed response,
  * timeout) be hit deterministically, which live Amazon won't reliably
@@ -17,11 +17,11 @@
 
 use APT\Helpers\Encryption;
 
-require_once __DIR__ . '/pa-api-mock.php';
+require_once __DIR__ . '/creators-api-mock.php';
 
 /**
  * Test case for the Products REST controller's create path, against a
- * faked Amazon PA-API.
+ * faked Amazon Creators API.
  */
 class Test_Products_Controller_Component extends WP_UnitTestCase {
 
@@ -47,9 +47,23 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     protected $direct_product_ids = [];
 
     /**
+     * User IDs (beyond $created_user_id) that had their own apt_user_settings
+     * row inserted directly by a test - e.g. an admin used to test the
+     * daily-limit bypass. Tracked here (rather than cleaned up inline at
+     * the end of the test method) so tearDown() still cleans them up even
+     * if an assertion earlier in the method fails and throws - otherwise
+     * the row leaks past create_product()'s internal COMMIT (see tearDown()
+     * docblock) and permanently orphans, breaking a later test that
+     * happens to reuse the same auto-incremented user_id.
+     *
+     * @var int[]
+     */
+    protected $extra_settings_user_ids = [];
+
+    /**
      * Boot a real REST server with the plugin's routes registered, and set
-     * up a user with fake (but well-formed) PA-API credentials - the mock
-     * intercepts the request before those credentials are ever sent
+     * up a user with fake (but well-formed) Creators API credentials - the
+     * mock intercepts the request before those credentials are ever sent
      * anywhere, so their actual values don't matter.
      */
     public function setUp(): void {
@@ -68,8 +82,9 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
 
         $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
             'user_id' => $user_id,
-            'access_key' => Encryption::encrypt('test-access-key'),
-            'secret_key' => Encryption::encrypt('test-secret-key'),
+            'creators_credential_id' => Encryption::encrypt('test-credential-id'),
+            'creators_credential_secret' => Encryption::encrypt('test-credential-secret'),
+            'creators_credential_version' => '3.2',
             'partner_tags' => wp_json_encode(['UK' => 'test-partner-tag']),
             'created_at' => current_time('mysql', true),
             'updated_at' => current_time('mysql', true),
@@ -88,13 +103,19 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     public function tearDown(): void {
         global $wpdb;
 
-        apt_test_reset_pa_api_responses();
+        apt_test_reset_creators_api_responses();
 
         foreach ($this->direct_product_ids as $product_id) {
             $wpdb->delete($wpdb->prefix . 'apt_price_history', ['product_id' => $product_id]);
         }
         $wpdb->delete($wpdb->prefix . 'apt_products', ['created_by' => $this->created_user_id]);
         $wpdb->delete($wpdb->prefix . 'apt_user_settings', ['user_id' => $this->created_user_id]);
+
+        foreach ($this->extra_settings_user_ids as $user_id) {
+            $wpdb->delete($wpdb->prefix . 'apt_products', ['created_by' => $user_id]);
+            $wpdb->delete($wpdb->prefix . 'apt_user_settings', ['user_id' => $user_id]);
+        }
+
         delete_option('apt_daily_creation_limit');
 
         // Product_Service's internal COMMIT above leaves autocommit off but
@@ -115,6 +136,32 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     private function login_as_admin(): int {
         $admin_id = self::factory()->user->create(['role' => 'administrator']);
         wp_set_current_user($admin_id);
+        return $admin_id;
+    }
+
+    /**
+     * Log in as a fresh administrator with a real Creators API settings row
+     * of their own - refresh_item()/bulk_refresh() look up the *currently
+     * authenticated* user's settings (not the product's original creator),
+     * so refresh tests need this rather than login_as_admin() alone.
+     * Tracked via $extra_settings_user_ids so tearDown() always cleans it up.
+     */
+    private function login_as_admin_with_creators_settings(): int {
+        global $wpdb;
+
+        $admin_id = $this->login_as_admin();
+        $this->extra_settings_user_ids[] = $admin_id;
+
+        $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
+            'user_id' => $admin_id,
+            'creators_credential_id' => Encryption::encrypt('test-credential-id'),
+            'creators_credential_secret' => Encryption::encrypt('test-credential-secret'),
+            'creators_credential_version' => '3.2',
+            'partner_tags' => wp_json_encode(['UK' => 'test-partner-tag']),
+            'created_at' => current_time('mysql', true),
+            'updated_at' => current_time('mysql', true),
+        ]);
+
         return $admin_id;
     }
 
@@ -267,31 +314,31 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     }
 
     /**
-     * A canned success response shaped like a real PA-API GetItems result.
+     * A canned success response shaped like a real Creators API getItems
+     * result.
      *
      * @param string $asin
      * @return array
      */
     private function canned_success_body(string $asin): array {
         return [
-            'ItemsResult' => [
-                'Items' => [
+            'itemsResult' => [
+                'items' => [
                     [
-                        'ASIN' => $asin,
-                        'ItemInfo' => [
-                            'Title' => ['DisplayValue' => 'Component Test Product'],
+                        'asin' => $asin,
+                        'itemInfo' => [
+                            'title' => ['displayValue' => 'Component Test Product'],
                         ],
-                        'Images' => [
-                            'Primary' => [
-                                'Large' => ['URL' => 'https://example.com/image.jpg', 'Height' => 500, 'Width' => 500],
+                        'images' => [
+                            'primary' => [
+                                'large' => ['url' => 'https://example.com/image.jpg', 'height' => 500, 'width' => 500],
                             ],
                         ],
-                        'Offers' => [
-                            'Listings' => [
+                        'offersV2' => [
+                            'listings' => [
                                 [
-                                    'Price' => ['Amount' => 19.99],
-                                    'Availability' => ['Type' => 'Now', 'Message' => 'In Stock.'],
-                                    'DeliveryInfo' => ['IsPrimeEligible' => true],
+                                    'price' => ['money' => ['amount' => 19.99]],
+                                    'availability' => ['type' => 'IN_STOCK', 'message' => 'In stock'],
                                 ],
                             ],
                         ],
@@ -301,9 +348,26 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         ];
     }
 
+    /**
+     * A canned success response covering multiple ASINs in one getItems
+     * batch - what Product_Service::bulk_refresh() actually receives per
+     * region (it groups products by region, then batches up to 10 ASINs
+     * per real getItems call).
+     *
+     * @param string[] $asins
+     * @return array
+     */
+    private function canned_multi_item_body(array $asins): array {
+        $items = [];
+        foreach ($asins as $asin) {
+            $items[] = $this->canned_success_body($asin)['itemsResult']['items'][0];
+        }
+        return ['itemsResult' => ['items' => $items]];
+    }
+
     public function test_create_product_succeeds_with_canned_amazon_response() {
         $asin = 'B0SUCCESS1';
-        apt_test_queue_pa_api_response(200, $this->canned_success_body($asin));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body($asin));
 
         global $wpdb;
         $response = $this->create_product_request($asin, 'UK');
@@ -333,11 +397,10 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
 
     public function test_create_product_returns_asin_not_found_for_amazon_not_found_error() {
         $asin = 'B0NOTFOUND';
-        apt_test_queue_pa_api_response(404, [
-            'Errors' => [
-                ['Code' => 'ItemNotAccessible', 'Message' => 'The item you requested was not found.'],
-            ],
-        ]);
+        // Creators API has no per-item "not found" error - an unmatched ASIN
+        // is simply absent from itemsResult.items in an otherwise-200
+        // response (see Amazon_Creators_API::request()'s docblock).
+        apt_test_queue_creators_api_response(200, ['itemsResult' => ['items' => []]]);
 
         $response = $this->create_product_request($asin, 'UK');
 
@@ -347,8 +410,11 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
 
     public function test_create_product_returns_amazon_api_error_for_malformed_response() {
         $asin = 'B0MALFORM1';
-        // Well-formed JSON, but missing the ItemsResult.Items shape entirely.
-        apt_test_queue_pa_api_response(200, ['UnexpectedShape' => true]);
+        // Well-formed JSON, but missing the itemsResult.items shape entirely -
+        // Amazon_Creators_API::get_items() treats this as a distinct,
+        // genuine parse failure (sets last_error) rather than the
+        // not-found case above (which leaves last_error null).
+        apt_test_queue_creators_api_response(200, ['UnexpectedShape' => true]);
 
         $response = $this->create_product_request($asin, 'UK');
 
@@ -358,7 +424,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
 
     public function test_create_product_returns_amazon_api_error_on_timeout() {
         $asin = 'B0TIMEOUT1';
-        apt_test_queue_pa_api_error('http_request_failed', 'Operation timed out after 30001 milliseconds.');
+        apt_test_queue_creators_api_error('http_request_failed', 'Operation timed out after 30001 milliseconds.');
 
         $response = $this->create_product_request($asin, 'UK');
 
@@ -368,7 +434,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
 
     public function test_create_product_conflict_includes_title_and_active_status_for_active_product() {
         $asin = 'B0EXISTING';
-        apt_test_queue_pa_api_response(200, $this->canned_success_body($asin));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body($asin));
         $this->create_product_request($asin, 'UK');
 
         // No second canned response queued - the conflict check must short-circuit
@@ -387,7 +453,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         global $wpdb;
 
         $asin = 'B0INACTIVE';
-        apt_test_queue_pa_api_response(200, $this->canned_success_body($asin));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body($asin));
         $this->create_product_request($asin, 'UK');
 
         $wpdb->update(
@@ -408,7 +474,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         global $wpdb;
 
         $asin = 'B0REACTIV1';
-        apt_test_queue_pa_api_response(200, $this->canned_success_body($asin));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body($asin));
         $create_response = $this->create_product_request($asin, 'UK');
         $original_id = $create_response->get_data()['id'];
         $original_created_at = $create_response->get_data()['created_at'];
@@ -420,8 +486,8 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         );
 
         $reactivated_body = $this->canned_success_body($asin);
-        $reactivated_body['ItemsResult']['Items'][0]['Offers']['Listings'][0]['Price']['Amount'] = 24.99;
-        apt_test_queue_pa_api_response(200, $reactivated_body);
+        $reactivated_body['itemsResult']['items'][0]['offersV2']['listings'][0]['price']['money']['amount'] = 24.99;
+        apt_test_queue_creators_api_response(200, $reactivated_body);
 
         $response = $this->reactivate_product_request($asin, 'UK');
         $data = $response->get_data();
@@ -450,7 +516,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         global $wpdb;
 
         $asin = 'B0BLACKLST';
-        apt_test_queue_pa_api_response(200, $this->canned_success_body($asin));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body($asin));
         $this->create_product_request($asin, 'UK');
         $wpdb->update($wpdb->prefix . 'apt_products', ['is_active' => 0], ['asin' => $asin, 'region' => 'UK']);
 
@@ -943,7 +1009,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     }
 
     public function test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request() {
-        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0BULKDUP1'));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body('B0BULKDUP1'));
 
         $response = $this->dispatch_post_json('/products/bulk', [
             'products' => [
@@ -960,10 +1026,10 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     }
 
     public function test_bulk_create_reports_mixed_success_and_failure() {
-        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0BULKOK01'));
-        apt_test_queue_pa_api_response(404, [
-            'Errors' => [['Code' => 'ItemNotAccessible', 'Message' => 'The item you requested was not found.']],
-        ]);
+        apt_test_queue_creators_api_response(200, $this->canned_success_body('B0BULKOK01'));
+        // Creators API has no per-item "not found" error - an unmatched
+        // ASIN is simply absent from itemsResult.items in a 200 response.
+        apt_test_queue_creators_api_response(200, ['itemsResult' => ['items' => []]]);
 
         $response = $this->dispatch_post_json('/products/bulk', [
             'products' => [
@@ -990,7 +1056,7 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     public function test_create_item_returns_429_once_daily_limit_reached() {
         update_option('apt_daily_creation_limit', 1);
 
-        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0RATEONE1'));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body('B0RATEONE1'));
         $first = $this->create_product_request('B0RATEONE1', 'UK');
         $this->assertSame(201, $first->get_status(), 'First product should succeed under the limit.');
 
@@ -1009,38 +1075,260 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         update_option('apt_daily_creation_limit', 1);
 
         $admin_id = $this->login_as_admin();
+        $this->extra_settings_user_ids[] = $admin_id;
         $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
             'user_id' => $admin_id,
-            'access_key' => Encryption::encrypt('test-access-key'),
-            'secret_key' => Encryption::encrypt('test-secret-key'),
+            'creators_credential_id' => Encryption::encrypt('test-credential-id'),
+            'creators_credential_secret' => Encryption::encrypt('test-credential-secret'),
+            'creators_credential_version' => '3.2',
             'partner_tags' => wp_json_encode(['UK' => 'test-partner-tag']),
             'created_at' => current_time('mysql', true),
             'updated_at' => current_time('mysql', true),
         ]);
 
-        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0ADMRATE1'));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body('B0ADMRATE1'));
         $first = $this->create_product_request('B0ADMRATE1', 'UK');
         $this->assertSame(201, $first->get_status());
 
-        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0ADMRATE2'));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body('B0ADMRATE2'));
         $second = $this->create_product_request('B0ADMRATE2', 'UK');
 
         $this->assertSame(201, $second->get_status(), 'Admins should not be subject to the daily creation limit.');
-
-        $wpdb->delete($wpdb->prefix . 'apt_products', ['created_by' => $admin_id]);
-        $wpdb->delete($wpdb->prefix . 'apt_user_settings', ['user_id' => $admin_id]);
-        $wpdb->query('COMMIT');
     }
 
     public function test_create_item_includes_rate_limit_headers_reflecting_remaining_quota() {
         update_option('apt_daily_creation_limit', 5);
 
-        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0HEADERS1'));
+        apt_test_queue_creators_api_response(200, $this->canned_success_body('B0HEADERS1'));
         $response = $this->create_product_request('B0HEADERS1', 'UK');
         $headers = $response->get_headers();
 
         $this->assertSame(201, $response->get_status());
         $this->assertSame('5', $headers['X-RateLimit-Limit']);
         $this->assertSame('4', $headers['X-RateLimit-Remaining'], 'One creation used, four of five should remain.');
+    }
+
+    // ========== POST /products/{id}/refresh (single refresh) ==========
+
+    public function test_refresh_item_succeeds_and_records_a_new_price() {
+        $this->login_as_admin_with_creators_settings();
+        $product_id = $this->insert_product(['asin' => 'B0REFRESH1', 'region' => 'UK']);
+        $this->insert_price_history($product_id, ['current_price' => 9.99]);
+
+        $updated_body = $this->canned_success_body('B0REFRESH1');
+        $updated_body['itemsResult']['items'][0]['offersV2']['listings'][0]['price']['money']['amount'] = 14.99;
+        apt_test_queue_creators_api_response(200, $updated_body);
+
+        $response = $this->dispatch_post_json("/products/{$product_id}/refresh", []);
+
+        $this->assertSame(200, $response->get_status());
+
+        // format_product() (this endpoint's response shape) doesn't include
+        // current_price at all - that only lives in price_history - so
+        // verify the refresh actually happened by querying the DB directly.
+        global $wpdb;
+        $price_records = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}apt_price_history WHERE product_id = %d ORDER BY id ASC",
+            $product_id
+        ));
+        $this->assertCount(2, $price_records, 'Expected the original seed record plus a new one from the refresh.');
+        $this->assertEquals(14.99, $price_records[1]->current_price);
+
+        $product = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}apt_products WHERE id = %d",
+            $product_id
+        ));
+        $facts = json_decode($product->facts, true);
+        $this->assertSame('Component Test Product', $facts['title']);
+    }
+
+    public function test_refresh_item_not_found() {
+        $this->login_as_admin_with_creators_settings();
+
+        $response = $this->dispatch_post_json('/products/999999/refresh', []);
+
+        $this->assertSame(404, $response->get_status());
+        $this->assertSame('NOT_FOUND', $response->as_error()->get_error_code());
+    }
+
+    public function test_refresh_item_forbidden_for_non_admin() {
+        // setUp() already authenticates as a subscriber by default.
+        $product_id = $this->insert_product(['asin' => 'B0REFNADMN', 'region' => 'UK']);
+
+        $response = $this->dispatch_post_json("/products/{$product_id}/refresh", []);
+
+        $this->assertSame(403, $response->get_status());
+    }
+
+    public function test_refresh_item_returns_amazon_api_error_and_leaves_existing_price_unchanged() {
+        $this->login_as_admin_with_creators_settings();
+        $product_id = $this->insert_product(['asin' => 'B0REFFAIL1', 'region' => 'UK']);
+        $this->insert_price_history($product_id, ['current_price' => 9.99]);
+
+        // Malformed response (missing itemsResult.items entirely) - Amazon_Creators_API::get_items()
+        // sets last_error for this case, distinct from a genuine not-found ASIN.
+        apt_test_queue_creators_api_response(200, ['UnexpectedShape' => true]);
+
+        $response = $this->dispatch_post_json("/products/{$product_id}/refresh", []);
+
+        $this->assertSame(502, $response->get_status());
+        $this->assertSame('AMAZON_API_ERROR', $response->as_error()->get_error_code());
+
+        global $wpdb;
+        $price_records = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}apt_price_history WHERE product_id = %d",
+            $product_id
+        ));
+        $this->assertCount(1, $price_records, 'A failed refresh must not insert a new price record.');
+        $this->assertEquals(9.99, $price_records[0]->current_price, 'The existing stored price must be left unchanged on refresh failure.');
+    }
+
+    public function test_refresh_item_returns_not_configured_when_no_credentials() {
+        $this->login_as_admin();
+        $product_id = $this->insert_product(['asin' => 'B0REFNOCFG', 'region' => 'UK']);
+
+        $saved_env = apt_test_suppress_credential_env_fallback();
+        try {
+            $response = $this->dispatch_post_json("/products/{$product_id}/refresh", []);
+        } finally {
+            apt_test_restore_credential_env_fallback($saved_env);
+        }
+
+        $this->assertSame(400, $response->get_status());
+        $this->assertSame('NOT_CONFIGURED', $response->as_error()->get_error_code());
+    }
+
+    public function test_refresh_item_returns_missing_partner_tag_for_unconfigured_region() {
+        // login_as_admin_with_creators_settings() only configures a UK partner tag.
+        $this->login_as_admin_with_creators_settings();
+        $product_id = $this->insert_product(['asin' => 'B0REFNOTAG', 'region' => 'DE']);
+
+        $response = $this->dispatch_post_json("/products/{$product_id}/refresh", []);
+
+        $this->assertSame(400, $response->get_status());
+        $this->assertSame('MISSING_PARTNER_TAG', $response->as_error()->get_error_code());
+    }
+
+    // ========== POST /products/refresh (bulk refresh) ==========
+
+    public function test_bulk_refresh_updates_active_products_and_reports_success() {
+        $this->login_as_admin_with_creators_settings();
+        $id1 = $this->insert_product(['asin' => 'B0BULKREF1', 'region' => 'UK']);
+        $id2 = $this->insert_product(['asin' => 'B0BULKREF2', 'region' => 'UK']);
+
+        apt_test_queue_creators_api_response(200, $this->canned_multi_item_body(['B0BULKREF1', 'B0BULKREF2']));
+
+        $response = $this->dispatch_post_json('/products/refresh', []);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame(2, $data['success_count']);
+        $this->assertSame(0, $data['failure_count']);
+        $product_ids = array_column($data['results'], 'product_id');
+        sort($product_ids);
+        $this->assertSame([$id1, $id2], $product_ids);
+        foreach ($data['results'] as $result) {
+            $this->assertTrue($result['success']);
+        }
+
+        global $wpdb;
+        foreach ([$id1, $id2] as $id) {
+            $count = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}apt_price_history WHERE product_id = %d",
+                $id
+            ));
+            $this->assertEquals(1, $count, "Expected a new price record for product {$id}.");
+        }
+    }
+
+    public function test_bulk_refresh_excludes_inactive_products() {
+        $this->login_as_admin_with_creators_settings();
+        $active_id = $this->insert_product(['asin' => 'B0BULKACTV', 'region' => 'UK', 'is_active' => 1]);
+        $inactive_id = $this->insert_product(['asin' => 'B0BULKINAC', 'region' => 'UK', 'is_active' => 0]);
+
+        apt_test_queue_creators_api_response(200, $this->canned_multi_item_body(['B0BULKACTV']));
+
+        $response = $this->dispatch_post_json('/products/refresh', []);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame(1, $data['success_count']);
+        $this->assertCount(1, $data['results'], 'The inactive product should not appear in the results at all.');
+        $this->assertSame($active_id, $data['results'][0]['product_id']);
+
+        global $wpdb;
+        $inactive_price_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}apt_price_history WHERE product_id = %d",
+            $inactive_id
+        ));
+        $this->assertEquals(0, $inactive_price_count, 'The inactive product must not be refreshed.');
+    }
+
+    public function test_bulk_refresh_filters_by_product_ids() {
+        $this->login_as_admin_with_creators_settings();
+        $id1 = $this->insert_product(['asin' => 'B0BULKPID1', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0BULKPID2', 'region' => 'UK']);
+
+        apt_test_queue_creators_api_response(200, $this->canned_multi_item_body(['B0BULKPID1']));
+
+        $response = $this->dispatch_post_json('/products/refresh', ['product_ids' => [$id1]]);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertCount(1, $data['results']);
+        $this->assertSame($id1, $data['results'][0]['product_id']);
+    }
+
+    public function test_bulk_refresh_reports_mixed_success_and_failure() {
+        $this->login_as_admin_with_creators_settings();
+        $ok_id = $this->insert_product(['asin' => 'B0BMIXOK01', 'region' => 'UK']);
+        $fail_id = $this->insert_product(['asin' => 'B0BMIXFAIL', 'region' => 'UK']);
+
+        // Only B0BMIXOK01 comes back - Creators API silently omits an
+        // unmatched ASIN from a 200 response rather than erroring on it.
+        apt_test_queue_creators_api_response(200, $this->canned_multi_item_body(['B0BMIXOK01']));
+
+        $response = $this->dispatch_post_json('/products/refresh', []);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame(1, $data['success_count']);
+        $this->assertSame(1, $data['failure_count']);
+
+        $ok_result = current(array_filter($data['results'], fn($r) => $r['product_id'] === $ok_id));
+        $this->assertTrue($ok_result['success']);
+
+        $fail_result = current(array_filter($data['results'], fn($r) => $r['product_id'] === $fail_id));
+        $this->assertFalse($fail_result['success']);
+        $this->assertSame('Product not found or API error', $fail_result['error']);
+    }
+
+    public function test_bulk_refresh_forbidden_for_non_admin() {
+        // setUp() already authenticates as a subscriber by default.
+        $response = $this->dispatch_post_json('/products/refresh', []);
+
+        $this->assertSame(403, $response->get_status());
+    }
+
+    public function test_bulk_refresh_returns_all_failures_when_not_configured() {
+        $this->login_as_admin();
+        $this->insert_product(['asin' => 'B0BNOCFG01', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0BNOCFG02', 'region' => 'UK']);
+
+        $saved_env = apt_test_suppress_credential_env_fallback();
+        try {
+            $response = $this->dispatch_post_json('/products/refresh', []);
+        } finally {
+            apt_test_restore_credential_env_fallback($saved_env);
+        }
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status(), 'Bulk refresh always returns 200, reporting failures per-item inside the body.');
+        $this->assertSame(0, $data['success_count']);
+        $this->assertSame(2, $data['failure_count']);
+        foreach ($data['results'] as $result) {
+            $this->assertFalse($result['success']);
+            $this->assertSame('Amazon Creators API credentials not configured', $result['error']);
+        }
     }
 }

@@ -4,7 +4,7 @@
  *
  * Loads simple KEY=VALUE pairs from a .env file at the plugin root into the
  * process environment, if one exists. Used to make locally-supplied test
- * credentials (see Product_Service's PA-API settings fallback) available via
+ * credentials (see Product_Service's Creators API settings fallback) available via
  * getenv() regardless of how PHP was invoked (CLI/PHPUnit or a real WP
  * request), without adding a Composer dependency for something this small.
  *

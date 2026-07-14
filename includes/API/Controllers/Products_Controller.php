@@ -444,7 +444,7 @@ class Products_Controller extends Base_Controller {
             );
         }
 
-        // Use Product Service to create the product (fetches from Amazon PA-API)
+        // Use Product Service to create the product (fetches from Amazon Creators API)
         $service = new Product_Service();
         $result = $service->create_product($asin, $region, $this->get_current_user_id());
 

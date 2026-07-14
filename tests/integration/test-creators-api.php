@@ -17,7 +17,7 @@
  *   APT_TEST_CREATORS_API_VERSION
  *   APT_TEST_CREATORS_API_PARTNER_TAG
  *   APT_TEST_CREATORS_API_REGION      (defaults to UK)
- *   APT_TEST_PA_API_ASIN              (shared with the PA-API integration
+ *   APT_TEST_ASIN                     (shared with the other integration
  *                                       tests, defaults to a known-good UK ASIN)
  *
  * Without them set, these tests are skipped rather than failed.
@@ -58,12 +58,11 @@ class Test_Creators_API extends WP_UnitTestCase {
 
     /**
      * Test that a real getItems call via get_item() returns actual product
-     * data - title, images, and a pricing block in the same shape
-     * Amazon_API::parse_item() produces.
+     * data - title, images, and a pricing block.
      */
     public function test_get_item_returns_real_product_data_from_creators_api() {
         $amazon = $this->make_client();
-        $asin = getenv('APT_TEST_PA_API_ASIN') ?: 'B0GWGVC46T';
+        $asin = getenv('APT_TEST_ASIN') ?: 'B0GWGVC46T';
 
         $product_data = $amazon->get_item($asin);
 
@@ -94,7 +93,7 @@ class Test_Creators_API extends WP_UnitTestCase {
      */
     public function test_get_items_returns_asin_keyed_results() {
         $amazon = $this->make_client();
-        $asin = getenv('APT_TEST_PA_API_ASIN') ?: 'B0GWGVC46T';
+        $asin = getenv('APT_TEST_ASIN') ?: 'B0GWGVC46T';
 
         $results = $amazon->get_items([$asin]);
 
