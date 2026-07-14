@@ -152,6 +152,14 @@ class Test_Validation extends WP_UnitTestCase {
     }
 
     /**
+     * Test boolean validation trims whitespace and lowercases string
+     * values before comparing against the allow-list.
+     */
+    public function test_validate_bool_trims_and_lowercases_strings() {
+        $this->assertTrue(Validation::validate_bool(' TRUE '));
+    }
+
+    /**
      * Test sort order validation.
      */
     public function test_validate_sort_order() {
@@ -161,6 +169,14 @@ class Test_Validation extends WP_UnitTestCase {
         $this->assertEquals('DESC', Validation::validate_sort_order('DESC'));
         $this->assertEquals('DESC', Validation::validate_sort_order('invalid'));
         $this->assertEquals('DESC', Validation::validate_sort_order(''));
+    }
+
+    /**
+     * Test sort order validation trims surrounding whitespace before
+     * comparing against the allow-list.
+     */
+    public function test_validate_sort_order_trims_whitespace() {
+        $this->assertEquals('ASC', Validation::validate_sort_order(' asc '));
     }
 
     /**
@@ -176,6 +192,14 @@ class Test_Validation extends WP_UnitTestCase {
     }
 
     /**
+     * Test aggregation validation trims whitespace and lowercases before
+     * comparing against the allow-list.
+     */
+    public function test_validate_aggregation_trims_and_lowercases() {
+        $this->assertEquals('daily', Validation::validate_aggregation(' DAILY '));
+    }
+
+    /**
      * Test category validation.
      */
     public function test_validate_category() {
@@ -183,6 +207,21 @@ class Test_Validation extends WP_UnitTestCase {
         $this->assertEquals('Home & Garden', Validation::validate_category('  Home & Garden  '));
         $this->assertNull(Validation::validate_category(''));
         $this->assertNull(Validation::validate_category(null));
+    }
+
+    /**
+     * Test category validation truncates values longer than 255
+     * characters to exactly the first 255 characters.
+     */
+    public function test_validate_category_truncates_long_values() {
+        // Non-uniform content is essential here: repeated identical characters
+        // would make an off-by-one truncation offset produce the same output.
+        $long_category = substr(str_repeat('0123456789', 30), 0, 300);
+
+        $result = Validation::validate_category($long_category);
+
+        $this->assertSame(255, strlen($result));
+        $this->assertSame(substr($long_category, 0, 255), $result);
     }
 
     /**
@@ -236,6 +275,15 @@ class Test_Validation extends WP_UnitTestCase {
      */
     public function test_validate_pagination_clamps_per_page_above_max() {
         $this->assertSame(100, Validation::validate_pagination(1, 500, 100)['per_page']);
+    }
+
+    /**
+     * Test pagination validation clamps per_page against the default
+     * max_per_page (100) when the caller relies on that default rather
+     * than passing it explicitly.
+     */
+    public function test_validate_pagination_clamps_per_page_against_default_max() {
+        $this->assertSame(100, Validation::validate_pagination(1, 150)['per_page']);
     }
 
     /**
@@ -309,6 +357,14 @@ class Test_Validation extends WP_UnitTestCase {
      */
     public function test_validate_search_query_too_short_returns_null() {
         $this->assertNull(Validation::validate_search_query('a'));
+    }
+
+    /**
+     * Test search query validation accepts a query exactly at the default
+     * minimum length (2).
+     */
+    public function test_validate_search_query_at_default_min_length() {
+        $this->assertSame('ab', Validation::validate_search_query('ab'));
     }
 
     /**

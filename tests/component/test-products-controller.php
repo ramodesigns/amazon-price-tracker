@@ -36,6 +36,17 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
     protected $created_user_id;
 
     /**
+     * Product IDs inserted directly via insert_product() (bypassing
+     * create_item), tracked so tearDown() can also clean up their
+     * price_history rows - unlike products created through create_item(),
+     * these have no COMMIT-driven side effect that already leaks past
+     * WP_UnitTestCase's rollback, so they'd otherwise just accumulate.
+     *
+     * @var int[]
+     */
+    protected $direct_product_ids = [];
+
+    /**
      * Boot a real REST server with the plugin's routes registered, and set
      * up a user with fake (but well-formed) PA-API credentials - the mock
      * intercepts the request before those credentials are ever sent
@@ -79,8 +90,12 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
 
         apt_test_reset_pa_api_responses();
 
+        foreach ($this->direct_product_ids as $product_id) {
+            $wpdb->delete($wpdb->prefix . 'apt_price_history', ['product_id' => $product_id]);
+        }
         $wpdb->delete($wpdb->prefix . 'apt_products', ['created_by' => $this->created_user_id]);
         $wpdb->delete($wpdb->prefix . 'apt_user_settings', ['user_id' => $this->created_user_id]);
+        delete_option('apt_daily_creation_limit');
 
         // Product_Service's internal COMMIT above leaves autocommit off but
         // no transaction open, so WP_UnitTestCase's own ROLLBACK (called via
@@ -89,6 +104,130 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         $wpdb->query('COMMIT');
 
         parent::tearDown();
+    }
+
+    /**
+     * Switch the current user to a fresh administrator, for endpoints
+     * gated by check_admin(). Leaves $this->created_user_id (and any
+     * products already created_by it) untouched, since ownership and
+     * "who's calling the endpoint right now" are independent here.
+     */
+    private function login_as_admin(): int {
+        $admin_id = self::factory()->user->create(['role' => 'administrator']);
+        wp_set_current_user($admin_id);
+        return $admin_id;
+    }
+
+    /**
+     * Insert a product row directly (bypassing create_item/Amazon), for
+     * tests that only care about read/update/delete behavior against
+     * existing data.
+     *
+     * @param array $overrides Column overrides.
+     * @return int Inserted product ID.
+     */
+    private function insert_product(array $overrides = []): int {
+        global $wpdb;
+
+        $data = array_merge([
+            'asin' => 'B0LISTTES1',
+            'region' => 'UK',
+            'custom_category' => null,
+            'images' => wp_json_encode([]),
+            'facts' => wp_json_encode(['title' => 'Test Product']),
+            'is_active' => 1,
+            'created_by' => $this->created_user_id,
+            'created_at' => current_time('mysql', true),
+            'updated_at' => current_time('mysql', true),
+        ], $overrides);
+
+        $wpdb->insert($wpdb->prefix . 'apt_products', $data);
+        $product_id = $wpdb->insert_id;
+        $this->direct_product_ids[] = $product_id;
+
+        return $product_id;
+    }
+
+    /**
+     * Insert a price_history row directly for a product.
+     *
+     * @param int $product_id
+     * @param array $overrides Column overrides.
+     * @return int Inserted price_history ID.
+     */
+    private function insert_price_history(int $product_id, array $overrides = []): int {
+        global $wpdb;
+
+        $data = array_merge([
+            'product_id' => $product_id,
+            'rrp' => null,
+            'current_price' => 9.99,
+            'is_prime_price' => 0,
+            'availability' => 'in_stock',
+            'recorded_at' => current_time('mysql', true),
+        ], $overrides);
+
+        $wpdb->insert($wpdb->prefix . 'apt_price_history', $data);
+
+        return $wpdb->insert_id;
+    }
+
+    /**
+     * Dispatch a GET request with query params.
+     *
+     * @param string $route
+     * @param array $query
+     * @return WP_REST_Response
+     */
+    private function dispatch_get(string $route, array $query = []): WP_REST_Response {
+        $request = new WP_REST_Request('GET', '/' . APT_API_NAMESPACE . $route);
+        foreach ($query as $key => $value) {
+            $request->set_param($key, $value);
+        }
+        return $this->server->dispatch($request);
+    }
+
+    /**
+     * Dispatch a DELETE request with query params.
+     *
+     * @param string $route
+     * @param array $query
+     * @return WP_REST_Response
+     */
+    private function dispatch_delete(string $route, array $query = []): WP_REST_Response {
+        $request = new WP_REST_Request('DELETE', '/' . APT_API_NAMESPACE . $route);
+        foreach ($query as $key => $value) {
+            $request->set_param($key, $value);
+        }
+        return $this->server->dispatch($request);
+    }
+
+    /**
+     * Dispatch a PUT request with a JSON body.
+     *
+     * @param string $route
+     * @param array $body
+     * @return WP_REST_Response
+     */
+    private function dispatch_put(string $route, array $body): WP_REST_Response {
+        $request = new WP_REST_Request('PUT', '/' . APT_API_NAMESPACE . $route);
+        $request->set_header('Content-Type', 'application/json');
+        $request->set_body(wp_json_encode($body));
+        return $this->server->dispatch($request);
+    }
+
+    /**
+     * Dispatch a POST request with a JSON body.
+     *
+     * @param string $route
+     * @param array $body
+     * @return WP_REST_Response
+     */
+    private function dispatch_post_json(string $route, array $body): WP_REST_Response {
+        $request = new WP_REST_Request('POST', '/' . APT_API_NAMESPACE . $route);
+        $request->set_header('Content-Type', 'application/json');
+        $request->set_body(wp_json_encode($body));
+        return $this->server->dispatch($request);
     }
 
     /**
@@ -329,5 +468,579 @@ class Test_Products_Controller_Component extends WP_UnitTestCase {
         $this->assertSame('BLACKLISTED', $response->as_error()->get_error_code());
 
         $wpdb->delete($wpdb->prefix . 'apt_blacklist', ['asin' => $asin, 'region' => 'UK']);
+    }
+
+    // ========== GET /products (list/filter/sort) ==========
+
+    public function test_get_items_defaults_to_active_products_only() {
+        $this->insert_product(['asin' => 'B0ACTIVETS', 'is_active' => 1]);
+        $this->insert_product(['asin' => 'B0INACTVTS', 'is_active' => 0]);
+
+        $response = $this->dispatch_get('/products');
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertCount(1, $data['data']);
+        $this->assertSame('B0ACTIVETS', $data['data'][0]['asin']);
+    }
+
+    public function test_get_items_can_include_inactive_products_explicitly() {
+        $this->insert_product(['asin' => 'B0ACTIVETS', 'is_active' => 1]);
+        $this->insert_product(['asin' => 'B0INACTVTS', 'is_active' => 0]);
+
+        $response = $this->dispatch_get('/products', ['is_active' => 'false']);
+        $data = $response->get_data();
+
+        $this->assertCount(1, $data['data']);
+        $this->assertSame('B0INACTVTS', $data['data'][0]['asin']);
+    }
+
+    public function test_get_items_filters_by_single_region() {
+        $this->insert_product(['asin' => 'B0REGIONUK', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0REGIONDE', 'region' => 'DE']);
+
+        $response = $this->dispatch_get('/products', ['region' => 'DE']);
+        $data = $response->get_data();
+
+        $this->assertCount(1, $data['data']);
+        $this->assertSame('DE', $data['data'][0]['region']);
+    }
+
+    public function test_get_items_region_takes_precedence_over_regions_when_both_given() {
+        // Real branch in the controller: `if ($regions && !$region)` - the
+        // multi-region filter is only consulted when no single `region` was
+        // also supplied.
+        $this->insert_product(['asin' => 'B0REGIONUK', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0REGIONDE', 'region' => 'DE']);
+        $this->insert_product(['asin' => 'B0REGIONFR', 'region' => 'FR']);
+
+        $response = $this->dispatch_get('/products', ['region' => 'UK', 'regions' => 'DE,FR']);
+        $data = $response->get_data();
+
+        $this->assertCount(1, $data['data']);
+        $this->assertSame('UK', $data['data'][0]['region']);
+    }
+
+    public function test_get_items_filters_by_multiple_regions() {
+        $this->insert_product(['asin' => 'B0REGIONUK', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0REGIONDE', 'region' => 'DE']);
+        $this->insert_product(['asin' => 'B0REGIONFR', 'region' => 'FR']);
+
+        $response = $this->dispatch_get('/products', ['regions' => 'DE,FR']);
+        $data = $response->get_data();
+
+        $regions = array_column($data['data'], 'region');
+        sort($regions);
+        $this->assertSame(['DE', 'FR'], $regions);
+    }
+
+    public function test_get_items_filters_by_custom_category() {
+        $this->insert_product(['asin' => 'B0CATELECT', 'custom_category' => 'Electronics']);
+        $this->insert_product(['asin' => 'B0CATBOOKS', 'custom_category' => 'Books']);
+
+        $response = $this->dispatch_get('/products', ['custom_category' => 'Books']);
+        $data = $response->get_data();
+
+        $this->assertCount(1, $data['data']);
+        $this->assertSame('B0CATBOOKS', $data['data'][0]['asin']);
+    }
+
+    public function test_get_items_searches_title_from_facts_json_case_insensitively() {
+        // Regression test: JSON_EXTRACT()/JSON_UNQUOTE() return utf8mb4_bin
+        // (case-sensitive) in MySQL/MariaDB regardless of the source column's
+        // collation, so a naive LIKE against the extracted JSON value would
+        // silently only match exact case - "wireless" would never find
+        // "Wireless Mouse". Products_Controller::get_items() now wraps both
+        // sides in LOWER() specifically to guard against this.
+        $this->insert_product(['asin' => 'B0WIRELESS', 'facts' => wp_json_encode(['title' => 'Wireless Mouse'])]);
+        $this->insert_product(['asin' => 'B0KEYBOARD', 'facts' => wp_json_encode(['title' => 'Mechanical Keyboard'])]);
+
+        $response = $this->dispatch_get('/products', ['search' => 'wireless']);
+        $data = $response->get_data();
+
+        $this->assertCount(1, $data['data']);
+        $this->assertSame('B0WIRELESS', $data['data'][0]['asin']);
+    }
+
+    public function test_get_items_sorts_by_current_price_via_joined_latest_price() {
+        // Exercises the special-cased sort_column mapping for 'current_price'
+        // (ph.current_price from the joined latest-price subquery) rather
+        // than a plain products-table column.
+        $cheap_id = $this->insert_product(['asin' => 'B0CHEAPITM']);
+        $this->insert_price_history($cheap_id, ['current_price' => 5.00]);
+
+        $expensive_id = $this->insert_product(['asin' => 'B0EXPENSIV']);
+        $this->insert_price_history($expensive_id, ['current_price' => 50.00]);
+
+        $response = $this->dispatch_get('/products', ['sort_by' => 'current_price', 'sort_order' => 'asc']);
+        $data = $response->get_data();
+
+        $this->assertSame(['B0CHEAPITM', 'B0EXPENSIV'], array_column($data['data'], 'asin'));
+    }
+
+    public function test_get_items_uses_latest_price_when_product_has_price_history() {
+        $product_id = $this->insert_product(['asin' => 'B0PRICEHIS']);
+        $this->insert_price_history($product_id, [
+            'current_price' => 10.00,
+            'recorded_at' => gmdate('Y-m-d H:i:s', strtotime('-1 day')),
+        ]);
+        $this->insert_price_history($product_id, [
+            'current_price' => 8.00,
+            'recorded_at' => current_time('mysql', true),
+        ]);
+
+        $response = $this->dispatch_get('/products', ['search' => 'test']);
+        $data = $response->get_data();
+
+        $item = current(array_filter($data['data'], fn($p) => $p['asin'] === 'B0PRICEHIS'));
+        $this->assertNotFalse($item);
+        $this->assertSame(8.00, $item['current_price'], 'Should reflect the most recently recorded price, not the first one.');
+    }
+
+    public function test_get_items_pagination_meta_reflects_total_and_page() {
+        for ($i = 0; $i < 3; $i++) {
+            $this->insert_product(['asin' => 'B0PAGE' . $i . 'TST']);
+        }
+
+        $response = $this->dispatch_get('/products', ['per_page' => 2, 'page' => 2]);
+        $data = $response->get_data();
+
+        $this->assertCount(1, $data['data'], 'Second page of a 3-item set at 2 per page should have 1 remaining item.');
+        $this->assertSame(3, $data['meta']['pagination']['total_items']);
+        $this->assertSame(2, $data['meta']['pagination']['total_pages']);
+    }
+
+    // ========== GET /products/{id} ==========
+
+    public function test_get_item_not_found() {
+        $response = $this->dispatch_get('/products/999999');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    public function test_get_item_returns_full_product_shape() {
+        $product_id = $this->insert_product([
+            'asin' => 'B0GETITEM1',
+            'custom_category' => 'Electronics',
+            'facts' => wp_json_encode(['title' => 'A Product']),
+        ]);
+
+        $response = $this->dispatch_get("/products/{$product_id}");
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame('B0GETITEM1', $data['asin']);
+        $this->assertSame('Electronics', $data['custom_category']);
+        $this->assertSame('A Product', $data['facts']['title']);
+    }
+
+    // ========== GET /products/by-asin/{asin}(/{region}) ==========
+
+    public function test_get_by_asin_returns_all_regions_for_that_asin() {
+        $this->insert_product(['asin' => 'B0MULTIREG', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0MULTIREG', 'region' => 'DE']);
+
+        $response = $this->dispatch_get('/products/by-asin/B0MULTIREG');
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertCount(2, $data);
+        $regions = array_column($data, 'region');
+        sort($regions);
+        $this->assertSame(['DE', 'UK'], $regions);
+    }
+
+    public function test_get_by_asin_excludes_inactive_products() {
+        $this->insert_product(['asin' => 'B0INACTBYA', 'is_active' => 0]);
+
+        $response = $this->dispatch_get('/products/by-asin/B0INACTBYA');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    public function test_get_by_asin_not_found() {
+        $response = $this->dispatch_get('/products/by-asin/B0NEVERSAW');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    public function test_get_by_asin_region_returns_single_matching_product() {
+        $this->insert_product(['asin' => 'B0MULTIREG', 'region' => 'UK']);
+        $this->insert_product(['asin' => 'B0MULTIREG', 'region' => 'DE']);
+
+        $response = $this->dispatch_get('/products/by-asin/B0MULTIREG/DE');
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame('DE', $data['region']);
+    }
+
+    public function test_get_by_asin_region_not_found() {
+        $response = $this->dispatch_get('/products/by-asin/B0NEVERSAW/UK');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    // ========== DELETE /products/{id} ==========
+
+    public function test_delete_item_not_found() {
+        $this->login_as_admin();
+
+        $response = $this->dispatch_delete('/products/999999');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    public function test_delete_item_forbidden_for_non_admin() {
+        // setUp() already authenticates as a subscriber by default.
+        $product_id = $this->insert_product(['asin' => 'B0DELNADMN']);
+
+        $response = $this->dispatch_delete("/products/{$product_id}");
+
+        $this->assertSame(403, $response->get_status());
+    }
+
+    public function test_delete_item_soft_deletes_by_default() {
+        global $wpdb;
+
+        $product_id = $this->insert_product(['asin' => 'B0SOFTDEL1', 'is_active' => 1]);
+        $this->insert_price_history($product_id);
+        $this->login_as_admin();
+
+        $response = $this->dispatch_delete("/products/{$product_id}");
+
+        $this->assertSame(204, $response->get_status());
+
+        $product = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}apt_products WHERE id = %d",
+            $product_id
+        ));
+        $this->assertNotNull($product, 'Soft delete must not remove the product row.');
+        $this->assertEquals(0, $product->is_active);
+
+        $price_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}apt_price_history WHERE product_id = %d",
+            $product_id
+        ));
+        $this->assertEquals(1, $price_count, 'Soft delete must not remove price history.');
+    }
+
+    public function test_delete_item_force_hard_deletes_product_and_price_history() {
+        global $wpdb;
+
+        $product_id = $this->insert_product(['asin' => 'B0FORCEDEL', 'is_active' => 1]);
+        $this->insert_price_history($product_id);
+        $this->login_as_admin();
+
+        $response = $this->dispatch_delete("/products/{$product_id}", ['force' => 'true']);
+
+        $this->assertSame(204, $response->get_status());
+
+        $product = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}apt_products WHERE id = %d",
+            $product_id
+        ));
+        $this->assertNull($product, 'force=true must actually remove the product row.');
+
+        $price_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}apt_price_history WHERE product_id = %d",
+            $product_id
+        ));
+        $this->assertEquals(0, $price_count, 'force=true must cascade-remove price history (no FK cascade exists at the DB level).');
+    }
+
+    // ========== PUT /products/{id}/category ==========
+
+    public function test_update_category_not_found() {
+        $this->login_as_admin();
+
+        $response = $this->dispatch_put('/products/999999/category', ['custom_category' => 'Electronics']);
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    public function test_update_category_forbidden_for_non_admin() {
+        // setUp() already authenticates as a subscriber by default.
+        $product_id = $this->insert_product(['asin' => 'B0CATNADMN']);
+
+        $response = $this->dispatch_put("/products/{$product_id}/category", ['custom_category' => 'Electronics']);
+
+        $this->assertSame(403, $response->get_status());
+    }
+
+    public function test_update_category_sets_new_category() {
+        $product_id = $this->insert_product(['asin' => 'B0CATUPDT1', 'custom_category' => null]);
+        $this->login_as_admin();
+
+        $response = $this->dispatch_put("/products/{$product_id}/category", ['custom_category' => 'Home & Garden']);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame('Home & Garden', $data['custom_category']);
+    }
+
+    public function test_update_category_truncates_overly_long_value() {
+        // Real Validation::validate_category() behavior: truncate to 255
+        // characters rather than reject outright.
+        $product_id = $this->insert_product(['asin' => 'B0CATLONG1']);
+        $long_category = str_repeat('a', 300);
+        $this->login_as_admin();
+
+        $response = $this->dispatch_put("/products/{$product_id}/category", ['custom_category' => $long_category]);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame(255, strlen($data['custom_category']));
+    }
+
+    // ========== GET /products/{id}/prices (+ by-asin variant, + aggregation) ==========
+
+    public function test_get_prices_not_found() {
+        $response = $this->dispatch_get('/products/999999/prices');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    public function test_get_prices_returns_history_ordered_newest_first_by_default() {
+        $product_id = $this->insert_product(['asin' => 'B0PRICEORD']);
+        $this->insert_price_history($product_id, ['current_price' => 10.00, 'recorded_at' => '2026-01-01 00:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 20.00, 'recorded_at' => '2026-01-03 00:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 15.00, 'recorded_at' => '2026-01-02 00:00:00']);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices");
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame([20.00, 15.00, 10.00], array_column($data['data'], 'current_price'));
+        $this->assertSame($product_id, $data['product']['id']);
+        $this->assertSame(3, $data['meta']['pagination']['total_items']);
+    }
+
+    public function test_get_prices_honors_ascending_sort_order() {
+        $product_id = $this->insert_product(['asin' => 'B0PRICEASC']);
+        $this->insert_price_history($product_id, ['current_price' => 10.00, 'recorded_at' => '2026-01-01 00:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 20.00, 'recorded_at' => '2026-01-02 00:00:00']);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices", ['sort_order' => 'asc']);
+        $data = $response->get_data();
+
+        $this->assertSame([10.00, 20.00], array_column($data['data'], 'current_price'));
+    }
+
+    public function test_get_prices_filters_by_date_range() {
+        $product_id = $this->insert_product(['asin' => 'B0PRICEDAT']);
+        $this->insert_price_history($product_id, ['current_price' => 10.00, 'recorded_at' => '2026-01-01 00:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 20.00, 'recorded_at' => '2026-02-15 00:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 30.00, 'recorded_at' => '2026-03-30 00:00:00']);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices", [
+            'from' => '2026-02-01',
+            'to' => '2026-03-01',
+        ]);
+        $data = $response->get_data();
+
+        $this->assertSame([20.00], array_column($data['data'], 'current_price'));
+    }
+
+    public function test_get_prices_ignores_unparseable_date_filters() {
+        // Validation::validate_datetime() returns null for anything
+        // strtotime() can't parse, and the controller only adds a WHERE
+        // clause when that succeeds - an invalid `from`/`to` should be
+        // silently ignored rather than erroring or excluding everything.
+        $product_id = $this->insert_product(['asin' => 'B0PRICEBAD']);
+        $this->insert_price_history($product_id, ['current_price' => 10.00]);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices", ['from' => 'not-a-date']);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertCount(1, $data['data']);
+    }
+
+    public function test_get_prices_includes_currency_and_title() {
+        $product_id = $this->insert_product([
+            'asin' => 'B0PRICEMET',
+            'region' => 'DE',
+            'facts' => wp_json_encode(['title' => 'Metadata Product']),
+        ]);
+        $this->insert_price_history($product_id);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices");
+        $data = $response->get_data();
+
+        $this->assertSame('EUR', $data['currency']);
+        $this->assertSame('Metadata Product', $data['product']['title']);
+    }
+
+    public function test_get_prices_without_aggregate_param_omits_aggregations_key() {
+        $product_id = $this->insert_product(['asin' => 'B0NOAGGRE1']);
+        $this->insert_price_history($product_id);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices");
+        $data = $response->get_data();
+
+        $this->assertArrayNotHasKey('aggregations', $data);
+    }
+
+    public function test_get_prices_daily_aggregation_computes_min_max_avg_per_day() {
+        $product_id = $this->insert_product(['asin' => 'B0AGGDAILY']);
+        // Two records on day 1 (avg should be 15), one on day 2.
+        $this->insert_price_history($product_id, ['current_price' => 10.00, 'recorded_at' => '2026-01-01 08:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 20.00, 'recorded_at' => '2026-01-01 20:00:00']);
+        $this->insert_price_history($product_id, ['current_price' => 30.00, 'recorded_at' => '2026-01-02 08:00:00']);
+
+        $response = $this->dispatch_get("/products/{$product_id}/prices", ['aggregate' => 'daily']);
+        $data = $response->get_data();
+
+        $this->assertArrayHasKey('aggregations', $data);
+        $this->assertCount(2, $data['aggregations']);
+
+        $day1 = $data['aggregations'][0];
+        $this->assertSame(10.00, $day1['min_price']);
+        $this->assertSame(20.00, $day1['max_price']);
+        $this->assertSame(15.00, $day1['avg_price']);
+        $this->assertSame(2, $day1['record_count']);
+
+        $day2 = $data['aggregations'][1];
+        $this->assertSame(30.00, $day2['min_price']);
+        $this->assertSame(1, $day2['record_count']);
+    }
+
+    public function test_get_prices_by_asin_region_resolves_product_and_returns_same_shape_as_get_prices() {
+        $product_id = $this->insert_product(['asin' => 'B0ASINPRIC', 'region' => 'UK']);
+        $this->insert_price_history($product_id, ['current_price' => 42.00]);
+
+        $response = $this->dispatch_get('/products/by-asin/B0ASINPRIC/UK/prices');
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame($product_id, $data['product']['id']);
+        $this->assertSame([42.00], array_column($data['data'], 'current_price'));
+    }
+
+    public function test_get_prices_by_asin_region_not_found() {
+        $response = $this->dispatch_get('/products/by-asin/B0NEVERSAW/UK/prices');
+
+        $this->assertSame(404, $response->get_status());
+    }
+
+    // ========== POST /products/bulk ==========
+
+    public function test_bulk_create_requires_products_array() {
+        $response = $this->dispatch_post_json('/products/bulk', []);
+
+        $this->assertSame(400, $response->get_status());
+        $this->assertSame('VALIDATION_ERROR', $response->as_error()->get_error_code());
+    }
+
+    public function test_bulk_create_rejects_more_than_100_products() {
+        $products = array_fill(0, 101, ['asin' => 'B0BULKTOO1', 'region' => 'UK']);
+
+        $response = $this->dispatch_post_json('/products/bulk', ['products' => $products]);
+
+        $this->assertSame(400, $response->get_status());
+        $this->assertSame('VALIDATION_ERROR', $response->as_error()->get_error_code());
+    }
+
+    public function test_bulk_create_skips_duplicate_asin_region_pairs_within_the_request() {
+        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0BULKDUP1'));
+
+        $response = $this->dispatch_post_json('/products/bulk', [
+            'products' => [
+                ['asin' => 'b0bulkdup1', 'region' => 'uk'],
+                ['asin' => 'B0BULKDUP1', 'region' => 'UK'],
+            ],
+        ]);
+        $data = $response->get_data();
+
+        $this->assertSame(1, $data['success_count']);
+        $this->assertSame(1, $data['failure_count']);
+        $duplicate = current(array_filter($data['results'], fn($r) => !$r['success']));
+        $this->assertSame('DUPLICATE_IN_REQUEST', $duplicate['error']['code']);
+    }
+
+    public function test_bulk_create_reports_mixed_success_and_failure() {
+        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0BULKOK01'));
+        apt_test_queue_pa_api_response(404, [
+            'Errors' => [['Code' => 'ItemNotAccessible', 'Message' => 'The item you requested was not found.']],
+        ]);
+
+        $response = $this->dispatch_post_json('/products/bulk', [
+            'products' => [
+                ['asin' => 'B0BULKOK01', 'region' => 'UK'],
+                ['asin' => 'B0BULKFAIL', 'region' => 'UK'],
+            ],
+        ]);
+        $data = $response->get_data();
+
+        $this->assertSame(200, $response->get_status());
+        $this->assertSame(1, $data['success_count']);
+        $this->assertSame(1, $data['failure_count']);
+
+        $ok = current(array_filter($data['results'], fn($r) => $r['asin'] === 'B0BULKOK01'));
+        $this->assertTrue($ok['success']);
+
+        $failed = current(array_filter($data['results'], fn($r) => $r['asin'] === 'B0BULKFAIL'));
+        $this->assertFalse($failed['success']);
+        $this->assertSame('ASIN_NOT_FOUND', $failed['error']['code']);
+    }
+
+    // ========== Daily creation rate limit (create_item / reactivate / bulk_create) ==========
+
+    public function test_create_item_returns_429_once_daily_limit_reached() {
+        update_option('apt_daily_creation_limit', 1);
+
+        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0RATEONE1'));
+        $first = $this->create_product_request('B0RATEONE1', 'UK');
+        $this->assertSame(201, $first->get_status(), 'First product should succeed under the limit.');
+
+        $second = $this->create_product_request('B0RATETWO1', 'UK');
+
+        $this->assertSame(429, $second->get_status());
+        $error_data = $second->as_error()->get_error_data();
+        $this->assertSame('RATE_LIMIT_EXCEEDED', $second->as_error()->get_error_code());
+        $this->assertSame(1, $error_data['limit']);
+        $this->assertSame(1, $error_data['used']);
+    }
+
+    public function test_create_item_admin_users_bypass_the_daily_limit() {
+        global $wpdb;
+
+        update_option('apt_daily_creation_limit', 1);
+
+        $admin_id = $this->login_as_admin();
+        $wpdb->insert($wpdb->prefix . 'apt_user_settings', [
+            'user_id' => $admin_id,
+            'access_key' => Encryption::encrypt('test-access-key'),
+            'secret_key' => Encryption::encrypt('test-secret-key'),
+            'partner_tags' => wp_json_encode(['UK' => 'test-partner-tag']),
+            'created_at' => current_time('mysql', true),
+            'updated_at' => current_time('mysql', true),
+        ]);
+
+        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0ADMRATE1'));
+        $first = $this->create_product_request('B0ADMRATE1', 'UK');
+        $this->assertSame(201, $first->get_status());
+
+        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0ADMRATE2'));
+        $second = $this->create_product_request('B0ADMRATE2', 'UK');
+
+        $this->assertSame(201, $second->get_status(), 'Admins should not be subject to the daily creation limit.');
+
+        $wpdb->delete($wpdb->prefix . 'apt_products', ['created_by' => $admin_id]);
+        $wpdb->delete($wpdb->prefix . 'apt_user_settings', ['user_id' => $admin_id]);
+        $wpdb->query('COMMIT');
+    }
+
+    public function test_create_item_includes_rate_limit_headers_reflecting_remaining_quota() {
+        update_option('apt_daily_creation_limit', 5);
+
+        apt_test_queue_pa_api_response(200, $this->canned_success_body('B0HEADERS1'));
+        $response = $this->create_product_request('B0HEADERS1', 'UK');
+        $headers = $response->get_headers();
+
+        $this->assertSame(201, $response->get_status());
+        $this->assertSame('5', $headers['X-RateLimit-Limit']);
+        $this->assertSame('4', $headers['X-RateLimit-Remaining'], 'One creation used, four of five should remain.');
     }
 }

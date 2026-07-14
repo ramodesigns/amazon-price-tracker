@@ -315,8 +315,15 @@ class Products_Controller extends Base_Controller {
         // Search in title and brand
         $search = $request->get_param('search');
         if ($search && strlen($search) >= 2) {
+            // JSON_EXTRACT()/JSON_UNQUOTE() return utf8mb4_bin (case-sensitive)
+            // regardless of the source column's collation, so a plain LIKE here
+            // would silently miss any case-differing match (e.g. searching
+            // "wireless" would never find a product titled "Wireless Mouse").
+            // LOWER() on both sides sidesteps the collation mismatch entirely,
+            // rather than hardcoding a COLLATE that may not match every
+            // install's configured charset_collate.
             $search_term = '%' . $db->esc_like(sanitize_text_field($search)) . '%';
-            $where_clauses[] = "(JSON_UNQUOTE(JSON_EXTRACT(p.facts, '$.title')) LIKE %s OR JSON_UNQUOTE(JSON_EXTRACT(p.facts, '$.brand')) LIKE %s)";
+            $where_clauses[] = "(LOWER(JSON_UNQUOTE(JSON_EXTRACT(p.facts, '$.title'))) LIKE LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(p.facts, '$.brand'))) LIKE LOWER(%s))";
             $where_values[] = $search_term;
             $where_values[] = $search_term;
         }
@@ -1073,6 +1080,16 @@ class Products_Controller extends Base_Controller {
             'monthly' => '%Y-%m',
             default => '%Y-%m-%d',
         };
+
+        // $date_format is spliced directly into $sql below, which then goes
+        // through $db->prepare(). wpdb::prepare() scans the whole query
+        // string for its own %s/%d/etc. placeholders, and '%d' in '%Y-%m-%d'
+        // (the 'daily' and default cases) is indistinguishable from a real
+        // integer placeholder to that scan - it throws off the
+        // placeholder/argument count and prepare() returns null. Doubling
+        // the percent signs here is wpdb's documented escape for a literal
+        // '%' so DATE_FORMAT() still receives the real format string.
+        $date_format = str_replace('%', '%%', $date_format);
 
         $where_clauses = ['product_id = %d'];
         $where_values = [$product_id];

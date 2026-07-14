@@ -56,6 +56,11 @@ spl_autoload_register(function ($class) {
     }
 });
 
+// Load a local .env file (if present) into the process environment, before
+// anything reads PA-API credentials. Absent in every real deployment - see
+// APT\Helpers\Env_File for what this enables and why it's safe.
+\APT\Helpers\Env_File::load();
+
 /**
  * Main plugin class
  */

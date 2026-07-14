@@ -16,6 +16,7 @@ if (!defined('ABSPATH')) {
 
 use APT\Helpers\Regions;
 use APT\Helpers\Encryption;
+use APT\Helpers\Env_File;
 
 /**
  * Class Product_Service
@@ -577,14 +578,139 @@ class Product_Service {
     /**
      * Get user settings
      *
+     * Falls back to locally-supplied credentials (via a gitignored .env
+     * file - see Env_File) when the user has none configured in the
+     * database. This lets Amazon-touching functionality (create, reactivate,
+     * refresh, connectivity checks) be exercised locally - manually or via
+     * tests - without needing a real settings row, while leaving the
+     * settings CRUD endpoints themselves (Settings_Controller has its own
+     * separate, unmodified copy of this lookup) testing the real
+     * database-backed behavior. A deployed install has no .env file, so this
+     * fallback is always inert there.
+     *
+     * Covers both PA-API (Amazon_API) and Creators API (Amazon_Creators_API)
+     * credentials - they live under different columns/env keys specifically
+     * so a settings row (or a local .env) can carry either or both at once,
+     * letting the caller choose which implementation to build via
+     * Amazon_API::from_settings() vs. Amazon_Creators_API::from_settings().
+     *
      * @param int $user_id User ID
      * @return object|null
      */
     private function get_user_settings(int $user_id): ?object {
-        return $this->db->get_row($this->db->prepare(
+        $settings = $this->db->get_row($this->db->prepare(
             "SELECT * FROM {$this->settings_table} WHERE user_id = %d",
             $user_id
         ));
+
+        return $settings ?: $this->get_env_fallback_settings();
+    }
+
+    /**
+     * Build a settings-shaped object from .env-supplied credentials.
+     *
+     * Independently checks the PA-API and Creators API env var sets - either
+     * being complete is enough to produce a (partial) settings object; both
+     * missing returns null. A set with only some of its own fields present
+     * is treated as absent (no half-configured fallback).
+     *
+     * @return object|null
+     */
+    private function get_env_fallback_settings(): ?object {
+        Env_File::load();
+
+        $legacy = $this->get_legacy_env_credentials();
+        $creators = $this->get_creators_env_credentials();
+
+        if (!$legacy && !$creators) {
+            return null;
+        }
+
+        $settings = new \stdClass();
+        $partner_tags = [];
+
+        // Re-encrypted here so each API class's from_settings() (which
+        // always decrypts) works identically regardless of which source
+        // the settings came from.
+        if ($legacy) {
+            $settings->access_key = Encryption::encrypt($legacy['access_key']);
+            $settings->secret_key = Encryption::encrypt($legacy['secret_key']);
+            $partner_tags[$legacy['region']] = $legacy['partner_tag'];
+        }
+
+        if ($creators) {
+            $settings->creators_credential_id = Encryption::encrypt($creators['credential_id']);
+            $settings->creators_credential_secret = Encryption::encrypt($creators['credential_secret']);
+            // Not a secret - identifies which auth flavor/region cluster
+            // the credential belongs to (see
+            // Amazon_Creators_API::get_token_endpoint()). Marketplace
+            // itself is deliberately not stored here - Amazon_Creators_API
+            // derives it per request from the region code via
+            // Regions::get_marketplace_domain(), same as the legacy PA-API
+            // client, so one credential can serve every region this user
+            // has a partner tag for rather than being pinned to one.
+            $settings->creators_credential_version = $creators['version'];
+            // A partner/tracking tag belongs to the Associates account and
+            // marketplace, not to which API technology calls it - merge
+            // rather than overwrite so both sources' regions are usable.
+            $partner_tags[$creators['region']] = $creators['partner_tag'];
+        }
+
+        $settings->partner_tags = wp_json_encode($partner_tags);
+
+        return $settings;
+    }
+
+    /**
+     * Read the legacy PA-API .env credential set, if complete.
+     *
+     * @return array{access_key: string, secret_key: string, partner_tag: string, region: string}|null
+     */
+    private function get_legacy_env_credentials(): ?array {
+        $access_key = getenv('APT_TEST_PA_API_ACCESS_KEY');
+        $secret_key = getenv('APT_TEST_PA_API_SECRET_KEY');
+        $partner_tag = getenv('APT_TEST_PA_API_PARTNER_TAG');
+
+        if (!$access_key || !$secret_key || !$partner_tag) {
+            return null;
+        }
+
+        return [
+            'access_key' => $access_key,
+            'secret_key' => $secret_key,
+            'partner_tag' => $partner_tag,
+            'region' => strtoupper(getenv('APT_TEST_PA_API_REGION') ?: 'UK'),
+        ];
+    }
+
+    /**
+     * Read the Creators API .env credential set, if complete.
+     *
+     * Amazon's own Creators API documentation/SDK names these fields
+     * Credential ID, Credential Secret, Version, Marketplace, and Partner
+     * Tag - but Marketplace is a per-request value derived from the region
+     * (see Amazon_Creators_API), not stored, so it has no env var here;
+     * region takes its place, consistent with the legacy PA-API set below.
+     *
+     * @return array{credential_id: string, credential_secret: string, version: string, partner_tag: string, region: string}|null
+     */
+    private function get_creators_env_credentials(): ?array {
+        $credential_id = getenv('APT_TEST_CREATORS_API_CREDENTIAL_ID');
+        $credential_secret = getenv('APT_TEST_CREATORS_API_CREDENTIAL_SECRET');
+        $version = getenv('APT_TEST_CREATORS_API_VERSION');
+        $partner_tag = getenv('APT_TEST_CREATORS_API_PARTNER_TAG');
+
+        if (!$credential_id || !$credential_secret || !$version || !$partner_tag) {
+            return null;
+        }
+
+        return [
+            'credential_id' => $credential_id,
+            'credential_secret' => $credential_secret,
+            'version' => $version,
+            'partner_tag' => $partner_tag,
+            'region' => strtoupper(getenv('APT_TEST_CREATORS_API_REGION') ?: 'UK'),
+        ];
     }
 
     /**

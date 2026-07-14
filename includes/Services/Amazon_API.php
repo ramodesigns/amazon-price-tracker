@@ -114,6 +114,13 @@ class Amazon_API {
      * @return self|null Returns null if settings are incomplete
      */
     public static function from_settings(object $settings, string $region_code): ?self {
+        // A settings object may now carry only Creators API credentials
+        // (see Product_Service::get_env_fallback_settings()), so
+        // access_key/secret_key are no longer guaranteed to be set here.
+        if (empty($settings->access_key) || empty($settings->secret_key)) {
+            return null;
+        }
+
         $access_key = Encryption::decrypt($settings->access_key);
         $secret_key = Encryption::decrypt($settings->secret_key);
 

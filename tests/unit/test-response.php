@@ -102,6 +102,17 @@ class Test_Response extends WP_UnitTestCase {
     }
 
     /**
+     * Test total_pages rounds up (ceiling), not to nearest, for a
+     * fractional remainder below the midpoint - distinguishes ceil()
+     * from round().
+     */
+    public function test_build_pagination_rounds_up_not_to_nearest() {
+        $pagination = Response::build_pagination(1, 10, 21);
+
+        $this->assertSame(3, $pagination['total_pages']);
+    }
+
+    /**
      * Test basic error response shape.
      */
     public function test_error() {
@@ -112,6 +123,15 @@ class Test_Response extends WP_UnitTestCase {
         $this->assertSame('Something went wrong', $error->get_error_message());
         $this->assertSame(418, $error->get_error_data()['status']);
         $this->assertArrayNotHasKey('details', $error->get_error_data());
+    }
+
+    /**
+     * Test error response defaults to HTTP 400 when no status is given.
+     */
+    public function test_error_defaults_to_400() {
+        $error = Response::error('SOME_ERROR', 'Something went wrong');
+
+        $this->assertSame(400, $error->get_error_data()['status']);
     }
 
     /**
@@ -192,6 +212,7 @@ class Test_Response extends WP_UnitTestCase {
         $error = Response::blacklisted();
 
         $this->assertSame('BLACKLISTED', $error->get_error_code());
+        $this->assertSame(403, $error->get_error_data()['status']);
         $this->assertArrayNotHasKey('details', $error->get_error_data());
     }
 
@@ -201,6 +222,7 @@ class Test_Response extends WP_UnitTestCase {
     public function test_blacklisted_with_reason() {
         $error = Response::blacklisted('Restricted category');
 
+        $this->assertSame(403, $error->get_error_data()['status']);
         $this->assertSame('Restricted category', $error->get_error_data()['details']['reason']);
     }
 
@@ -231,6 +253,7 @@ class Test_Response extends WP_UnitTestCase {
         $error = Response::missing_partner_tag('DE');
 
         $this->assertSame('MISSING_PARTNER_TAG', $error->get_error_code());
+        $this->assertSame(400, $error->get_error_data()['status']);
         $this->assertStringContainsString('DE', $error->get_error_message());
     }
 
@@ -241,6 +264,7 @@ class Test_Response extends WP_UnitTestCase {
         $error = Response::not_configured();
 
         $this->assertSame('NOT_CONFIGURED', $error->get_error_code());
+        $this->assertSame(400, $error->get_error_data()['status']);
         $this->assertSame('Settings not configured', $error->get_error_message());
     }
 

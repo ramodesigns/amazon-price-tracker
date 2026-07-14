@@ -279,6 +279,75 @@ STEP 10: Test Scheduled Refresh
   - Check price_history table for new records
 
 ================================================================================
+=== SECTION 10: CREATORS API MIGRATION - RETIRE LEGACY PA-API ===
+================================================================================
+# PRIORITY: HIGH
+# CONTEXT: Amazon has started hard-rejecting PA-API 5.0 calls for this account
+#          (403 AccessDeniedException: "Product Advertising API is deprecated.
+#          Please migrate to Creators API...") since the Creators API
+#          credential was issued. tests/integration/test-amazon-api-pricing.php
+#          and the PA-API path in test-products-controller.php are currently
+#          red because of this - confirmed real, not a bug on our end.
+# ACTION: Do these four phases IN ORDER. Each phase gates the next - do not
+#         skip ahead. Do not start Phase 2 until Phase 1's field list has been
+#         explicitly reviewed and accepted (not just written down).
+
+--- Phase 1: Field parity audit (do first - blocks every later phase) ---
+
+- [ ] MIGR-01: Audit every field Amazon_API::parse_item()/parse_pricing()
+      extracts from PA-API responses against Amazon_Creators_API's
+      parse_item()/parse_pricing() equivalents, field by field. For each
+      PA-API field: either (a) confirm a working Creators API equivalent
+      exists and is populated, or (b) explicitly list it as missing/
+      unavailable on Creators API and get that gap reviewed and accepted
+      before touching Phase 2.
+      KNOWN GAPS ALREADY DOCUMENTED (Amazon_Creators_API class docblock -
+      confirm this list is complete, don't assume it is):
+        - is_prime_price: always false, no IsPrimeEligible equivalent
+        - Offers.Listings.Promotions: no Creators API equivalent, dropped
+        - Offers.Summaries.LowestPrice/HighestPrice: offersV2 has no
+          aggregate summary, only per-listing prices
+      OUTPUT: a field-by-field parity list (in this file or a new doc),
+      each row marked matched / missing-accepted.
+
+--- Phase 2: Remove old API configs (only after Phase 1 is accepted) ---
+
+- [ ] MIGR-02: Remove PA-API credential fields (access_key/secret_key) from
+      Settings_Controller and the apt_user_settings DB columns, once
+      Creators API credentials are the only supported path.
+- [ ] MIGR-03: Remove APT_TEST_PA_API_* env vars from .env.example and any
+      code reading them via getenv() - do this after Phase 3 retires the
+      tests that consume them, not before.
+- [ ] MIGR-04: Remove Amazon_API.php (the PA-API request-signing class)
+      entirely, once nothing in includes/ references it.
+
+--- Phase 3: Remove old API tests ---
+
+- [ ] MIGR-05: Delete tests/integration/test-amazon-api-pricing.php - PA-API
+      -only canary, now permanently broken (hard 403, not the offers-omission
+      it was written to detect).
+- [ ] MIGR-06: Update tests/integration/test-products-controller.php to drop
+      its PA-API path (it currently exercises the real PA-API round trip).
+- [ ] MIGR-07: Remove/retire tests/component/pa-api-mock.php and any
+      component-test fixtures mocking PA-API pre_http_request responses -
+      check tests/component/test-products-controller.php for PA-API-specific
+      branches/fixtures first.
+- [ ] MIGR-08: Remove any unit tests that exercise Amazon_API directly.
+
+--- Phase 4: Remove legacy-vs-Creator decision logic (last) ---
+
+- [ ] MIGR-09: In Product_Service, remove the logic that chooses between
+      Amazon_API::from_settings() and Amazon_Creators_API::from_settings()
+      (and any preference/fallback ordering between them) - Creators API
+      becomes the only implementation. Update
+      Product_Service::get_env_fallback_settings() and its call sites
+      accordingly.
+- [ ] MIGR-10: Search for any other legacy-vs-Creators branching outside
+      Product_Service (e.g. Health_Controller's Amazon connectivity check,
+      Settings_Controller::validate_credentials()) and collapse each to
+      Creators-only.
+
+================================================================================
 === COMPLETION TRACKING ===
 ================================================================================
 
@@ -289,11 +358,12 @@ QUALITY:    4/4 complete
 SECURITY:   5/5 complete
 PERFORMANCE: 3/3 complete
 FEATURES:   1/6 complete (post-MVP bonus: dashboard widget)
+CREATORS API MIGRATION: 0/10 complete (Phase 1 field audit not started)
 
 TOTAL REQUIRED FOR PRE-PROD: 31/31 complete (100%)
 BONUS FEATURES IMPLEMENTED: 1/6 (Dashboard Widget)
 
-Last updated: 2025-12-06
+Last updated: 2026-07-14
 
 ================================================================================
 === NOTES FOR FUTURE PROMPTS ===

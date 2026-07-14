@@ -97,6 +97,17 @@ class Test_Encryption extends WP_UnitTestCase {
     }
 
     /**
+     * Test masking a string just past the fully-redacted threshold (2x
+     * visible_chars) is partially, not fully, redacted. Distinguishes the
+     * `visible_chars * 2` threshold from off-by-one/factor mutations.
+     */
+    public function test_mask_just_above_threshold_is_partially_redacted() {
+        $masked = Encryption::mask('ABCDEFGHIJ', 4);
+
+        $this->assertSame('ABCD**GHIJ', $masked);
+    }
+
+    /**
      * Test masking with a custom number of visible characters.
      */
     public function test_mask_custom_visible_chars() {
@@ -143,5 +154,24 @@ class Test_Encryption extends WP_UnitTestCase {
         $GLOBALS['apt_test_force_base64_decode_failure'] = true;
 
         $this->assertSame('', Encryption::decrypt('anything'));
+    }
+
+    /**
+     * Test that get_key() derives its key from AUTH_KEY exactly as
+     * documented (sha256 of AUTH_KEY concatenated with a fixed suffix, in
+     * that order), rather than merely returning *some* 32-byte string.
+     * The public encrypt/decrypt round trip alone can't tell these apart,
+     * since it stays internally consistent regardless of how the key is
+     * derived - this reaches into the private method via reflection to
+     * pin down the actual derivation.
+     */
+    public function test_get_key_derives_from_auth_key() {
+        $this->assertTrue(defined('AUTH_KEY') && AUTH_KEY, 'Test assumes AUTH_KEY is defined and truthy in the WP test environment.');
+
+        $method = new \ReflectionMethod(Encryption::class, 'get_key');
+
+        $expected = hash('sha256', AUTH_KEY . 'apt_encryption', true);
+
+        $this->assertSame($expected, $method->invoke(null));
     }
 }

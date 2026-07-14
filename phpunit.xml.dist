@@ -18,4 +18,9 @@
 			<directory prefix="test-" suffix=".php">./tests/integration/</directory>
 		</testsuite>
 	</testsuites>
+	<coverage cacheDirectory=".phpunit.cache/code-coverage" processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">includes</directory>
+		</include>
+	</coverage>
 </phpunit>
